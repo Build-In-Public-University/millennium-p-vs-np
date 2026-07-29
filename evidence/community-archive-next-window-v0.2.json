@@ -1,0 +1,100 @@
+{
+  "schema_version": "community-archive-next-window/v0.2",
+  "status": "frozen_before_acquisition",
+  "frozen_at": "2026-07-29T21:03:28Z",
+  "subject": "@leo_guinan",
+  "purpose": "Prospective non-overlapping test of frozen Community Archive hypotheses using topology observed before prediction.",
+  "topology_snapshot": {
+    "observed_at": "2026-07-29",
+    "logical_path": "data/relationship_graph_2026-07-29/relationship_snapshot.json",
+    "sha256": "4dc4a6d8d5097c9f27b74cad9dd98bf3a485a3cf91e4ff7a8ab5a7c473f2a2c4",
+    "temporal_role": "pre_window_static_relationship_features",
+    "limitations": [
+      "snapshot has day precision only",
+      "valid for static partition features, not relationship lifecycle prediction"
+    ]
+  },
+  "collection_window": {
+    "authored_start_inclusive": "2026-07-30T00:00:00Z",
+    "authored_end_exclusive": "2026-08-14T00:00:00Z",
+    "interaction_end_exclusive": "2026-08-15T00:00:00Z",
+    "acquire_not_before": "2026-08-15T00:00:00Z"
+  },
+  "holdout_days": [
+    "2026-08-11",
+    "2026-08-12",
+    "2026-08-13"
+  ],
+  "label_horizon_hours": 24,
+  "minimum_class_support": 30,
+  "adaptive_extension_allowed": false,
+  "underpowered_action": "publish_not_evaluatable_without_extension",
+  "targets": {
+    "H-CA-01": {
+      "role": "replication",
+      "control_upgrade": "within_window_permutation_distribution",
+      "hypothesis_text_changes_allowed": false
+    },
+    "H-CA-02": {
+      "required_support": {
+        "seen_account_events": 30
+      }
+    },
+    "H-CA-03": {
+      "required_support": {
+        "new_account_post": 30,
+        "no_new_account_post": 30
+      },
+      "required_features": [
+        "pre_window_cross_population_partition"
+      ]
+    },
+    "H-CA-04": {
+      "required_support": {
+        "reply": 30,
+        "quote": 30
+      },
+      "type_rule": "derive target-specific type from reply_to_tweet_id or quoted_tweet_id; exclude unlinked mentions",
+      "required_features": [
+        "pre_window_relationship_partition"
+      ]
+    }
+  },
+  "external_acquisition": {
+    "approved": false,
+    "mechanism": "Community Archive REST enriched_tweets",
+    "raw_output_repository": "leo-twitter-audience-model",
+    "network_calls_allowed_before_approval": false,
+    "network_calls_allowed_before_acquire_not_before": false,
+    "current_extractor_status": "ready_dry_run_verified",
+    "current_extractor_blockers": [],
+    "default_mode": "dry_run_zero_network_calls",
+    "execution_module": "python3 -m community_archive_prediction.acquisition",
+    "execution_guards": [
+      "explicit --execute required",
+      "refuse before interaction_end_exclusive",
+      "credentials never persisted"
+    ]
+  },
+  "privacy_boundary": {
+    "raw_text_repository": "leo-twitter-audience-model",
+    "benchmark_repository_receives": [
+      "source hashes",
+      "aggregate support counts",
+      "identity-free metrics",
+      "day-level error specimens"
+    ],
+    "benchmark_repository_excludes": [
+      "raw text",
+      "post IDs",
+      "interacting-account identities",
+      "exact post timestamps"
+    ]
+  },
+  "research_lock": {
+    "layer_08_allowed": false,
+    "ontology_changes_allowed": false,
+    "threshold_changes_allowed": false,
+    "unlock_condition": "execute frozen v0.2 receipt or publish explicit not-evaluatable outcome"
+  }
+}

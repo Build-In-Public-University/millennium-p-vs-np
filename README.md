@@ -24,6 +24,11 @@ the evaluability audit found H-CA-03/H-CA-04 below their class floors with
 postdated topology. The project therefore adds no Layer 08 and makes no public
 claim that archive topology predicts behavior.
 
+The next prospective window is frozen in
+`evidence/community-archive-next-window-v0.2.json`. Its acquisition CLI defaults
+to a zero-network dry run and requires both explicit `--execute` and a mature
+interaction horizon.
+
 This is an empirical stress test of the observation-relative framework. It is
 not evidence for either side of P versus NP.
 

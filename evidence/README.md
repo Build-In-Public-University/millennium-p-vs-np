@@ -66,3 +66,6 @@ Negative results are first-class evidence.
   new-account and H-CA-04 reply/quote class support plus feature timing.
 - `community-archive-evaluability-v0.1.md` — why H-CA-03/H-CA-04 moved from
   deferred to `not_evaluatable_yet`, including target-specific type counts.
+- `community-archive-next-window-v0.2.json` — prospective July 30–August 14
+  collection contract, July 29 topology boundary, frozen holdouts, support
+  floors, dry-run acquisition status, and external-approval gate.

@@ -46,6 +46,11 @@ seen-account events against the frozen floor of 30; H-CA-03 has 25 new-account
 posts and a postdated relationship snapshot; H-CA-04 has only 3 linked quotes
 and the same postdated snapshot.
 
+The prospective v0.2 contract freezes July 30–August 13 authored posts, a
+24-hour interaction horizon through August 14, and the July 29 relationship
+snapshot. Acquisition requires separate external approval and cannot run before
+August 15 UTC.
+
 While the goal remains locked:
 
 - no Layer 08;
@@ -121,6 +126,7 @@ Raw social data remains in its source repository. This repository stores aggrega
 - `evidence/community-archive-hypotheses-v0.1.json`
 - `evidence/community-archive-prediction-v0.1.md`
 - `evidence/community-archive-evaluability-v0.1.md`
+- `evidence/community-archive-next-window-v0.2.json`
 - `evidence/runs/community-archive-prediction-v0.1.json`
 - `evidence/runs/community-archive-evaluability-v0.1.json`
 - `evidence/theorem-ledger-v0.7.md`
