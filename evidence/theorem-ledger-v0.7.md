@@ -1,9 +1,11 @@
-# Theorem and claim ledger — v0.7
+# Theorem and claim ledger — v0.7 plus theory addendum
 
-**Status:** consolidation receipt, not a P versus NP result
+**Status:** consolidation receipt with 2026-07-29 formalization addendum; not a
+P versus NP result and not an empirical Layer 08
 
 **Instrument:** `network_relativity/`
 **Generated evidence:** `evidence/runs/network-observation-v0.7.json`
+**Formal note:** `papers/observation-factorization-v0.1.md`
 
 ## Classification
 
@@ -16,9 +18,9 @@
 
 | ID | Statement | Class | Receipt or proof burden |
 |---|---|---|---|
-| T-01 | For finite world set `W`, observation map `O`, and task `f`, an exact validator based only on `O(w)` exists iff `f` is constant on every fiber of `O`. | Established | Necessity: identical observations must receive one output. Sufficiency: map each observation class to its common task value. Executed in `analyze_identifiability`. |
+| T-01 | For world set `W`, observation map `O`, and task `f`, an exact validator on `O(W)` exists iff `f` is constant on every fiber of `O`; the factor is unique on `O(W)`. | Established | Formal proof in `papers/observation-factorization-v0.1.md`; finite execution in `analyze_identifiability`. |
 | T-02 | A case is distributed-but-not-local when the joint observation determines `f` and every individual node observation fails to determine `f`. | Finite corollary | Exhaustive finite counterexample search in v0.1 fixtures. This is a classification, not an asymptotic complexity separation. |
-| T-03 | Changing network topology while holding sensors and task fixed can change communication rounds without changing observational identifiability. | Finite corollary | v0.2 path/clique fixtures; topology affects routes, not observation fibers. |
+| T-03 | Changing network topology while holding the effective joint observation and task fixed can change communication rounds without changing observational identifiability. | Finite corollary | v0.2 connected path/clique fixtures; topology affects routes, not observation fibers. Disconnection, loss, or deadlines may change the effective observation and therefore identifiability. |
 | T-04 | A source-grounded certificate is sufficient only when every world compatible with its attested facts has the same task answer. | Implementation invariant | Exhaustive compatible-world enumeration in v0.3. Minimality is by finite enumeration in the instrument, not a general complexity theorem. |
 | T-05 | In a static world with lossless retained observations, cumulative observational information cannot decrease as epochs are appended. | Finite corollary | v0.4 rotating-sensor fixture. It does not apply when the world changes, cache entries expire, or provenance is invalidated. |
 | T-06 | An inferred private desire without authorization cannot alter the realized action in the v0.5 protocol. | Implementation invariant | Authorization gate is deny-by-default. This is a protocol property, not a claim about human behavior. |
@@ -26,13 +28,14 @@
 | T-08 | A correction cycle is next-message ready iff the corrected state matches the observation and every register required by the reset contract is cleared. | Implementation invariant | `evaluate_correction_cycle`; blocked correction and uncleared-syndrome fixtures. |
 | T-09 | In the declared finite ensemble, corrective-message value is `H(Z|Y) - H(Z|Y,M)`, and the ideal avoided erasure floor is `k_B T ln(2)` times that difference. | Established + finite calculation | v0.7 helpful/constant-message ensembles. No measured device energy. |
 | T-10 | Independent reset boundaries permit addition of their declared ideal floors; dependent boundaries require a joint ensemble rather than a guessed sum. | Established modeling rule + invariant | v0.7 emits `null` for dependent aggregate floor. |
+| T-11 | Given Boolean circuits `O` and `f`, deciding whether some pair has equal observations and unequal task values is NP-complete; deciding exact identifiability is coNP-complete. | Established classification for the declared circuit representation; novelty unassessed | SAT reduction in `papers/observation-factorization-v0.1.md`. Hardness already holds when `O` drops one designated input bit. This does not define a new class or separate P from NP. |
 | C-01 | Future visible archive interactions may be bounded by observation classes induced by content, topology, recurrence, and source coverage. | Conjectural bridge | Requires chronological archive benchmark and comparison against class-frequency/Bayes-style ceilings. |
 | C-02 | Relationship topology may add predictive information beyond content for previously observed interactors. | Conjectural bridge | Existing seven-day pilot is preliminary evidence against a simple three-day recency boost. Must survive at least three held-out windows. |
 | C-03 | Cross-population position may predict second-hop propagation. | Conjectural bridge | Currently not evaluatable: 36 bridge posts and zero observed audience-response positives. |
 
 ## What this establishes
 
-The seven-layer instrument gives exact finite answers to questions about observational equivalence, communication, certificates, retained evidence, authorization, trajectory envelopes, and declared erasure entropy.
+The seven-layer instrument gives exact finite answers to questions about observational equivalence, communication, certificates, retained evidence, authorization, trajectory envelopes, and declared erasure entropy. The theory addendum also classifies the succinct Boolean-circuit bad-fiber audit problem as NP-complete and its exact-identifiability complement as coNP-complete.
 
 ## What this does not establish
 
@@ -50,7 +53,8 @@ It does not establish:
 
 Before manuscript language:
 
-1. formalize T-01 through T-10 with definitions independent of Python;
+1. formalize T-02 through T-10 with definitions independent of Python; T-01 is
+   now formalized;
 2. identify citations and prior formulations for each established statement;
 3. separate exhaustive finite algorithms from general decision problems;
 4. state runtime in `|W|`, node count, and candidate-certificate count;

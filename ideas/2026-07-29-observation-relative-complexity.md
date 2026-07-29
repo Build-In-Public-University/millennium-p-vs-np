@@ -1,6 +1,6 @@
 # Idea: Observation-relative validation complexity
 
-- Status: mechanism under test
+- Status: finite mechanism executed; mathematical core formalized; novelty unassessed
 - Author(s): Leo Guinan, Marvin
 - Date: 2026-07-29
 - Domain(s): distributed complexity, information theory, sensing
@@ -31,7 +31,7 @@ on every equivalence class induced by `~N`. If two observationally equivalent
 worlds require different answers, no zero-error algorithm restricted to those
 observations can distinguish them.
 
-## Smallest next test
+## Executed finite test
 
 Enumerate finite binary worlds and compare OR and PARITY under:
 
@@ -42,6 +42,24 @@ Enumerate finite binary worlds and compare OR and PARITY under:
 
 Record the validation regime, exact counterexample pair, uniform-prior optimal
 accuracy, and aggregation radius.
+
+This test is implemented in `network_relativity/` and reported in
+`evidence/network-observation-v0.1.md`.
+
+## Formalization
+
+`papers/observation-factorization-v0.1.md` proves the exact factorization
+criterion, separates identifiability from communication and computation,
+derives finite Bayes risk, and proves NP-completeness of succinct Boolean-circuit
+bad-fiber detection. The classification has not yet survived a prior-work
+novelty audit.
+
+## Smallest next theory test
+
+Compare the circuit result against functional-dependence, noninterference,
+information-flow verification, communication-complexity, and statistical
+experiment-ordering formulations. Preserve the result as a standard reduction
+if no residual novelty remains.
 
 ## Falsifier
 

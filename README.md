@@ -44,7 +44,15 @@ not evidence for either side of P versus NP.
 - `ideas/` — one hypothesis or question per file.
 - `connections/` — explicit bridges between concepts, fields, methods, or datasets.
 - `evidence/` — sources, calculations, counterexamples, failed attempts, and replication notes.
+- `literature/` — frozen review contracts, normalized bibliographies, local
+  full-text hashes, and explicit claim-to-source links.
 - `papers/` — paper generators: proposed question, contribution, method, result needed, and falsifier.
+
+The reusable literature workbench is documented in `literature/README.md`.
+Discovery, bibliography expansion, and open-access PDF retrieval are dry runs
+unless `--execute` is explicit. Retrieved PDFs and extracted text stay local;
+metadata, citation edges, claim assessments, and validation receipts are
+shareable.
 
 ## First instrument: sampling versus prediction
 
@@ -72,6 +80,13 @@ python3 -m network_relativity.experiment \
 The generated receipt measures finite observational identifiability, the best
 accuracy under a uniform prior, and a topology-dependent aggregation radius.
 It does not measure classical time complexity and does not resolve P versus NP.
+
+The mathematical core is formalized in
+`papers/observation-factorization-v0.1.md`. The note proves the elementary
+fiber-factorization criterion, separates identifiability from communication and
+computation, and classifies succinct Boolean-circuit bad-fiber detection as
+NP-complete. The complementary exact-identifiability problem is coNP-complete.
+Novelty is unassessed, and neither classification separates P from NP.
 
 ### Interactive Observation Lab
 

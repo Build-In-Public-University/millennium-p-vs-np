@@ -1,3 +1,9 @@
 __pycache__/
 *.py[cod]
 .pytest_cache/
+
+# Literature metadata, citation edges, claim links, and hashes are tracked.
+# Retrieved PDFs and extracted full text remain local to avoid repository bloat
+# and accidental redistribution of material whose license is missing or unclear.
+literature/**/artifacts/**
+!literature/**/artifacts/.gitkeep

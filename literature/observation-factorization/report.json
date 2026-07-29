@@ -1,0 +1,17 @@
+{
+  "claim_links": 0,
+  "claims_linked": 0,
+  "claims_total": 4,
+  "expansion_depth": 1,
+  "full_text_downloaded": 0,
+  "full_text_extracted": 0,
+  "generated_at": "2026-07-29T23:07:42.052498+00:00",
+  "max_records": 500,
+  "metadata_only": 0,
+  "open_access_pdf_available": 0,
+  "records": 0,
+  "reference_edges": 0,
+  "references_unresolved": 0,
+  "review": "observation-factorization",
+  "schema_version": "literature-review-report/v0.1"
+}

@@ -1,0 +1,60 @@
+{
+  "acquisition": {
+    "dry_run_default": true,
+    "execute_required": true,
+    "normalized_metadata_and_hash_receipts_persisted": true,
+    "raw_provider_responses_persisted": false
+  },
+  "claim_relationships": [
+    "context",
+    "contradicts",
+    "overlaps",
+    "supports",
+    "unresolved"
+  ],
+  "claims": [
+    {
+      "claim_id": "T-01",
+      "text": "An exact observation-restricted solver exists iff the task is constant on every observation fiber."
+    },
+    {
+      "claim_id": "T-03",
+      "text": "Holding the effective joint observation fixed, network topology can change communication cost without changing identifiability."
+    },
+    {
+      "claim_id": "T-11",
+      "text": "For succinct Boolean circuits, BAD-FIBER is NP-complete and exact CIRCUIT-IDENTIFIABLE is coNP-complete."
+    },
+    {
+      "claim_id": "T-BAYES",
+      "text": "Finite zero-one Bayes risk is the sum of per-observation-fiber minority mass."
+    }
+  ],
+  "discovery": {
+    "max_results_per_query": 25,
+    "provider": "openalex",
+    "queries": [
+      "functional dependence Boolean circuits variable independence",
+      "noninterference information flow Boolean circuits complexity",
+      "functions constant on equivalence classes quotient factorization",
+      "Blackwell comparison statistical experiments sufficient statistics decision theory",
+      "distributed function computation communication complexity graph topology"
+    ]
+  },
+  "expansion": {
+    "completeness_claim": "provider_reported_references_within_declared_depth_and_cap",
+    "depth": 1,
+    "direction": "references",
+    "max_records": 500
+  },
+  "problem": "Determine which parts of the observation-factorization framework are established under quotient factorization, sufficient statistics, information ordering, noninterference, functional dependence, and distributed function computation; identify whether the BAD-FIBER NP-completeness result has any residual novelty.",
+  "retrieval": {
+    "closed_or_unknown_access": "metadata_only",
+    "full_text_policy": "open_access_or_user_supplied",
+    "local_artifacts_tracked_by_git": false,
+    "max_pdf_bytes": 50000000
+  },
+  "schema_version": "literature-review/v0.1",
+  "slug": "observation-factorization",
+  "title": "Observation factorization and succinct identifiability"
+}
