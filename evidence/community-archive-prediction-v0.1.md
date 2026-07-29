@@ -90,7 +90,10 @@ not cleanly lower.
 
 ## Other targets
 
-- H-CA-03 and H-CA-04: deferred to v0.2; no model was run.
+- H-CA-03: not evaluatable; a subsequent audit found 25 new-account posts and
+  a relationship snapshot that postdates prediction.
+- H-CA-04: not evaluatable; the audit found 44 linked replies, 3 linked quotes,
+  and the same postdated relationship snapshot.
 - H-CA-05: not evaluable; zero propagation positives.
 - H-CA-06: not evaluable; one relationship snapshot.
 - H-CA-07: deferred; observation partition not frozen.

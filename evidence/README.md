@@ -62,3 +62,7 @@ Negative results are first-class evidence.
   hashes, and identity-free error specimens.
 - `community-archive-prediction-v0.1.md` — interpretation, negative result,
   underpowered result, leakage boundary, and next acquisition requirement.
+- `runs/community-archive-evaluability-v0.1.json` — machine audit of H-CA-03
+  new-account and H-CA-04 reply/quote class support plus feature timing.
+- `community-archive-evaluability-v0.1.md` — why H-CA-03/H-CA-04 moved from
+  deferred to `not_evaluatable_yet`, including target-specific type counts.

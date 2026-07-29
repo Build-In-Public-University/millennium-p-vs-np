@@ -20,8 +20,9 @@ three chronological holdouts.
 
 The frozen contract is in `RESEARCH_GOAL.md`. Benchmark v0.1 exists, but the
 goal remains locked: H-CA-01 was not supported, H-CA-02 was underpowered, and
-H-CA-03/H-CA-04 were deferred. The project therefore adds no Layer 08 and makes
-no public claim that archive topology predicts behavior.
+the evaluability audit found H-CA-03/H-CA-04 below their class floors with
+postdated topology. The project therefore adds no Layer 08 and makes no public
+claim that archive topology predicts behavior.
 
 This is an empirical stress test of the observation-relative framework. It is
 not evidence for either side of P versus NP.

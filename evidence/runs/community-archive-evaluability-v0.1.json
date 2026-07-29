@@ -1,0 +1,151 @@
+{
+  "data_contract": {
+    "candidate_rule": "accounts in matured training rows only",
+    "excluded_labels": [
+      "mention_without_target_post_linkage"
+    ],
+    "feature_availability_rule": "relationship snapshot must predate every holdout prediction",
+    "holdout_selection": "last complete UTC days with full label horizon",
+    "interaction_type_rule": "reply_to_tweet_id and quoted_tweet_id fields, not mixed interaction_types",
+    "label_horizon_hours": 24.0,
+    "relationship_snapshot_day": "2026-07-29",
+    "source_end": "2026-07-20T00:00:00+00:00"
+  },
+  "folds": [
+    {
+      "H-CA-03": {
+        "all_account_events": 26,
+        "new_account_events": 18,
+        "posts_with_new_account_event": 14,
+        "seen_account_events": 8
+      },
+      "H-CA-04": {
+        "ambiguous_linked_events": 0,
+        "excluded_unlinked_mentions": 4,
+        "linked_quote_events": 2,
+        "linked_reply_events": 25
+      },
+      "heldout_posts": 115,
+      "holdout_day": "2026-07-16",
+      "training_posts": 368
+    },
+    {
+      "H-CA-03": {
+        "all_account_events": 15,
+        "new_account_events": 7,
+        "posts_with_new_account_event": 7,
+        "seen_account_events": 8
+      },
+      "H-CA-04": {
+        "ambiguous_linked_events": 0,
+        "excluded_unlinked_mentions": 4,
+        "linked_quote_events": 1,
+        "linked_reply_events": 14
+      },
+      "heldout_posts": 94,
+      "holdout_day": "2026-07-17",
+      "training_posts": 522
+    },
+    {
+      "H-CA-03": {
+        "all_account_events": 5,
+        "new_account_events": 4,
+        "posts_with_new_account_event": 4,
+        "seen_account_events": 1
+      },
+      "H-CA-04": {
+        "ambiguous_linked_events": 0,
+        "excluded_unlinked_mentions": 0,
+        "linked_quote_events": 0,
+        "linked_reply_events": 5
+      },
+      "heldout_posts": 129,
+      "holdout_day": "2026-07-18",
+      "training_posts": 637
+    }
+  ],
+  "privacy": {
+    "exact_post_timestamps_emitted": false,
+    "interaction_account_identities_emitted": false,
+    "post_identifiers_emitted": false,
+    "raw_rows_emitted": false,
+    "subject_handle_in_source_logical_path": true
+  },
+  "provenance": {
+    "command": "python3 -m community_archive_prediction.evaluability_audit --source-root <source> --output <output> --relationship-snapshot-at <timestamp>",
+    "generated_at": "2026-07-29T20:51:13.191476+00:00",
+    "sources": {
+      "interactions": {
+        "bytes": 86539,
+        "logical_path": "data/interactions_with_leo_2026-07-12_2026-07-19.jsonl",
+        "rows": 178,
+        "sha256": "9455d4cf22cdd641721853ef3af683cf9066a0bb8ff43ac60bdc4749b762a61e"
+      },
+      "relationship_snapshot": {
+        "bytes": 273,
+        "logical_path": "data/relationship_graph_2026-07-29/relationship_snapshot.json",
+        "sha256": "4dc4a6d8d5097c9f27b74cad9dd98bf3a485a3cf91e4ff7a8ab5a7c473f2a2c4"
+      },
+      "tweets": {
+        "bytes": 449718,
+        "logical_path": "data/leo_guinan_tweets_2026-07-12_2026-07-19.jsonl",
+        "rows": 870,
+        "sha256": "640b85746a6b148591b6dcb03945e342a6e8729e717b077d39cb2574375a97af"
+      },
+      "window_contract": {
+        "bytes": 15429,
+        "logical_path": "reports/audience_model_results.json",
+        "sha256": "2845630b691062ed972ec5b35dfbff02aa1c38edac31c66dde2e965b91bc06ee"
+      }
+    }
+  },
+  "schema_version": "community-archive-evaluability/v0.1",
+  "support": {
+    "H-CA-03": {
+      "all_account_events": 46,
+      "new_account_events": 29,
+      "posts_with_new_account_event": 25,
+      "seen_account_events": 17
+    },
+    "H-CA-04": {
+      "ambiguous_linked_events": 0,
+      "excluded_unlinked_mentions": 8,
+      "linked_quote_events": 3,
+      "linked_reply_events": 44
+    }
+  },
+  "targets": {
+    "H-CA-03": {
+      "blockers": [
+        "class_support_below_30",
+        "relationship_snapshot_postdates_predictions"
+      ],
+      "class_support": {
+        "new_account_post": 25,
+        "no_new_account_post": 313
+      },
+      "feature_status": "not_evaluatable_yet",
+      "label": "post_receives_interaction_from_account_absent_from_matured_training_candidates",
+      "label_status": "not_evaluatable_yet",
+      "minimum_class_support": 30,
+      "minimum_observed_class_support": 25,
+      "status": "not_evaluatable_yet"
+    },
+    "H-CA-04": {
+      "blockers": [
+        "class_support_below_30",
+        "relationship_snapshot_postdates_predictions"
+      ],
+      "class_support": {
+        "quote": 3,
+        "reply": 44
+      },
+      "feature_status": "not_evaluatable_yet",
+      "label": "target_specific_reply_vs_quote",
+      "label_status": "not_evaluatable_yet",
+      "minimum_class_support": 30,
+      "minimum_observed_class_support": 3,
+      "status": "not_evaluatable_yet"
+    }
+  }
+}

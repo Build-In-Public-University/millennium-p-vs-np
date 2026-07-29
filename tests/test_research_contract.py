@@ -63,8 +63,13 @@ def test_research_goal_blocks_layer_eight_until_receipt_exists() -> None:
 
     ledger = load_hypotheses()
     assert ledger["executed_receipt"] == "evidence/runs/community-archive-prediction-v0.1.json"
+    assert ledger["evaluability_audit_receipt"] == "evidence/runs/community-archive-evaluability-v0.1.json"
     assert ledger["hypotheses"][0]["v0_1_outcome"] == "not_supported"
     assert ledger["hypotheses"][1]["v0_1_outcome"] == "unresolved_underpowered"
+    assert ledger["hypotheses"][2]["v0_1_outcome"] == "not_evaluatable_yet"
+    assert ledger["hypotheses"][3]["v0_1_outcome"] == "not_evaluatable_yet"
+    assert "25 new-account posts" in goal
+    assert "3 linked quotes" in goal
 
 
 def test_theorem_ledger_separates_claim_classes_and_denies_pnp_result() -> None:

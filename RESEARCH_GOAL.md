@@ -41,9 +41,10 @@ Success is not “the combined model wins.” A clean null or baseline victory s
 
 ## Research lock
 
-The v0.1 receipt exists, but the goal remains locked: H-CA-02 has only 17
-seen-account events against the frozen floor of 30, and H-CA-03/H-CA-04 were
-deferred rather than evaluated or retired.
+The v0.1 receipts exist, but the goal remains locked: H-CA-02 has only 17
+seen-account events against the frozen floor of 30; H-CA-03 has 25 new-account
+posts and a postdated relationship snapshot; H-CA-04 has only 3 linked quotes
+and the same postdated snapshot.
 
 While the goal remains locked:
 
@@ -88,6 +89,10 @@ account events.
   matched or exceeded observed content AP in all three windows.
 - H-CA-02: `unresolved_underpowered`. Only 17 account events came from accounts
   in the matured training candidate sets, below the frozen floor of 30.
+- H-CA-03: `not_evaluatable_yet`. There are 25 new-account posts, below the
+  class floor of 30, and the cross-population snapshot postdates prediction.
+- H-CA-04: `not_evaluatable_yet`. There are 44 linked replies but only 3 linked
+  quotes; the relationship snapshot also postdates prediction.
 - Account frequency remained the best descriptive Recall@10 baseline at
   `0.588235`; combined ranking reached `0.411765`.
 - Topology remained unavailable because the relationship snapshot postdates
@@ -115,5 +120,7 @@ Raw social data remains in its source repository. This repository stores aggrega
 - `evidence/community-archive-network-substrate-v0.1.md`
 - `evidence/community-archive-hypotheses-v0.1.json`
 - `evidence/community-archive-prediction-v0.1.md`
+- `evidence/community-archive-evaluability-v0.1.md`
 - `evidence/runs/community-archive-prediction-v0.1.json`
+- `evidence/runs/community-archive-evaluability-v0.1.json`
 - `evidence/theorem-ledger-v0.7.md`

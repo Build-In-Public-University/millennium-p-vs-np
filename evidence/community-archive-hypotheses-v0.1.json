@@ -90,7 +90,16 @@
       "prediction": "positive mean delta across at least three held-out windows",
       "falsifier": "combined model does not beat the global-rate baseline or only account-activity volume explains the delta",
       "prior_status": "untested",
-      "prior_evidence": "new accounts were 0.364 of held-out direct-interaction events"
+      "prior_evidence": "new accounts were 0.364 of held-out direct-interaction events",
+      "v0_1_outcome": "not_evaluatable_yet",
+      "v0_1_label_support": {
+        "new_account_post": 25,
+        "no_new_account_post": 313
+      },
+      "v0_1_blockers": [
+        "class_support_below_30",
+        "relationship_snapshot_postdates_predictions"
+      ]
     },
     {
       "id": "H-CA-04",
@@ -100,7 +109,17 @@
       "prediction": "positive delta with every class meeting the evaluability threshold",
       "falsifier": "class imbalance leaves any target unevaluable or combined performance does not beat content-only",
       "prior_status": "untested",
-      "prior_evidence": "129 identity-resolved relationship rows and 12 identity-resolved distribution rows exist"
+      "prior_evidence": "129 identity-resolved relationship rows and 12 identity-resolved distribution rows exist",
+      "v0_1_outcome": "not_evaluatable_yet",
+      "v0_1_label_support": {
+        "reply": 44,
+        "quote": 3
+      },
+      "v0_1_excluded_unlinked_mentions": 8,
+      "v0_1_blockers": [
+        "class_support_below_30",
+        "relationship_snapshot_postdates_predictions"
+      ]
     },
     {
       "id": "H-CA-05",
@@ -143,5 +162,6 @@
       "prior_evidence": "claim ledger exists but every outcome is unscored"
     }
   ],
-  "executed_receipt": "evidence/runs/community-archive-prediction-v0.1.json"
+  "executed_receipt": "evidence/runs/community-archive-prediction-v0.1.json",
+  "evaluability_audit_receipt": "evidence/runs/community-archive-evaluability-v0.1.json"
 }
