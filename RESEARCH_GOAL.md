@@ -51,6 +51,13 @@ The prospective v0.2 contract freezes July 30–August 13 authored posts, a
 snapshot. Acquisition requires separate external approval and cannot run before
 August 15 UTC.
 
+The v0.2 evaluator is built but has not seen the future window. It performs
+hash, maturity, topology, holdout, and support preflight before fitting models;
+unsupported targets emit no model metrics. H-CA-01 requires both binary classes,
+H-CA-03 uses sequential training-only partition-topic context, and H-CA-04 is a
+conditional linked-event reply-versus-quote task. None of this unlocks Layer 08
+before the real receipt exists.
+
 While the goal remains locked:
 
 - no Layer 08;

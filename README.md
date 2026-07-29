@@ -29,6 +29,13 @@ The next prospective window is frozen in
 to a zero-network dry run and requires both explicit `--execute` and a mature
 interaction horizon.
 
+The contract-driven evaluator is implemented in
+`community_archive_prediction/prospective.py`. It verifies source and topology
+hashes, maturity, exact holdouts, and support before fitting any eligible target.
+H-CA-04 is explicitly conditional reply-versus-quote classification; it does not
+claim to predict whether an account interacts. The real v0.2 receipt does not
+exist yet and is scheduled only after the August 15 label boundary.
+
 This is an empirical stress test of the observation-relative framework. It is
 not evidence for either side of P versus NP.
 

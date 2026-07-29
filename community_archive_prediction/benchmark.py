@@ -389,6 +389,27 @@ def _evaluate_account_fold(
     }, control_rows
 
 
+def _account_support_fold(
+    train: list[PostExample], test: list[PostExample]
+) -> dict[str, Any]:
+    candidates = {event.account for row in train for event in row.interaction_events}
+    all_events = seen_events = 0
+    for row in test:
+        actual = set(row.direct_accounts)
+        all_events += len(actual)
+        seen_events += len(actual & candidates)
+    return {
+        "candidate_accounts": len(candidates),
+        "all_account_events": all_events,
+        "seen_account_events": seen_events,
+        "new_account_events": all_events - seen_events,
+        "candidate_coverage": round(seen_events / max(1, all_events), 6),
+        "new_account_event_share": round((all_events - seen_events) / max(1, all_events), 6),
+        "models": {},
+        "error_specimens": [],
+    }
+
+
 def _rotated(values: np.ndarray) -> np.ndarray:
     return np.roll(values, 1) if len(values) > 1 else values.copy()
 
@@ -465,7 +486,12 @@ def resolve_direct_interaction_hypothesis(
 ) -> dict[str, Any]:
     observed = [float(fold["direct_interaction_models"]["content_only"]["metrics"]["average_precision"]) for fold in folds]
     baselines = [float(fold["direct_interaction_models"]["global_positive_rate"]["metrics"]["average_precision"]) for fold in folds]
-    shuffled = [float(control["metrics"]["average_precision"]) for control in controls]
+    shuffled = [
+        float(control["metrics"]["average_precision"])
+        if "metrics" in control
+        else statistics.mean(control["average_precision_distribution"])
+        for control in controls
+    ]
     positive_windows = sum(value > baseline for value, baseline in zip(observed, baselines))
     control_windows = sum(value >= signal for value, signal in zip(shuffled, observed))
     mean_delta = statistics.mean(value - baseline for value, baseline in zip(observed, baselines))
@@ -515,7 +541,12 @@ def evaluate_benchmark(
     holdout_count: int = 3,
     label_horizon: timedelta = timedelta(hours=24),
     minimum_positive_events: int = 30,
+    active_targets: set[str] | None = None,
+    time_control_mode: str = "single_rotation",
 ) -> dict[str, Any]:
+    active_targets = active_targets or {"H-CA-01", "H-CA-02"}
+    if time_control_mode not in {"single_rotation", "all_cyclic_permutations"}:
+        raise ValueError(f"unsupported time control mode: {time_control_mode}")
     examples = build_examples(tweets, interactions, label_horizon)
     holdout_days = complete_holdout_days(tweets, source_end, label_horizon, holdout_count)
     folds: list[dict[str, Any]] = []
@@ -524,26 +555,56 @@ def evaluate_benchmark(
 
     for holdout_day in holdout_days:
         train, test = rolling_split(examples, holdout_day, label_horizon)
-        binary_models, content_probs = _evaluate_binary_fold(train, test)
-        account_ranking, control_rows = _evaluate_account_fold(train, test)
+        if "H-CA-01" in active_targets:
+            binary_models, content_probs = _evaluate_binary_fold(train, test)
+        else:
+            binary_models = {}
+            content_probs = np.zeros(len(test))
+        if "H-CA-02" in active_targets:
+            account_ranking, control_rows = _evaluate_account_fold(train, test)
+        else:
+            account_ranking = _account_support_fold(train, test)
+            control_rows = []
         test_labels = np.asarray([row.has_direct_interaction for row in test], dtype=int)
-        shuffled_labels = _rotated(test_labels)
-        time_controls.append(
-            {
-                "holdout_day": holdout_day.isoformat(),
-                "model": "content_only_fixed_predictions",
-                "permutation": "rotate_labels_by_one_row",
-                "metrics": _binary_metrics(shuffled_labels, content_probs),
-            }
-        )
-        account_controls.append(
-            {
-                "holdout_day": holdout_day.isoformat(),
-                "model": "combined_fixed_rankings",
-                "permutation": "rotate_actual_account_sets_by_one_positive_row",
-                "recall_at_10": _account_shuffle_recall(control_rows),
-            }
-        )
+        if "H-CA-01" in active_targets:
+            if time_control_mode == "single_rotation":
+                time_controls.append(
+                    {
+                        "holdout_day": holdout_day.isoformat(),
+                        "model": "content_only_fixed_predictions",
+                        "permutation": "rotate_labels_by_one_row",
+                        "metrics": _binary_metrics(_rotated(test_labels), content_probs),
+                    }
+                )
+            else:
+                distribution = [
+                    _binary_metrics(np.roll(test_labels, offset), content_probs)["average_precision"]
+                    for offset in range(1, len(test_labels))
+                ]
+                distribution = [float(value) for value in distribution if value is not None]
+                observed = binary_models["content_only"]["metrics"]["average_precision"]
+                exceedances = sum(value >= float(observed) for value in distribution)
+                time_controls.append(
+                    {
+                        "holdout_day": holdout_day.isoformat(),
+                        "model": "content_only_fixed_predictions",
+                        "permutation": "all_non_identity_cyclic_label_rotations",
+                        "permutation_count": len(distribution),
+                        "average_precision_distribution": distribution,
+                        "empirical_p_value": round(
+                            (1 + exceedances) / (1 + len(distribution)), 6
+                        ),
+                    }
+                )
+        if "H-CA-02" in active_targets:
+            account_controls.append(
+                {
+                    "holdout_day": holdout_day.isoformat(),
+                    "model": "combined_fixed_rankings",
+                    "permutation": "rotate_actual_account_sets_by_one_positive_row",
+                    "recall_at_10": _account_shuffle_recall(control_rows),
+                }
+            )
         folds.append(
             {
                 "holdout_day": holdout_day.isoformat(),
@@ -558,8 +619,16 @@ def evaluate_benchmark(
     positive_posts = sum(fold["positive_test_posts"] for fold in folds)
     seen_account_events = sum(fold["account_ranking"]["seen_account_events"] for fold in folds)
     all_account_events = sum(fold["account_ranking"]["all_account_events"] for fold in folds)
-    h1_status = "evaluated" if positive_posts >= minimum_positive_events else "not_evaluatable_yet"
-    h2_status = "evaluated" if seen_account_events >= minimum_positive_events else "not_evaluatable_yet"
+    h1_status = (
+        "evaluated"
+        if "H-CA-01" in active_targets and positive_posts >= minimum_positive_events
+        else "not_evaluatable_yet"
+    )
+    h2_status = (
+        "evaluated"
+        if "H-CA-02" in active_targets and seen_account_events >= minimum_positive_events
+        else "not_evaluatable_yet"
+    )
 
     account_summary = _summarize_account_folds(folds)
 

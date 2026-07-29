@@ -174,6 +174,30 @@ def test_benchmark_marks_underpowered_targets_not_evaluatable() -> None:
     assert receipt["targets"]["H-CA-01"]["reason"] == "positive_support_below_100"
 
 
+def test_benchmark_skips_inactive_target_models_and_can_emit_permutation_distribution() -> None:
+    tweets, interactions = synthetic_archive()
+
+    receipt = evaluate_benchmark(
+        tweets=tweets,
+        interactions=interactions,
+        source_end=datetime(2026, 1, 10, tzinfo=UTC),
+        holdout_count=3,
+        label_horizon=timedelta(hours=24),
+        minimum_positive_events=1,
+        active_targets={"H-CA-01"},
+        time_control_mode="all_cyclic_permutations",
+    )
+
+    assert receipt["targets"]["H-CA-01"]["status"] == "evaluated"
+    assert receipt["targets"]["H-CA-02"]["status"] == "not_evaluatable_yet"
+    assert receipt["summary"]["account_ranking_models"] == {}
+    assert receipt["negative_controls"]["shuffled_account_labels_within_window"] == []
+    assert all(fold["account_ranking"]["models"] == {} for fold in receipt["folds"])
+    controls = receipt["negative_controls"]["shuffled_event_times"]
+    assert all(row["permutation"] == "all_non_identity_cyclic_label_rotations" for row in controls)
+    assert all(row["permutation_count"] == 3 for row in controls)
+
+
 def test_h1_resolution_rejects_signal_when_time_control_is_as_good() -> None:
     folds = []
     controls = []

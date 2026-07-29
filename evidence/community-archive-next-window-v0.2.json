@@ -8,6 +8,16 @@
     "observed_at": "2026-07-29",
     "logical_path": "data/relationship_graph_2026-07-29/relationship_snapshot.json",
     "sha256": "4dc4a6d8d5097c9f27b74cad9dd98bf3a485a3cf91e4ff7a8ab5a7c473f2a2c4",
+    "feature_sources": {
+      "nodes": {
+        "logical_path": "data/relationship_graph_2026-07-29/relationship_nodes.jsonl",
+        "sha256": "30d02e020314064ed86a710829242e76ff87c78eee92b86a1aef6f48b3af3d6d"
+      },
+      "edges": {
+        "logical_path": "data/relationship_graph_2026-07-29/relationship_edges.jsonl",
+        "sha256": "75a288468a289564f7fe2e19df9ceb40aaef9d82ed948d04319f57ed70a7264d"
+      }
+    },
     "temporal_role": "pre_window_static_relationship_features",
     "limitations": [
       "snapshot has day precision only",
@@ -33,7 +43,11 @@
     "H-CA-01": {
       "role": "replication",
       "control_upgrade": "within_window_permutation_distribution",
-      "hypothesis_text_changes_allowed": false
+      "hypothesis_text_changes_allowed": false,
+      "required_support": {
+        "direct_interaction_post": 30,
+        "no_direct_interaction_post": 30
+      }
     },
     "H-CA-02": {
       "required_support": {
@@ -41,6 +55,7 @@
       }
     },
     "H-CA-03": {
+      "prediction_unit": "authored_post_at_publication",
       "required_support": {
         "new_account_post": 30,
         "no_new_account_post": 30
@@ -50,6 +65,7 @@
       ]
     },
     "H-CA-04": {
+      "prediction_unit": "linked_account_post_event_conditional_on_interaction",
       "required_support": {
         "reply": 30,
         "quote": 30
@@ -91,6 +107,32 @@
       "exact post timestamps"
     ]
   },
+  "amendments": [
+    {
+      "amended_at": "2026-07-29T21:27:17Z",
+      "reason": "Add omitted hashes for the pre-window account-level topology feature sources.",
+      "scope": "provenance_only",
+      "unchanged": [
+        "hypotheses",
+        "dates",
+        "holdouts",
+        "labels",
+        "thresholds"
+      ]
+    },
+    {
+      "amended_at": "2026-07-29T21:56:38Z",
+      "reason": "Make the existing class-support semantics and prediction units machine-readable.",
+      "scope": "contract_clarification",
+      "unchanged": [
+        "hypotheses",
+        "dates",
+        "holdouts",
+        "labels",
+        "threshold_values"
+      ]
+    }
+  ],
   "research_lock": {
     "layer_08_allowed": false,
     "ontology_changes_allowed": false,
