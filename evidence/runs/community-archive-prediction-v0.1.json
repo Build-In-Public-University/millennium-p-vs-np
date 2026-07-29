@@ -1,0 +1,1236 @@
+{
+  "data_contract": {
+    "candidate_rule": "accounts observed in matured training rows only",
+    "excluded_labels": [
+      "mention_without_target_post_linkage"
+    ],
+    "holdout_selection": "last complete UTC days with full label horizon",
+    "label_horizon_hours": 24.0,
+    "label_scope": "reply_or_quote_targeting_authored_post",
+    "minimum_positive_events": 30,
+    "source_end_exclusive": "2026-07-20T00:00:00+00:00",
+    "within_holdout_updates": false
+  },
+  "folds": [
+    {
+      "account_ranking": {
+        "all_account_events": 26,
+        "candidate_accounts": 36,
+        "candidate_coverage": 0.307692,
+        "error_specimens": [
+          {
+            "actual_seen_count": 1,
+            "best_actual_rank": 5,
+            "candidate_count": 36,
+            "created_day": "2026-07-16",
+            "query_token_count": 20,
+            "row_index": 26
+          },
+          {
+            "actual_seen_count": 1,
+            "best_actual_rank": 6,
+            "candidate_count": 36,
+            "created_day": "2026-07-16",
+            "query_token_count": 39,
+            "row_index": 47
+          },
+          {
+            "actual_seen_count": 1,
+            "best_actual_rank": 3,
+            "candidate_count": 36,
+            "created_day": "2026-07-16",
+            "query_token_count": 11,
+            "row_index": 67
+          },
+          {
+            "actual_seen_count": 1,
+            "best_actual_rank": 1,
+            "candidate_count": 36,
+            "created_day": "2026-07-16",
+            "query_token_count": 42,
+            "row_index": 82
+          },
+          {
+            "actual_seen_count": 1,
+            "best_actual_rank": 36,
+            "candidate_count": 36,
+            "created_day": "2026-07-16",
+            "query_token_count": 4,
+            "row_index": 101
+          },
+          {
+            "actual_seen_count": 1,
+            "best_actual_rank": 31,
+            "candidate_count": 36,
+            "created_day": "2026-07-16",
+            "query_token_count": 13,
+            "row_index": 107
+          },
+          {
+            "actual_seen_count": 1,
+            "best_actual_rank": 16,
+            "candidate_count": 36,
+            "created_day": "2026-07-16",
+            "query_token_count": 16,
+            "row_index": 113
+          },
+          {
+            "actual_seen_count": 1,
+            "best_actual_rank": 25,
+            "candidate_count": 36,
+            "created_day": "2026-07-16",
+            "query_token_count": 38,
+            "row_index": 114
+          }
+        ],
+        "models": {
+          "account_frequency": {
+            "mrr": 0.164343,
+            "recall_at_10": 0.5,
+            "recall_at_5": 0.375,
+            "status": "evaluated"
+          },
+          "combined": {
+            "mrr": 0.232817,
+            "recall_at_10": 0.5,
+            "recall_at_5": 0.375,
+            "status": "evaluated"
+          },
+          "content_only": {
+            "mrr": 0.079159,
+            "recall_at_10": 0.375,
+            "recall_at_5": 0.0,
+            "status": "evaluated"
+          },
+          "recurrence_only": {
+            "mrr": 0.18277,
+            "recall_at_10": 0.5,
+            "recall_at_5": 0.5,
+            "status": "evaluated"
+          },
+          "topology_only": {
+            "reason": "relationship_snapshot_postdates_prediction_windows",
+            "status": "not_evaluatable_yet"
+          }
+        },
+        "new_account_event_share": 0.692308,
+        "new_account_events": 18,
+        "seen_account_events": 8
+      },
+      "direct_interaction_models": {
+        "combined": {
+          "error_specimens": {
+            "highest_scored_negatives": [
+              {
+                "character_count": 32,
+                "created_day": "2026-07-16",
+                "label": 0,
+                "predicted_probability": 0.752993,
+                "row_index": 97,
+                "token_count": 8
+              },
+              {
+                "character_count": 235,
+                "created_day": "2026-07-16",
+                "label": 0,
+                "predicted_probability": 0.725412,
+                "row_index": 24,
+                "token_count": 48
+              },
+              {
+                "character_count": 585,
+                "created_day": "2026-07-16",
+                "label": 0,
+                "predicted_probability": 0.716118,
+                "row_index": 0,
+                "token_count": 122
+              }
+            ],
+            "lowest_scored_positives": [
+              {
+                "character_count": 42,
+                "created_day": "2026-07-16",
+                "label": 1,
+                "predicted_probability": 0.395042,
+                "row_index": 33,
+                "token_count": 9
+              },
+              {
+                "character_count": 86,
+                "created_day": "2026-07-16",
+                "label": 1,
+                "predicted_probability": 0.39962,
+                "row_index": 107,
+                "token_count": 13
+              },
+              {
+                "character_count": 184,
+                "created_day": "2026-07-16",
+                "label": 1,
+                "predicted_probability": 0.445269,
+                "row_index": 96,
+                "token_count": 35
+              }
+            ]
+          },
+          "metrics": {
+            "average_precision": 0.217573,
+            "brier_score": 0.291234,
+            "calibration_error": 0.36849,
+            "roc_auc": 0.526342
+          },
+          "status": "evaluated"
+        },
+        "content_only": {
+          "error_specimens": {
+            "highest_scored_negatives": [
+              {
+                "character_count": 585,
+                "created_day": "2026-07-16",
+                "label": 0,
+                "predicted_probability": 0.626468,
+                "row_index": 0,
+                "token_count": 122
+              },
+              {
+                "character_count": 32,
+                "created_day": "2026-07-16",
+                "label": 0,
+                "predicted_probability": 0.607765,
+                "row_index": 97,
+                "token_count": 8
+              },
+              {
+                "character_count": 221,
+                "created_day": "2026-07-16",
+                "label": 0,
+                "predicted_probability": 0.597502,
+                "row_index": 91,
+                "token_count": 40
+              }
+            ],
+            "lowest_scored_positives": [
+              {
+                "character_count": 42,
+                "created_day": "2026-07-16",
+                "label": 1,
+                "predicted_probability": 0.275191,
+                "row_index": 33,
+                "token_count": 9
+              },
+              {
+                "character_count": 86,
+                "created_day": "2026-07-16",
+                "label": 1,
+                "predicted_probability": 0.283109,
+                "row_index": 107,
+                "token_count": 13
+              },
+              {
+                "character_count": 184,
+                "created_day": "2026-07-16",
+                "label": 1,
+                "predicted_probability": 0.318517,
+                "row_index": 96,
+                "token_count": 35
+              }
+            ]
+          },
+          "metrics": {
+            "average_precision": 0.231251,
+            "brier_score": 0.213586,
+            "calibration_error": 0.247542,
+            "roc_auc": 0.529382
+          },
+          "status": "evaluated"
+        },
+        "global_positive_rate": {
+          "metrics": {
+            "average_precision": 0.182609,
+            "brier_score": 0.150031,
+            "calibration_error": 0.027717,
+            "roc_auc": 0.5
+          },
+          "status": "evaluated"
+        },
+        "recurrence_only": {
+          "error_specimens": {
+            "highest_scored_negatives": [
+              {
+                "character_count": 64,
+                "created_day": "2026-07-16",
+                "label": 0,
+                "predicted_probability": 0.643885,
+                "row_index": 111,
+                "token_count": 11
+              },
+              {
+                "character_count": 46,
+                "created_day": "2026-07-16",
+                "label": 0,
+                "predicted_probability": 0.643609,
+                "row_index": 73,
+                "token_count": 9
+              },
+              {
+                "character_count": 85,
+                "created_day": "2026-07-16",
+                "label": 0,
+                "predicted_probability": 0.643574,
+                "row_index": 72,
+                "token_count": 15
+              }
+            ],
+            "lowest_scored_positives": [
+              {
+                "character_count": 328,
+                "created_day": "2026-07-16",
+                "label": 1,
+                "predicted_probability": 0.634496,
+                "row_index": 43,
+                "token_count": 66
+              },
+              {
+                "character_count": 114,
+                "created_day": "2026-07-16",
+                "label": 1,
+                "predicted_probability": 0.634512,
+                "row_index": 44,
+                "token_count": 22
+              },
+              {
+                "character_count": 294,
+                "created_day": "2026-07-16",
+                "label": 1,
+                "predicted_probability": 0.63812,
+                "row_index": 47,
+                "token_count": 48
+              }
+            ]
+          },
+          "metrics": {
+            "average_precision": 0.400659,
+            "brier_score": 0.35789,
+            "calibration_error": 0.457184,
+            "roc_auc": 0.650456
+          },
+          "status": "evaluated"
+        },
+        "topology_only": {
+          "reason": "relationship_snapshot_postdates_prediction_windows",
+          "status": "not_evaluatable_yet"
+        }
+      },
+      "holdout_day": "2026-07-16",
+      "positive_test_posts": 21,
+      "test_posts": 115,
+      "train_posts": 368
+    },
+    {
+      "account_ranking": {
+        "all_account_events": 15,
+        "candidate_accounts": 48,
+        "candidate_coverage": 0.533333,
+        "error_specimens": [
+          {
+            "actual_seen_count": 1,
+            "best_actual_rank": 1,
+            "candidate_count": 48,
+            "created_day": "2026-07-17",
+            "query_token_count": 11,
+            "row_index": 7
+          },
+          {
+            "actual_seen_count": 2,
+            "best_actual_rank": 2,
+            "candidate_count": 48,
+            "created_day": "2026-07-17",
+            "query_token_count": 18,
+            "row_index": 23
+          },
+          {
+            "actual_seen_count": 1,
+            "best_actual_rank": 10,
+            "candidate_count": 48,
+            "created_day": "2026-07-17",
+            "query_token_count": 5,
+            "row_index": 59
+          },
+          {
+            "actual_seen_count": 1,
+            "best_actual_rank": 15,
+            "candidate_count": 48,
+            "created_day": "2026-07-17",
+            "query_token_count": 24,
+            "row_index": 66
+          },
+          {
+            "actual_seen_count": 1,
+            "best_actual_rank": 30,
+            "candidate_count": 48,
+            "created_day": "2026-07-17",
+            "query_token_count": 15,
+            "row_index": 69
+          },
+          {
+            "actual_seen_count": 1,
+            "best_actual_rank": 12,
+            "candidate_count": 48,
+            "created_day": "2026-07-17",
+            "query_token_count": 28,
+            "row_index": 75
+          },
+          {
+            "actual_seen_count": 1,
+            "best_actual_rank": 16,
+            "candidate_count": 48,
+            "created_day": "2026-07-17",
+            "query_token_count": 31,
+            "row_index": 91
+          }
+        ],
+        "models": {
+          "account_frequency": {
+            "mrr": 0.285849,
+            "recall_at_10": 0.75,
+            "recall_at_5": 0.375,
+            "status": "evaluated"
+          },
+          "combined": {
+            "mrr": 0.241146,
+            "recall_at_10": 0.375,
+            "recall_at_5": 0.25,
+            "status": "evaluated"
+          },
+          "content_only": {
+            "mrr": 0.099048,
+            "recall_at_10": 0.25,
+            "recall_at_5": 0.25,
+            "status": "evaluated"
+          },
+          "recurrence_only": {
+            "mrr": 0.221338,
+            "recall_at_10": 0.375,
+            "recall_at_5": 0.25,
+            "status": "evaluated"
+          },
+          "topology_only": {
+            "reason": "relationship_snapshot_postdates_prediction_windows",
+            "status": "not_evaluatable_yet"
+          }
+        },
+        "new_account_event_share": 0.466667,
+        "new_account_events": 7,
+        "seen_account_events": 8
+      },
+      "direct_interaction_models": {
+        "combined": {
+          "error_specimens": {
+            "highest_scored_negatives": [
+              {
+                "character_count": 139,
+                "created_day": "2026-07-17",
+                "label": 0,
+                "predicted_probability": 0.749454,
+                "row_index": 43,
+                "token_count": 27
+              },
+              {
+                "character_count": 167,
+                "created_day": "2026-07-17",
+                "label": 0,
+                "predicted_probability": 0.683441,
+                "row_index": 82,
+                "token_count": 34
+              },
+              {
+                "character_count": 19,
+                "created_day": "2026-07-17",
+                "label": 0,
+                "predicted_probability": 0.671682,
+                "row_index": 38,
+                "token_count": 3
+              }
+            ],
+            "lowest_scored_positives": [
+              {
+                "character_count": 26,
+                "created_day": "2026-07-17",
+                "label": 1,
+                "predicted_probability": 0.330886,
+                "row_index": 59,
+                "token_count": 5
+              },
+              {
+                "character_count": 67,
+                "created_day": "2026-07-17",
+                "label": 1,
+                "predicted_probability": 0.347043,
+                "row_index": 48,
+                "token_count": 14
+              },
+              {
+                "character_count": 118,
+                "created_day": "2026-07-17",
+                "label": 1,
+                "predicted_probability": 0.365718,
+                "row_index": 23,
+                "token_count": 18
+              }
+            ]
+          },
+          "metrics": {
+            "average_precision": 0.164206,
+            "brier_score": 0.229579,
+            "calibration_error": 0.305247,
+            "roc_auc": 0.4875
+          },
+          "status": "evaluated"
+        },
+        "content_only": {
+          "error_specimens": {
+            "highest_scored_negatives": [
+              {
+                "character_count": 139,
+                "created_day": "2026-07-17",
+                "label": 0,
+                "predicted_probability": 0.727676,
+                "row_index": 43,
+                "token_count": 27
+              },
+              {
+                "character_count": 167,
+                "created_day": "2026-07-17",
+                "label": 0,
+                "predicted_probability": 0.668452,
+                "row_index": 82,
+                "token_count": 34
+              },
+              {
+                "character_count": 19,
+                "created_day": "2026-07-17",
+                "label": 0,
+                "predicted_probability": 0.643959,
+                "row_index": 38,
+                "token_count": 3
+              }
+            ],
+            "lowest_scored_positives": [
+              {
+                "character_count": 26,
+                "created_day": "2026-07-17",
+                "label": 1,
+                "predicted_probability": 0.295238,
+                "row_index": 59,
+                "token_count": 5
+              },
+              {
+                "character_count": 67,
+                "created_day": "2026-07-17",
+                "label": 1,
+                "predicted_probability": 0.295851,
+                "row_index": 48,
+                "token_count": 14
+              },
+              {
+                "character_count": 67,
+                "created_day": "2026-07-17",
+                "label": 1,
+                "predicted_probability": 0.314209,
+                "row_index": 7,
+                "token_count": 11
+              }
+            ]
+          },
+          "metrics": {
+            "average_precision": 0.164642,
+            "brier_score": 0.209081,
+            "calibration_error": 0.266421,
+            "roc_auc": 0.472321
+          },
+          "status": "evaluated"
+        },
+        "global_positive_rate": {
+          "metrics": {
+            "average_precision": 0.148936,
+            "brier_score": 0.126782,
+            "calibration_error": 0.005258,
+            "roc_auc": 0.5
+          },
+          "status": "evaluated"
+        },
+        "recurrence_only": {
+          "error_specimens": {
+            "highest_scored_negatives": [
+              {
+                "character_count": 182,
+                "created_day": "2026-07-17",
+                "label": 0,
+                "predicted_probability": 0.569126,
+                "row_index": 0,
+                "token_count": 27
+              },
+              {
+                "character_count": 96,
+                "created_day": "2026-07-17",
+                "label": 0,
+                "predicted_probability": 0.565331,
+                "row_index": 8,
+                "token_count": 16
+              },
+              {
+                "character_count": 109,
+                "created_day": "2026-07-17",
+                "label": 0,
+                "predicted_probability": 0.565257,
+                "row_index": 6,
+                "token_count": 18
+              }
+            ],
+            "lowest_scored_positives": [
+              {
+                "character_count": 146,
+                "created_day": "2026-07-17",
+                "label": 1,
+                "predicted_probability": 0.519966,
+                "row_index": 66,
+                "token_count": 26
+              },
+              {
+                "character_count": 81,
+                "created_day": "2026-07-17",
+                "label": 1,
+                "predicted_probability": 0.520064,
+                "row_index": 69,
+                "token_count": 17
+              },
+              {
+                "character_count": 26,
+                "created_day": "2026-07-17",
+                "label": 1,
+                "predicted_probability": 0.533381,
+                "row_index": 59,
+                "token_count": 5
+              }
+            ]
+          },
+          "metrics": {
+            "average_precision": 0.267768,
+            "brier_score": 0.281453,
+            "calibration_error": 0.394486,
+            "roc_auc": 0.605357
+          },
+          "status": "evaluated"
+        },
+        "topology_only": {
+          "reason": "relationship_snapshot_postdates_prediction_windows",
+          "status": "not_evaluatable_yet"
+        }
+      },
+      "holdout_day": "2026-07-17",
+      "positive_test_posts": 14,
+      "test_posts": 94,
+      "train_posts": 522
+    },
+    {
+      "account_ranking": {
+        "all_account_events": 5,
+        "candidate_accounts": 60,
+        "candidate_coverage": 0.2,
+        "error_specimens": [
+          {
+            "actual_seen_count": 1,
+            "best_actual_rank": 58,
+            "candidate_count": 60,
+            "created_day": "2026-07-18",
+            "query_token_count": 9,
+            "row_index": 72
+          }
+        ],
+        "models": {
+          "account_frequency": {
+            "mrr": 0.027027,
+            "recall_at_10": 0.0,
+            "recall_at_5": 0.0,
+            "status": "evaluated"
+          },
+          "combined": {
+            "mrr": 0.017241,
+            "recall_at_10": 0.0,
+            "recall_at_5": 0.0,
+            "status": "evaluated"
+          },
+          "content_only": {
+            "mrr": 0.018868,
+            "recall_at_10": 0.0,
+            "recall_at_5": 0.0,
+            "status": "evaluated"
+          },
+          "recurrence_only": {
+            "mrr": 0.019608,
+            "recall_at_10": 0.0,
+            "recall_at_5": 0.0,
+            "status": "evaluated"
+          },
+          "topology_only": {
+            "reason": "relationship_snapshot_postdates_prediction_windows",
+            "status": "not_evaluatable_yet"
+          }
+        },
+        "new_account_event_share": 0.8,
+        "new_account_events": 4,
+        "seen_account_events": 1
+      },
+      "direct_interaction_models": {
+        "combined": {
+          "error_specimens": {
+            "highest_scored_negatives": [
+              {
+                "character_count": 160,
+                "created_day": "2026-07-18",
+                "label": 0,
+                "predicted_probability": 0.725873,
+                "row_index": 86,
+                "token_count": 20
+              },
+              {
+                "character_count": 66,
+                "created_day": "2026-07-18",
+                "label": 0,
+                "predicted_probability": 0.706539,
+                "row_index": 26,
+                "token_count": 14
+              },
+              {
+                "character_count": 269,
+                "created_day": "2026-07-18",
+                "label": 0,
+                "predicted_probability": 0.704166,
+                "row_index": 30,
+                "token_count": 53
+              }
+            ],
+            "lowest_scored_positives": [
+              {
+                "character_count": 45,
+                "created_day": "2026-07-18",
+                "label": 1,
+                "predicted_probability": 0.412071,
+                "row_index": 21,
+                "token_count": 6
+              },
+              {
+                "character_count": 132,
+                "created_day": "2026-07-18",
+                "label": 1,
+                "predicted_probability": 0.503199,
+                "row_index": 123,
+                "token_count": 29
+              },
+              {
+                "character_count": 46,
+                "created_day": "2026-07-18",
+                "label": 1,
+                "predicted_probability": 0.521249,
+                "row_index": 72,
+                "token_count": 9
+              }
+            ]
+          },
+          "metrics": {
+            "average_precision": 0.078943,
+            "brier_score": 0.221023,
+            "calibration_error": 0.419211,
+            "roc_auc": 0.698387
+          },
+          "status": "evaluated"
+        },
+        "content_only": {
+          "error_specimens": {
+            "highest_scored_negatives": [
+              {
+                "character_count": 160,
+                "created_day": "2026-07-18",
+                "label": 0,
+                "predicted_probability": 0.676212,
+                "row_index": 86,
+                "token_count": 20
+              },
+              {
+                "character_count": 66,
+                "created_day": "2026-07-18",
+                "label": 0,
+                "predicted_probability": 0.669113,
+                "row_index": 26,
+                "token_count": 14
+              },
+              {
+                "character_count": 269,
+                "created_day": "2026-07-18",
+                "label": 0,
+                "predicted_probability": 0.659025,
+                "row_index": 30,
+                "token_count": 53
+              }
+            ],
+            "lowest_scored_positives": [
+              {
+                "character_count": 45,
+                "created_day": "2026-07-18",
+                "label": 1,
+                "predicted_probability": 0.352239,
+                "row_index": 21,
+                "token_count": 6
+              },
+              {
+                "character_count": 132,
+                "created_day": "2026-07-18",
+                "label": 1,
+                "predicted_probability": 0.442172,
+                "row_index": 123,
+                "token_count": 29
+              },
+              {
+                "character_count": 46,
+                "created_day": "2026-07-18",
+                "label": 1,
+                "predicted_probability": 0.443753,
+                "row_index": 72,
+                "token_count": 9
+              }
+            ]
+          },
+          "metrics": {
+            "average_precision": 0.080989,
+            "brier_score": 0.173229,
+            "calibration_error": 0.35874,
+            "roc_auc": 0.7
+          },
+          "status": "evaluated"
+        },
+        "global_positive_rate": {
+          "metrics": {
+            "average_precision": 0.03876,
+            "brier_score": 0.049789,
+            "calibration_error": 0.111947,
+            "roc_auc": 0.5
+          },
+          "status": "evaluated"
+        },
+        "recurrence_only": {
+          "error_specimens": {
+            "highest_scored_negatives": [
+              {
+                "character_count": 124,
+                "created_day": "2026-07-18",
+                "label": 0,
+                "predicted_probability": 0.586112,
+                "row_index": 126,
+                "token_count": 23
+              },
+              {
+                "character_count": 35,
+                "created_day": "2026-07-18",
+                "label": 0,
+                "predicted_probability": 0.586072,
+                "row_index": 125,
+                "token_count": 5
+              },
+              {
+                "character_count": 43,
+                "created_day": "2026-07-18",
+                "label": 0,
+                "predicted_probability": 0.58601,
+                "row_index": 124,
+                "token_count": 9
+              }
+            ],
+            "lowest_scored_positives": [
+              {
+                "character_count": 248,
+                "created_day": "2026-07-18",
+                "label": 1,
+                "predicted_probability": 0.570922,
+                "row_index": 17,
+                "token_count": 47
+              },
+              {
+                "character_count": 45,
+                "created_day": "2026-07-18",
+                "label": 1,
+                "predicted_probability": 0.57095,
+                "row_index": 21,
+                "token_count": 6
+              },
+              {
+                "character_count": 46,
+                "created_day": "2026-07-18",
+                "label": 1,
+                "predicted_probability": 0.576797,
+                "row_index": 72,
+                "token_count": 9
+              }
+            ]
+          },
+          "metrics": {
+            "average_precision": 0.084474,
+            "brier_score": 0.325675,
+            "calibration_error": 0.537038,
+            "roc_auc": 0.490323
+          },
+          "status": "evaluated"
+        },
+        "topology_only": {
+          "reason": "relationship_snapshot_postdates_prediction_windows",
+          "status": "not_evaluatable_yet"
+        }
+      },
+      "holdout_day": "2026-07-18",
+      "positive_test_posts": 5,
+      "test_posts": 129,
+      "train_posts": 637
+    }
+  ],
+  "negative_controls": {
+    "shuffled_account_labels_within_window": [
+      {
+        "holdout_day": "2026-07-16",
+        "model": "combined_fixed_rankings",
+        "permutation": "rotate_actual_account_sets_by_one_positive_row",
+        "recall_at_10": 0.5
+      },
+      {
+        "holdout_day": "2026-07-17",
+        "model": "combined_fixed_rankings",
+        "permutation": "rotate_actual_account_sets_by_one_positive_row",
+        "recall_at_10": 0.625
+      },
+      {
+        "holdout_day": "2026-07-18",
+        "model": "combined_fixed_rankings",
+        "permutation": "rotate_actual_account_sets_by_one_positive_row",
+        "recall_at_10": 0.0
+      }
+    ],
+    "shuffled_event_times": [
+      {
+        "holdout_day": "2026-07-16",
+        "metrics": {
+          "average_precision": 0.374112,
+          "brier_score": 0.212555,
+          "calibration_error": 0.272672,
+          "roc_auc": 0.528622
+        },
+        "model": "content_only_fixed_predictions",
+        "permutation": "rotate_labels_by_one_row"
+      },
+      {
+        "holdout_day": "2026-07-17",
+        "metrics": {
+          "average_precision": 0.175395,
+          "brier_score": 0.205981,
+          "calibration_error": 0.266421,
+          "roc_auc": 0.541964
+        },
+        "model": "content_only_fixed_predictions",
+        "permutation": "rotate_labels_by_one_row"
+      },
+      {
+        "holdout_day": "2026-07-18",
+        "metrics": {
+          "average_precision": 0.157228,
+          "brier_score": 0.172304,
+          "calibration_error": 0.35874,
+          "roc_auc": 0.682258
+        },
+        "model": "content_only_fixed_predictions",
+        "permutation": "rotate_labels_by_one_row"
+      }
+    ]
+  },
+  "privacy": {
+    "account_identities_emitted": false,
+    "post_ids_emitted": false,
+    "raw_text_emitted": false
+  },
+  "provenance": {
+    "dependencies": {
+      "numpy": "2.4.3",
+      "scikit_learn": "1.8.0",
+      "scipy": "1.17.1"
+    },
+    "generated_at": "2026-07-29T20:27:52.900194+00:00",
+    "generator": "python3 -m community_archive_prediction.experiment",
+    "sources": {
+      "interactions": {
+        "bytes": 86539,
+        "logical_path": "data/interactions_with_leo_2026-07-12_2026-07-19.jsonl",
+        "rows": 178,
+        "sha256": "9455d4cf22cdd641721853ef3af683cf9066a0bb8ff43ac60bdc4749b762a61e"
+      },
+      "tweets": {
+        "bytes": 449718,
+        "logical_path": "data/leo_guinan_tweets_2026-07-12_2026-07-19.jsonl",
+        "rows": 870,
+        "sha256": "640b85746a6b148591b6dcb03945e342a6e8729e717b077d39cb2574375a97af"
+      },
+      "window_contract": {
+        "bytes": 15429,
+        "logical_path": "reports/audience_model_results.json",
+        "sha256": "2845630b691062ed972ec5b35dfbff02aa1c38edac31c66dde2e965b91bc06ee"
+      }
+    }
+  },
+  "schema_version": "community-archive-prediction/v0.1",
+  "summary": {
+    "account_ranking_models": {
+      "account_frequency": {
+        "metrics": {
+          "mrr": {
+            "population_std": 0.105729,
+            "weighted_mean": 0.213445,
+            "window_mean": 0.159073,
+            "windows": 3
+          },
+          "recall_at_10": {
+            "population_std": 0.311805,
+            "weighted_mean": 0.588235,
+            "window_mean": 0.416667,
+            "windows": 3
+          },
+          "recall_at_5": {
+            "population_std": 0.176777,
+            "weighted_mean": 0.352941,
+            "window_mean": 0.25,
+            "windows": 3
+          }
+        },
+        "status": "evaluated"
+      },
+      "combined": {
+        "metrics": {
+          "mrr": {
+            "population_std": 0.103642,
+            "weighted_mean": 0.224056,
+            "window_mean": 0.163735,
+            "windows": 3
+          },
+          "recall_at_10": {
+            "population_std": 0.212459,
+            "weighted_mean": 0.411765,
+            "window_mean": 0.291667,
+            "windows": 3
+          },
+          "recall_at_5": {
+            "population_std": 0.155902,
+            "weighted_mean": 0.294118,
+            "window_mean": 0.208333,
+            "windows": 3
+          }
+        },
+        "status": "evaluated"
+      },
+      "content_only": {
+        "metrics": {
+          "mrr": {
+            "population_std": 0.03409,
+            "weighted_mean": 0.084972,
+            "window_mean": 0.065692,
+            "windows": 3
+          },
+          "recall_at_10": {
+            "population_std": 0.155902,
+            "weighted_mean": 0.294118,
+            "window_mean": 0.208333,
+            "windows": 3
+          },
+          "recall_at_5": {
+            "population_std": 0.117851,
+            "weighted_mean": 0.117647,
+            "window_mean": 0.083333,
+            "windows": 3
+          }
+        },
+        "status": "evaluated"
+      },
+      "recurrence_only": {
+        "metrics": {
+          "mrr": {
+            "population_std": 0.087435,
+            "weighted_mean": 0.191322,
+            "window_mean": 0.141239,
+            "windows": 3
+          },
+          "recall_at_10": {
+            "population_std": 0.212459,
+            "weighted_mean": 0.411765,
+            "window_mean": 0.291667,
+            "windows": 3
+          },
+          "recall_at_5": {
+            "population_std": 0.204124,
+            "weighted_mean": 0.352941,
+            "window_mean": 0.25,
+            "windows": 3
+          }
+        },
+        "status": "evaluated"
+      },
+      "topology_only": {
+        "status": "not_evaluatable_yet"
+      }
+    },
+    "direct_interaction_models": {
+      "combined": {
+        "metrics": {
+          "average_precision": {
+            "mean": 0.153574,
+            "population_std": 0.057093,
+            "windows": 3
+          },
+          "brier_score": {
+            "mean": 0.247279,
+            "population_std": 0.031277,
+            "windows": 3
+          },
+          "calibration_error": {
+            "mean": 0.364316,
+            "population_std": 0.046619,
+            "windows": 3
+          },
+          "roc_auc": {
+            "mean": 0.570743,
+            "population_std": 0.09164,
+            "windows": 3
+          }
+        },
+        "status": "evaluated"
+      },
+      "content_only": {
+        "metrics": {
+          "average_precision": {
+            "mean": 0.158961,
+            "population_std": 0.061476,
+            "windows": 3
+          },
+          "brier_score": {
+            "mean": 0.198632,
+            "population_std": 0.018057,
+            "windows": 3
+          },
+          "calibration_error": {
+            "mean": 0.290901,
+            "population_std": 0.048585,
+            "windows": 3
+          },
+          "roc_auc": {
+            "mean": 0.567234,
+            "population_std": 0.096727,
+            "windows": 3
+          }
+        },
+        "status": "evaluated"
+      },
+      "global_positive_rate": {
+        "metrics": {
+          "average_precision": {
+            "mean": 0.123435,
+            "population_std": 0.061432,
+            "windows": 3
+          },
+          "brier_score": {
+            "mean": 0.108867,
+            "population_std": 0.042839,
+            "windows": 3
+          },
+          "calibration_error": {
+            "mean": 0.048307,
+            "population_std": 0.045925,
+            "windows": 3
+          },
+          "roc_auc": {
+            "mean": 0.5,
+            "population_std": 0.0,
+            "windows": 3
+          }
+        },
+        "status": "evaluated"
+      },
+      "recurrence_only": {
+        "metrics": {
+          "average_precision": {
+            "mean": 0.250967,
+            "population_std": 0.129628,
+            "windows": 3
+          },
+          "brier_score": {
+            "mean": 0.321673,
+            "population_std": 0.031333,
+            "windows": 3
+          },
+          "calibration_error": {
+            "mean": 0.462903,
+            "population_std": 0.058337,
+            "windows": 3
+          },
+          "roc_auc": {
+            "mean": 0.582045,
+            "population_std": 0.06742,
+            "windows": 3
+          }
+        },
+        "status": "evaluated"
+      },
+      "topology_only": {
+        "status": "not_evaluatable_yet"
+      }
+    }
+  },
+  "support": {
+    "heldout_account_events": 46,
+    "heldout_posts": 338,
+    "positive_heldout_posts": 40,
+    "seen_heldout_account_events": 17
+  },
+  "targets": {
+    "H-CA-01": {
+      "mean_average_precision_delta": 0.035526,
+      "outcome": "not_supported",
+      "positive_delta_windows": 3,
+      "positive_support": 40,
+      "reason": "shuffled_time_control_matched_or_exceeded_observed_in_3_windows",
+      "status": "evaluated",
+      "time_control_at_least_observed_windows": 3
+    },
+    "H-CA-02": {
+      "outcome": "unresolved_underpowered",
+      "positive_support": 17,
+      "reason": "positive_support_below_30",
+      "status": "not_evaluatable_yet"
+    },
+    "H-CA-03": {
+      "reason": "new_account_model_not_implemented",
+      "status": "deferred_to_v0.2"
+    },
+    "H-CA-04": {
+      "reason": "interaction_type_model_not_implemented",
+      "status": "deferred_to_v0.2"
+    },
+    "H-CA-05": {
+      "reason": "zero_observed_propagation_positives",
+      "status": "not_evaluatable_yet"
+    },
+    "H-CA-06": {
+      "reason": "single_relationship_snapshot",
+      "status": "not_evaluatable_yet"
+    },
+    "H-CA-07": {
+      "reason": "observation_partition_not_frozen",
+      "status": "deferred_to_v0.2"
+    },
+    "H-CA-08": {
+      "reason": "claim_outcomes_unscored",
+      "status": "not_evaluatable_yet"
+    }
+  }
+}

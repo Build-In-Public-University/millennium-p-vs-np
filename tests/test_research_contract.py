@@ -58,6 +58,13 @@ def test_research_goal_blocks_layer_eight_until_receipt_exists() -> None:
     assert "A clean null or baseline victory satisfies the research goal" in goal
     assert "Raw social data remains in its source repository" in goal
     assert "evidence/runs/community-archive-prediction-v0.1.json" in goal
+    assert "v0.1 executed" in goal
+    assert "goal remains locked" in goal
+
+    ledger = load_hypotheses()
+    assert ledger["executed_receipt"] == "evidence/runs/community-archive-prediction-v0.1.json"
+    assert ledger["hypotheses"][0]["v0_1_outcome"] == "not_supported"
+    assert ledger["hypotheses"][1]["v0_1_outcome"] == "unresolved_underpowered"
 
 
 def test_theorem_ledger_separates_claim_classes_and_denies_pnp_result() -> None:

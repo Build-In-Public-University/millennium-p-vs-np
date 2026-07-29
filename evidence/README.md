@@ -57,3 +57,8 @@ Negative results are first-class evidence.
 - `community-archive-hypotheses-v0.1.json` — machine-readable frozen hypotheses,
   chronological benchmark contract, boring baselines, negative controls, and
   falsifiers for the Community Archive prediction program.
+- `runs/community-archive-prediction-v0.1.json` — three rolling chronological
+  holdouts, model metrics, controls, support counts, outcome resolution, source
+  hashes, and identity-free error specimens.
+- `community-archive-prediction-v0.1.md` — interpretation, negative result,
+  underpowered result, leakage boundary, and next acquisition requirement.

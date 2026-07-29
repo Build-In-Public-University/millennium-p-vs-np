@@ -1,7 +1,8 @@
 # Active research goal
 
-**Status:** frozen before benchmark implementation
+**Status:** v0.1 executed; goal remains locked
 **Set:** 2026-07-29
+**Executed:** 2026-07-29
 
 ## Goal
 
@@ -40,7 +41,11 @@ Success is not “the combined model wins.” A clean null or baseline victory s
 
 ## Research lock
 
-Until that receipt exists:
+The v0.1 receipt exists, but the goal remains locked: H-CA-02 has only 17
+seen-account events against the frozen floor of 30, and H-CA-03/H-CA-04 were
+deferred rather than evaluated or retired.
+
+While the goal remains locked:
 
 - no Layer 08;
 - no new ontology for attention, trust, influence, energy, or intelligence;
@@ -69,7 +74,27 @@ The existing pilot is weak evidence, not a win:
 - new-account share of held-out interaction events: `0.364`;
 - observed second-hop propagation positives: `0`.
 
-The first combined benchmark therefore begins with a negative prior: recurrence may add no value, and observed propagation may remain unevaluable.
+The first combined benchmark therefore began with a negative prior: recurrence may add no value, and observed propagation may remain unevaluable.
+
+## v0.1 outcome
+
+The benchmark used the last three complete 24-hour label windows: July 16,
+17, and 18. Across 338 held-out posts it observed 40 positive posts and 46
+account events.
+
+- H-CA-01: `not_supported` on the evaluable reply/quote subset; mentions lack
+  target-post linkage. Content-only average precision exceeded the global rate
+  by `0.035526` on average, but the deterministic shuffled-time control
+  matched or exceeded observed content AP in all three windows.
+- H-CA-02: `unresolved_underpowered`. Only 17 account events came from accounts
+  in the matured training candidate sets, below the frozen floor of 30.
+- Account frequency remained the best descriptive Recall@10 baseline at
+  `0.588235`; combined ranking reached `0.411765`.
+- Topology remained unavailable because the relationship snapshot postdates
+  every prediction window.
+
+The machine receipt is `evidence/runs/community-archive-prediction-v0.1.json`;
+its interpretation is `evidence/community-archive-prediction-v0.1.md`.
 
 ## Boundaries
 
@@ -89,4 +114,6 @@ Raw social data remains in its source repository. This repository stores aggrega
 - `ideas/2026-07-29-community-archive-network-prediction.md`
 - `evidence/community-archive-network-substrate-v0.1.md`
 - `evidence/community-archive-hypotheses-v0.1.json`
+- `evidence/community-archive-prediction-v0.1.md`
+- `evidence/runs/community-archive-prediction-v0.1.json`
 - `evidence/theorem-ledger-v0.7.md`

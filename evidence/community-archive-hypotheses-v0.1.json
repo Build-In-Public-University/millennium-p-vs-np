@@ -9,8 +9,18 @@
     "feature_cutoff": "strictly before prediction timestamp",
     "label_window": "declared per run and complete before scoring",
     "binary_primary_metric": "average_precision",
-    "binary_secondary_metrics": ["roc_auc", "brier_score", "calibration_error"],
-    "ranking_metrics": ["recall_at_5", "recall_at_10", "mrr", "candidate_coverage", "new_account_event_share"],
+    "binary_secondary_metrics": [
+      "roc_auc",
+      "brier_score",
+      "calibration_error"
+    ],
+    "ranking_metrics": [
+      "recall_at_5",
+      "recall_at_10",
+      "mrr",
+      "candidate_coverage",
+      "new_account_event_share"
+    ],
     "required_baselines": [
       "global_positive_rate",
       "account_frequency",
@@ -53,7 +63,11 @@
       "prediction": "positive mean delta across at least three held-out windows",
       "falsifier": "delta is non-positive in at least two windows or pooled confidence interval includes only non-positive values",
       "prior_status": "weak_positive",
-      "prior_evidence": "ROC AUC 0.554 and AP 0.106 at positive rate 0.086 in one held-out slice"
+      "prior_evidence": "ROC AUC 0.554 and AP 0.106 at positive rate 0.086 in one held-out slice",
+      "v0_1_outcome": "not_supported",
+      "v0_1_support": 40,
+      "v0_1_reason": "content AP beat the global rate in all three windows, but the deterministic shuffled-time control matched or exceeded it in all three",
+      "v0_1_scope": "reply_or_quote_targeting_authored_post; mentions excluded because target-post linkage is unavailable"
     },
     {
       "id": "H-CA-02",
@@ -63,7 +77,10 @@
       "prediction": "positive mean delta across at least three held-out windows without reducing candidate coverage",
       "falsifier": "combined model fails to exceed the best boring baseline or improvement disappears under time-shuffle control",
       "prior_status": "preliminary_negative",
-      "prior_evidence": "three-day recency changed Recall@5 from 0.462 to 0.385 and Recall@10 from 0.462 to 0.462"
+      "prior_evidence": "three-day recency changed Recall@5 from 0.462 to 0.385 and Recall@10 from 0.462 to 0.462",
+      "v0_1_outcome": "unresolved_underpowered",
+      "v0_1_support": 17,
+      "v0_1_reason": "seen-account support was below the frozen minimum of 30; descriptive account-frequency Recall@10 also exceeded combined ranking"
     },
     {
       "id": "H-CA-03",
@@ -125,5 +142,6 @@
       "prior_status": "not_evaluatable_yet",
       "prior_evidence": "claim ledger exists but every outcome is unscored"
     }
-  ]
+  ],
+  "executed_receipt": "evidence/runs/community-archive-prediction-v0.1.json"
 }

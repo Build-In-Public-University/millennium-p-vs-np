@@ -18,10 +18,10 @@ identifiable from a time-bounded network state. Compare content, topology,
 recurrence, and cross-population position against boring priors on at least
 three chronological holdouts.
 
-The frozen contract is in `RESEARCH_GOAL.md`. Until its benchmark receipt
-exists, the project adds no Layer 08 and makes no public claim that archive
-topology predicts behavior. A complete null result satisfies the goal; a
-missing artifact does not.
+The frozen contract is in `RESEARCH_GOAL.md`. Benchmark v0.1 exists, but the
+goal remains locked: H-CA-01 was not supported, H-CA-02 was underpowered, and
+H-CA-03/H-CA-04 were deferred. The project therefore adds no Layer 08 and makes
+no public claim that archive topology predicts behavior.
 
 This is an empirical stress test of the observation-relative framework. It is
 not evidence for either side of P versus NP.
