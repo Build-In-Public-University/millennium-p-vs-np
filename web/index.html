@@ -1,0 +1,1991 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Interactive finite-world laboratory for Network Relativity's observation model.">
+  <title>Network Relativity — Observation Lab</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --void: #080a0c;
+      --surface: #0e1115;
+      --raised: #15191e;
+      --line: #292f36;
+      --line-strong: #404852;
+      --ink: #f1efe8;
+      --muted: #8c949e;
+      --dim: #5b636d;
+      --signal: #d7ff57;
+      --sensor: #75d5ff;
+      --warning: #ff9b62;
+      --danger: #ff6577;
+      --ok: #8ce6b0;
+      --mono: "SFMono-Regular", "Cascadia Code", "Roboto Mono", monospace;
+      --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--void); }
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      background:
+        linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.018) 1px, transparent 1px),
+        var(--void);
+      background-size: 48px 48px;
+      color: var(--ink);
+      font-family: var(--sans);
+      line-height: 1.45;
+    }
+
+    button, select, input { font: inherit; }
+    button { color: inherit; }
+    button:focus-visible, select:focus-visible, input:focus-visible {
+      outline: 2px solid var(--signal);
+      outline-offset: 2px;
+    }
+
+    .shell { width: min(1600px, 100%); margin: 0 auto; padding: 0 24px 48px; }
+    .masthead {
+      min-height: 82px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: 16px; }
+    .mark {
+      width: 34px; height: 34px; border: 1px solid var(--line-strong);
+      display: grid; place-items: center; position: relative;
+    }
+    .mark::before, .mark::after { content: ""; position: absolute; background: var(--signal); }
+    .mark::before { width: 16px; height: 1px; }
+    .mark::after { width: 1px; height: 16px; }
+    .eyebrow, .annot {
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .brand h1 { font-size: 16px; font-weight: 600; letter-spacing: -.01em; margin: 3px 0 0; }
+    .head-actions { display: flex; align-items: center; gap: 10px; }
+    .status-live { display: flex; align-items: center; gap: 8px; }
+    .status-live::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--signal); box-shadow: 0 0 14px var(--signal); }
+
+    .ghost, .primary, .seg button, .bit, .scope-bit, .topology button {
+      border: 1px solid var(--line);
+      background: transparent;
+      cursor: pointer;
+      transition: border-color .16s ease, background .16s ease, color .16s ease, transform .16s ease;
+    }
+    .ghost, .primary { min-height: 40px; padding: 0 14px; font-family: var(--mono); font-size: 10px; letter-spacing: .1em; text-transform: uppercase; }
+    .ghost:hover { border-color: var(--line-strong); background: var(--raised); }
+    .primary { color: var(--void); border-color: var(--signal); background: var(--signal); font-weight: 700; }
+    .primary:hover { transform: translateY(-1px); }
+
+    .progress-rail {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+      margin: 18px 0;
+    }
+    .phase { min-height: 66px; background: var(--surface); padding: 13px 15px; display: flex; align-items: center; gap: 12px; }
+    .phase-number { font: 11px var(--mono); color: var(--dim); }
+    .phase strong { display: block; font-size: 12px; font-weight: 550; }
+    .phase small { display: block; color: var(--dim); font: 9px var(--mono); margin-top: 4px; text-transform: uppercase; letter-spacing: .1em; }
+    .phase.active { background: var(--signal); color: var(--void); }
+    .phase.active .phase-number, .phase.active small { color: rgba(8,10,12,.62); }
+    .phase.complete { box-shadow: inset 0 -2px var(--signal); }
+    .phase.complete small { color: var(--ok); }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 300px minmax(420px, 1fr) 320px;
+      gap: 1px;
+      background: var(--line);
+      border: 1px solid var(--line);
+    }
+    .panel { background: var(--surface); min-width: 0; }
+    .panel-head {
+      min-height: 48px; padding: 0 16px; border-bottom: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    }
+    .panel-head h2 { margin: 0; font: 10px var(--mono); letter-spacing: .15em; text-transform: uppercase; }
+    .panel-index { font: 10px var(--mono); color: var(--dim); }
+    .controls { padding: 18px 16px 22px; display: grid; gap: 24px; }
+    .control-group { display: grid; gap: 10px; }
+    .control-label { display: flex; align-items: center; justify-content: space-between; font: 10px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .12em; }
+    .control-label output { color: var(--ink); }
+    select {
+      width: 100%; height: 42px; padding: 0 12px;
+      color: var(--ink); background: var(--raised); border: 1px solid var(--line);
+      border-radius: 0;
+    }
+    input[type="range"] { width: 100%; accent-color: var(--signal); }
+
+    .seg, .topology { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+    .seg.three { grid-template-columns: repeat(3, 1fr); }
+    .seg button, .topology button { min-height: 38px; padding: 7px; font: 9px var(--mono); color: var(--muted); text-transform: uppercase; letter-spacing: .08em; }
+    .seg button:hover, .topology button:hover { border-color: var(--line-strong); color: var(--ink); }
+    .seg button.active, .topology button.active { color: var(--void); border-color: var(--sensor); background: var(--sensor); }
+
+    .bits { display: grid; grid-template-columns: repeat(4, minmax(42px, 1fr)); gap: 7px; }
+    .bit { min-height: 54px; display: grid; place-items: center; position: relative; background: var(--raised); }
+    .bit:hover { border-color: var(--sensor); }
+    .bit .index { position: absolute; top: 5px; left: 7px; color: var(--dim); font: 8px var(--mono); }
+    .bit .value { font: 19px var(--mono); }
+    .bit.on { border-color: var(--signal); color: var(--signal); }
+
+    .scope-box { border: 1px solid var(--line); background: var(--void); padding: 12px; }
+    .scope-title { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+    .scope-title strong { color: var(--sensor); font: 11px var(--mono); }
+    .scope-bits { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+    .scope-bit { min-height: 34px; color: var(--dim); font: 10px var(--mono); }
+    .scope-bit.active { color: var(--void); background: var(--sensor); border-color: var(--sensor); }
+    .scope-help { margin: 10px 0 0; color: var(--dim); font-size: 11px; }
+
+    .canvas-panel { display: grid; grid-template-rows: auto minmax(430px, 1fr) auto; }
+    .network-stage { position: relative; overflow: hidden; min-height: 430px; }
+    #networkSvg { width: 100%; height: 100%; min-height: 430px; display: block; }
+    .edge { stroke: var(--line-strong); stroke-width: 1.2; }
+    .edge.route { stroke: var(--signal); stroke-width: 2.4; stroke-dasharray: 7 6; animation: route-flow 1.6s linear infinite; }
+    .node-hit { cursor: pointer; }
+    .node-ring { fill: var(--surface); stroke: var(--line-strong); stroke-width: 1.5; transition: stroke .15s ease, fill .15s ease; }
+    .node-hit:hover .node-ring { stroke: var(--sensor); }
+    .node-hit.selected .node-ring { fill: #11212a; stroke: var(--sensor); stroke-width: 2; }
+    .node-hit.root .node-ring { stroke-dasharray: 3 3; }
+    .node-id { fill: var(--ink); font: 12px var(--mono); text-anchor: middle; pointer-events: none; }
+    .node-samples { fill: var(--sensor); font: 8px var(--mono); text-anchor: middle; pointer-events: none; }
+    .sensor-pip { fill: var(--sensor); }
+    .canvas-legend { position: absolute; left: 18px; bottom: 16px; display: flex; gap: 16px; color: var(--dim); font: 9px var(--mono); text-transform: uppercase; }
+    .legend-item { display: flex; gap: 7px; align-items: center; }
+    .legend-dot { width: 7px; height: 7px; border-radius: 50%; border: 1px solid var(--line-strong); }
+    .legend-dot.sensor { background: var(--sensor); border-color: var(--sensor); }
+    .legend-dot.root { border-style: dashed; }
+    .legend-line { width: 16px; height: 0; border-top: 2px dashed var(--signal); }
+    @keyframes route-flow { to { stroke-dashoffset: -26; } }
+    .current-world {
+      border-top: 1px solid var(--line); padding: 15px 18px;
+      display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px;
+    }
+    .world-code { font: 13px var(--mono); color: var(--signal); letter-spacing: .18em; }
+    .world-answer { text-align: right; }
+    .world-answer strong { display: block; font: 16px var(--mono); }
+
+    .results { padding: 16px; display: grid; gap: 10px; }
+    .regime-card { min-height: 124px; padding: 16px; border: 1px solid var(--line-strong); display: grid; align-content: space-between; }
+    .regime-card.local { border-color: var(--ok); }
+    .regime-card.distributed { border-color: var(--sensor); }
+    .regime-card.predictive { border-color: var(--danger); }
+    .regime-card .regime { margin: 4px 0; font-size: clamp(24px, 3vw, 38px); letter-spacing: -.04em; font-weight: 560; text-transform: capitalize; }
+    .regime-card p { margin: 0; color: var(--muted); font-size: 11px; }
+    .metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--line); border: 1px solid var(--line); }
+    .metric { background: var(--raised); min-height: 82px; padding: 12px; }
+    .metric strong { display: block; margin-top: 8px; font: 20px var(--mono); }
+    .metric small { font: 8px var(--mono); color: var(--dim); text-transform: uppercase; letter-spacing: .08em; }
+    .comm-ledger { border: 1px solid var(--line); }
+    .comm-ledger-head { padding: 9px 11px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; }
+    .comm-ledger-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); }
+    .comm-value { min-width: 0; background: var(--void); padding: 11px; }
+    .comm-value small { display: block; color: var(--dim); font: 8px var(--mono); text-transform: uppercase; letter-spacing: .07em; }
+    .comm-value strong { display: block; margin-top: 6px; color: var(--signal); font: 17px var(--mono); }
+    .cert-card { padding: 13px; border: 1px solid var(--line); background: var(--void); }
+    .cert-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .cert-status { color: var(--ok); font: 9px var(--mono); text-transform: uppercase; letter-spacing: .07em; }
+    .cert-status.unavailable { color: var(--danger); }
+    .cert-metrics { display: grid; grid-template-columns: repeat(3, 1fr); margin: 12px 0; border: 1px solid var(--line); }
+    .cert-metric { padding: 9px; border-right: 1px solid var(--line); }
+    .cert-metric:last-child { border-right: 0; }
+    .cert-metric small { display: block; color: var(--dim); font: 7px var(--mono); text-transform: uppercase; }
+    .cert-metric strong { display: block; margin-top: 5px; font: 14px var(--mono); }
+    .attestations { display: flex; flex-wrap: wrap; gap: 6px; min-height: 24px; }
+    .attestation { padding: 5px 7px; border: 1px solid var(--sensor); color: var(--sensor); font: 8px var(--mono); }
+    .trust-line { margin: 10px 0 0; padding-top: 9px; border-top: 1px solid var(--line); color: var(--muted); font-size: 9px; line-height: 1.45; }
+    .trust-line b { color: var(--danger); font-weight: 550; }
+    .temporal-card { padding: 13px; border: 1px solid var(--line); background: #0d1115; }
+    .temporal-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .temporal-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; margin: 12px 0; background: var(--line); border: 1px solid var(--line); }
+    .temporal-value { min-width: 0; padding: 9px; background: var(--void); }
+    .temporal-value small { display: block; color: var(--dim); font: 7px var(--mono); text-transform: uppercase; }
+    .temporal-value strong { display: block; margin-top: 5px; font: 11px var(--mono); color: var(--ok); text-transform: uppercase; }
+    .temporal-value strong.stale, .temporal-value strong.no { color: var(--danger); }
+    .temporal-facts { display: grid; gap: 6px; font: 8px var(--mono); color: var(--muted); }
+    .temporal-facts div { display: grid; grid-template-columns: 78px 1fr; gap: 8px; }
+    .temporal-facts span:first-child { color: var(--dim); text-transform: uppercase; }
+    .temporal-assumption { margin: 10px 0 0; color: var(--warning); font-size: 9px; line-height: 1.45; }
+    .timespace-section { margin-top: 18px; border: 1px solid var(--line); background: var(--surface); }
+    .timespace-body { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 1px; background: var(--line); }
+    .timespace-config, .timespace-field { background: var(--surface); padding: 16px; }
+    .timespace-config { display: grid; align-content: start; gap: 14px; }
+    .desire-editor { padding: 11px; border: 1px solid var(--line); background: var(--void); }
+    .desire-editor .bits { margin-top: 9px; grid-template-columns: repeat(2, 1fr); }
+    .desire-editor .bit { min-height: 42px; }
+    .timespace-planes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .timespace-plane { min-width: 0; padding: 13px; border: 1px solid var(--line); background: var(--void); }
+    .timespace-plane h3 { margin: 0 0 12px; color: var(--ink); font: 10px var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+    .actual-track { display: grid; grid-template-columns: 1fr auto 1fr; gap: 8px; align-items: center; }
+    .event-point, .future-point { padding: 10px; border: 1px solid var(--line); background: var(--raised); }
+    .event-point code, .future-point code { display: block; margin-top: 6px; color: var(--signal); font: 13px var(--mono); }
+    .message-arrow { color: var(--sensor); font: 9px var(--mono); text-align: center; }
+    .future-stack { display: grid; gap: 8px; }
+    .future-point { box-shadow: inset 2px 0 var(--sensor); }
+    .future-point .model { margin-top: 7px; color: var(--muted); font: 8px var(--mono); }
+    .policy-ledger { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin-top: 10px; border: 1px solid var(--line); background: var(--line); }
+    .policy-value { min-width: 0; padding: 10px; background: var(--void); }
+    .policy-value small { display: block; color: var(--dim); font: 7px var(--mono); text-transform: uppercase; }
+    .policy-value strong { display: block; margin-top: 6px; color: var(--ink); font: 13px var(--mono); }
+    .policy-value strong.win { color: var(--ok); }
+    .policy-value strong.loss { color: var(--danger); }
+    .timespace-note { margin: 10px 0 0; color: var(--muted); font-size: 9px; line-height: 1.5; }
+    .trajectory-card { margin-top: 10px; padding: 13px; border: 1px solid var(--line); background: var(--void); }
+    .trajectory-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 12px; }
+    .trajectory-head h3 { margin: 0; color: var(--ink); font: 10px var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+    .compatibility { color: var(--ok); font: 10px var(--mono); text-transform: uppercase; }
+    .compatibility.conflict { color: var(--danger); }
+    .trajectory-paths { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .trajectory-path { min-width: 0; padding: 10px; border: 1px solid var(--line); background: var(--raised); }
+    .trajectory-track { display: flex; gap: 6px; align-items: center; margin-top: 8px; overflow-x: auto; }
+    .trajectory-node { flex: 0 0 auto; padding: 7px 8px; border: 1px solid var(--line); color: var(--signal); font: 11px var(--mono); }
+    .trajectory-arrow { flex: 0 0 auto; color: var(--dim); font: 9px var(--mono); }
+    .trajectory-metrics { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; margin-top: 10px; background: var(--line); }
+    .trajectory-metric { min-width: 0; padding: 9px; background: var(--surface); }
+    .trajectory-metric small { display: block; color: var(--dim); font: 7px var(--mono); text-transform: uppercase; }
+    .trajectory-metric strong { display: block; margin-top: 5px; color: var(--ink); font: 10px var(--mono); overflow-wrap: anywhere; }
+    .correction-card { margin-top: 10px; padding: 13px; border: 1px solid var(--line); background: #0a0e11; }
+    .correction-head { display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 12px; }
+    .correction-head h3 { margin: 0; color: var(--ink); font: 10px var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+    .send-state { color: var(--ok); font: 10px var(--mono); text-transform: uppercase; }
+    .send-state.blocked { color: var(--danger); }
+    .correction-flow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+    .correction-state { position: relative; min-width: 0; padding: 10px; border: 1px solid var(--line); background: var(--raised); }
+    .correction-state:not(:last-child)::after { content: "→"; position: absolute; right: -7px; top: 50%; z-index: 1; color: var(--dim); transform: translate(50%, -50%); }
+    .correction-state small { display: block; color: var(--dim); font: 7px var(--mono); text-transform: uppercase; }
+    .correction-state strong { display: block; margin-top: 6px; color: var(--signal); font: 12px var(--mono); overflow-wrap: anywhere; }
+    .correction-state strong.ready { color: var(--ok); }
+    .correction-state strong.blocked { color: var(--danger); }
+    .correction-metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; margin-top: 10px; background: var(--line); }
+    .correction-metric { min-width: 0; padding: 9px; background: var(--surface); }
+    .correction-metric small { display: block; color: var(--dim); font: 7px var(--mono); text-transform: uppercase; }
+    .correction-metric strong { display: block; margin-top: 5px; color: var(--ink); font: 10px var(--mono); overflow-wrap: anywhere; }
+    .correction-metric strong.good { color: var(--ok); }
+    .correction-metric strong.bad { color: var(--danger); }
+    .energy-boundary { display: grid; grid-template-columns: auto 1fr; gap: 9px; margin-top: 10px; padding: 9px 10px; border: 1px solid #4d3c23; color: var(--warning); font: 8px var(--mono); line-height: 1.5; }
+    .energy-boundary b { color: var(--danger); text-transform: uppercase; }
+    .boundary { padding: 12px; border: 1px solid var(--line); color: var(--muted); font-size: 10px; }
+    .boundary b { color: var(--ink); font-weight: 550; }
+
+    .lower-grid { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(320px, .55fr); gap: 1px; margin-top: 18px; background: var(--line); border: 1px solid var(--line); }
+    .equivalence, .theory-note { background: var(--surface); }
+    .equiv-body { padding: 16px; }
+    .witness {
+      display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 14px;
+      padding: 14px; background: var(--raised); border: 1px solid var(--line); margin-bottom: 12px;
+    }
+    .witness-world { min-width: 0; }
+    .witness-world code { display: block; font: 14px var(--mono); color: var(--danger); letter-spacing: .12em; margin: 5px 0; overflow-wrap: anywhere; }
+    .witness-world small { color: var(--muted); }
+    .same-sign { color: var(--dim); font: 10px var(--mono); text-align: center; }
+    .empty-witness { border: 1px solid var(--line); padding: 18px; color: var(--muted); font-size: 12px; margin-bottom: 12px; }
+    .class-list { display: grid; gap: 6px; max-height: 244px; overflow: auto; }
+    .class-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; gap: 12px; align-items: center; padding: 9px 11px; background: var(--raised); font: 9px var(--mono); }
+    .class-key { color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .class-row.ambiguous { box-shadow: inset 2px 0 var(--danger); }
+    .class-outcome { color: var(--ok); }
+    .class-row.ambiguous .class-outcome { color: var(--danger); }
+
+    .theory-body { padding: 18px; }
+    .formula { margin: 2px 0 16px; padding: 14px; background: var(--void); border: 1px solid var(--line); font: 12px var(--mono); color: var(--signal); overflow-x: auto; }
+    .theory-body p { color: var(--muted); font-size: 12px; margin: 0 0 14px; }
+    .claims { display: grid; gap: 8px; }
+    .claim { padding-top: 9px; border-top: 1px solid var(--line); display: grid; grid-template-columns: 70px 1fr; gap: 9px; font-size: 10px; }
+    .claim span:first-child { color: var(--dim); font: 8px var(--mono); text-transform: uppercase; letter-spacing: .08em; }
+    .claim.no span:last-child { color: var(--danger); }
+
+    .toast { position: fixed; right: 22px; bottom: 22px; background: var(--ink); color: var(--void); padding: 12px 15px; font: 10px var(--mono); transform: translateY(20px); opacity: 0; pointer-events: none; transition: .2s ease; z-index: 10; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+
+    @media (max-width: 1120px) {
+      .workspace { grid-template-columns: 280px 1fr; }
+      .results-panel { grid-column: 1 / -1; }
+      .results { grid-template-columns: 1.2fr 1fr 1fr; align-items: stretch; }
+      .boundary { display: grid; align-content: center; }
+    }
+    @media (max-width: 780px) {
+      .shell { padding: 0 12px 32px; }
+      .masthead { min-height: 72px; }
+      .status-live, #randomizeBtn { display: none; }
+      .progress-rail { grid-template-columns: 1fr 1fr; }
+      .phase { min-height: 58px; }
+      .workspace { grid-template-columns: 1fr; }
+      .canvas-panel, .results-panel { grid-column: auto; }
+      .controls-panel { order: 2; }
+      .canvas-panel { order: 1; }
+      .results-panel { order: 3; }
+      .results { grid-template-columns: 1fr; }
+      .lower-grid { grid-template-columns: 1fr; }
+      .timespace-body, .timespace-planes { grid-template-columns: 1fr; }
+      .policy-ledger { grid-template-columns: 1fr 1fr; }
+      .trajectory-paths { grid-template-columns: 1fr; }
+      .trajectory-metrics { grid-template-columns: 1fr 1fr; }
+      .correction-flow, .correction-metrics { grid-template-columns: 1fr 1fr; }
+      .network-stage, #networkSvg { min-height: 380px; }
+      .witness { grid-template-columns: 1fr; }
+      .same-sign { text-align: left; }
+      .current-world { grid-template-columns: 1fr auto; }
+      .current-world .annot { grid-column: 1 / -1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="masthead">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <div>
+          <div class="eyebrow">Network Relativity / Instrument 01</div>
+          <h1>Observation Lab</h1>
+        </div>
+      </div>
+      <div class="head-actions">
+        <div class="status-live annot">Finite model active</div>
+        <button class="ghost" id="randomizeBtn" type="button">Random world</button>
+        <button class="primary" id="exportBtn" type="button">Export state</button>
+      </div>
+    </header>
+
+    <nav class="progress-rail" aria-label="Theory layers">
+      <div class="phase complete"><span class="phase-number">01</span><div><strong>Observation boundary</strong><small>Interactive</small></div></div>
+      <div class="phase complete"><span class="phase-number">02</span><div><strong>Communication cost</strong><small>Interactive</small></div></div>
+      <div class="phase complete"><span class="phase-number">03</span><div><strong>Certificates & trust</strong><small>Interactive</small></div></div>
+      <div class="phase complete"><span class="phase-number">04</span><div><strong>Dynamic networks</strong><small>Interactive</small></div></div>
+      <div class="phase complete"><span class="phase-number">05</span><div><strong>Timespace</strong><small>Interactive</small></div></div>
+      <div class="phase complete"><span class="phase-number">06</span><div><strong>Acceleration</strong><small>Interactive</small></div></div>
+      <div class="phase active"><span class="phase-number">07</span><div><strong>Correction floor</strong><small>Interactive now</small></div></div>
+    </nav>
+
+    <section class="workspace" aria-label="Network observation workbench">
+      <aside class="panel controls-panel">
+        <div class="panel-head"><h2>Configure reality</h2><span class="panel-index">A</span></div>
+        <div class="controls">
+          <div class="control-group">
+            <label class="control-label" for="bitCount">World variables <output id="bitCountOut">4 bits</output></label>
+            <input id="bitCount" type="range" min="3" max="6" value="4" step="1">
+          </div>
+
+          <div class="control-group">
+            <div class="control-label"><span>Current world W</span><span>tap to flip</span></div>
+            <div class="bits" id="worldBits"></div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="taskSelect">Task f(W)</label>
+            <select id="taskSelect">
+              <option value="parity">PARITY — odd number of ones</option>
+              <option value="or">OR — any bit is one</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label"><span>Communication topology</span></div>
+            <div class="topology" id="topologyControls">
+              <button type="button" data-topology="path" class="active">Path</button>
+              <button type="button" data-topology="clique">Clique</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="rootSelect">Validation root <span>evidence destination</span></label>
+            <select id="rootSelect"></select>
+          </div>
+
+          <div class="control-group">
+            <div class="control-label"><span>Sensor preset</span></div>
+            <div class="seg three" id="presetControls">
+              <button type="button" data-preset="central">Central</button>
+              <button type="button" data-preset="distributed" class="active">Distributed</button>
+              <button type="button" data-preset="partial">Partial</button>
+            </div>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="dynamicScenario">Temporal scenario <span>static world</span></label>
+            <select id="dynamicScenario">
+              <option value="static">Static baseline</option>
+              <option value="rotating_sensor">Rotating sensor</option>
+              <option value="root_link_failure">Root-link failure</option>
+              <option value="connectivity_recovery">Connectivity recovery</option>
+            </select>
+          </div>
+
+          <div class="control-group">
+            <label class="control-label" for="epochSlider">Epoch <output id="epochOut">t=0</output></label>
+            <input id="epochSlider" type="range" min="0" max="3" value="0" step="1">
+          </div>
+
+          <div class="control-group scope-box">
+            <div class="scope-title"><span class="annot">Sensor scope</span><strong id="selectedNodeLabel">NODE 0</strong></div>
+            <div class="scope-bits" id="scopeBits"></div>
+            <p class="scope-help">Select a node in the field, then choose which parts of reality it can sample.</p>
+          </div>
+        </div>
+      </aside>
+
+      <section class="panel canvas-panel">
+        <div class="panel-head"><h2>Configured network N</h2><span class="panel-index" id="networkSummary">4 nodes · path</span></div>
+        <div class="network-stage">
+          <svg id="networkSvg" viewBox="0 0 700 430" role="img" aria-label="Interactive sensor network"></svg>
+          <div class="canvas-legend" aria-hidden="true">
+            <span class="legend-item"><i class="legend-dot sensor"></i>samples reality</span>
+            <span class="legend-item"><i class="legend-dot root"></i>validation root</span>
+            <span class="legend-item"><i class="legend-line"></i>evidence route</span>
+          </div>
+        </div>
+        <div class="current-world">
+          <span class="annot">Observed instance</span>
+          <code class="world-code" id="currentObservation">—</code>
+          <div class="world-answer"><span class="annot">f(W)</span><strong id="currentAnswer">—</strong></div>
+        </div>
+      </section>
+
+      <aside class="panel results-panel">
+        <div class="panel-head"><h2>Computed boundary</h2><span class="panel-index">B</span></div>
+        <div class="results">
+          <article class="regime-card" id="regimeCard">
+            <div class="annot">Validation regime</div>
+            <div class="regime" id="regimeValue">—</div>
+            <p id="regimeDescription">—</p>
+          </article>
+          <div class="metrics">
+            <div class="metric"><small>Identifiable</small><strong id="identifiableValue">—</strong></div>
+            <div class="metric"><small>Prediction ceiling</small><strong id="accuracyValue">—</strong></div>
+            <div class="metric"><small>Synchronous rounds</small><strong id="radiusValue">—</strong></div>
+            <div class="metric"><small>Ambiguous classes</small><strong id="ambiguousValue">—</strong></div>
+          </div>
+          <div class="comm-ledger">
+            <div class="comm-ledger-head"><span class="annot">Communication ledger</span><span class="annot" id="rootLabel">root N0</span></div>
+            <div class="comm-ledger-grid">
+              <div class="comm-value"><small>Route messages</small><strong id="messageValue">—</strong></div>
+              <div class="comm-value"><small>Aggregate bits</small><strong id="aggregateBitsValue">—</strong></div>
+              <div class="comm-value"><small>Raw bits</small><strong id="rawBitsValue">—</strong></div>
+            </div>
+          </div>
+          <div class="cert-card" id="certificateCard">
+            <div class="cert-head"><span class="annot">Attested certificate</span><span class="cert-status" id="certificateStatus">—</span></div>
+            <div class="cert-metrics">
+              <div class="cert-metric"><small>Samples</small><strong id="certificateSamplesValue">—</strong></div>
+              <div class="cert-metric"><small>Logical bits</small><strong id="certificateBitsValue">—</strong></div>
+              <div class="cert-metric"><small>Worlds left</small><strong id="certificateWorldsValue">—</strong></div>
+            </div>
+            <div class="attestations" id="certificateSamples"></div>
+            <p class="trust-line" id="certificateTrust">—</p>
+          </div>
+          <div class="temporal-card" id="temporalCard">
+            <div class="temporal-head"><span class="annot">Temporal validation</span><span class="annot" id="temporalEpochLabel">epoch 0</span></div>
+            <div class="temporal-grid">
+              <div class="temporal-value"><small>Current epoch</small><strong id="instantaneousStatus">—</strong></div>
+              <div class="temporal-value"><small>Cached history</small><strong id="cumulativeStatus">—</strong></div>
+              <div class="temporal-value"><small>Prior certificate</small><strong id="freshnessStatus">—</strong></div>
+            </div>
+            <div class="temporal-facts">
+              <div><span>Current facts</span><code id="instantaneousFacts">—</code></div>
+              <div><span>Cached facts</span><code id="cumulativeFacts">—</code></div>
+              <div><span>Worlds left</span><code id="temporalWorldsLeft">—</code></div>
+            </div>
+            <p class="temporal-assumption">World held static across epochs. Connected sensors deliver within an epoch; cached facts persist.</p>
+          </div>
+          <div class="boundary"><b>Boundary:</b> prediction ceiling assumes a uniform prior over every possible world. Sensors change available input; they do not settle classical P versus NP.</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="timespace-section" aria-label="Timespace prospective state workbench">
+      <div class="panel-head"><h2>Timespace / prospective state</h2><span class="panel-index">T₊</span></div>
+      <div class="timespace-body">
+        <aside class="timespace-config">
+          <div class="control-group">
+            <label class="control-label" for="timespaceScenario">Cross-model policy</label>
+            <select id="timespaceScenario">
+              <option value="accurate_authorized">Accurate · authorized</option>
+              <option value="inverted_model">Inverted model · authorized</option>
+              <option value="accurate_unauthorized">Accurate · unauthorized</option>
+            </select>
+          </div>
+          <div class="desire-editor">
+            <span class="annot">N0 desired W(t+2)</span>
+            <div class="bits" id="senderDesireBits"></div>
+          </div>
+          <div class="desire-editor">
+            <span class="annot">N1 desired W(t+2)</span>
+            <div class="bits" id="receiverDesireBits"></div>
+          </div>
+          <div class="desire-editor">
+            <span class="annot">Realized W(t+2)</span>
+            <div class="bits" id="realizedWorldBits"></div>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="trajectoryPreset">Trajectory profile</label>
+            <select id="trajectoryPreset">
+              <option value="smooth_compatible">Smooth · compatible</option>
+              <option value="burst_acceleration">Burst · acceleration conflict</option>
+              <option value="early_horizon">Too early · horizon conflict</option>
+              <option value="burst_rate">Direct · rate conflict</option>
+              <option value="unauthorized_scope">Unauthorized scope</option>
+              <option value="direction_mismatch">Direction mismatch</option>
+              <option value="custom">Custom envelope</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="trajectoryPattern">Intended path</label>
+            <select id="trajectoryPattern">
+              <option value="smooth_x0">smooth · x0 then x1</option>
+              <option value="smooth_x1">smooth · x1 then x0</option>
+              <option value="delayed_burst">wait then burst</option>
+              <option value="direct">direct burst</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="trajectoryIntendedTarget">Intended endpoint</label>
+            <select id="trajectoryIntendedTarget"><option>00</option><option>01</option><option>10</option><option selected>11</option></select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="trajectoryAcceptedTarget">Accepted endpoint</label>
+            <select id="trajectoryAcceptedTarget"><option>00</option><option>01</option><option>10</option><option selected>11</option></select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="trajectoryEarliest">Earliest completion</label>
+            <select id="trajectoryEarliest"><option value="1">t+1</option><option value="2" selected>t+2</option><option value="3">t+3</option><option value="4">t+4</option></select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="trajectoryMaxLoad">Max load / epoch</label>
+            <select id="trajectoryMaxLoad"><option value="0">0 bits</option><option value="1" selected>1 bit</option><option value="2">2 bits</option></select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="trajectoryMaxAcceleration">Max acceleration</label>
+            <select id="trajectoryMaxAcceleration"><option value="0">0 bits/epoch²</option><option value="1" selected>1 bit/epoch²</option><option value="2">2 bits/epoch²</option></select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="trajectoryAuthorization">Authorized scope</label>
+            <select id="trajectoryAuthorization"><option value="both">x0 + x1</option><option value="x0">x0 only</option><option value="x1">x1 only</option><option value="none">none</option></select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="correctionPreset">Correction profile</label>
+            <select id="correctionPreset">
+              <option value="retained_prediction">Retain obsolete prediction</option>
+              <option value="overwrite_prediction" selected>Overwrite prediction</option>
+              <option value="uncleared_syndrome">Syndrome not reset</option>
+              <option value="cleared_syndrome">Syndrome reset</option>
+              <option value="incomplete_correction">Incomplete correction</option>
+              <option value="helpful_message">Helpful corrective message</option>
+              <option value="constant_message">Constant corrective message</option>
+              <option value="correlated_batch">Correlated batch</option>
+              <option value="repeated_resets">Three independent resets</option>
+              <option value="dependent_resets">Dependent resets · floor unknown</option>
+              <option value="custom">Custom correction</option>
+            </select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="correctionCompleted">Corrected state</label>
+            <select id="correctionCompleted"><option value="yes">matches observation</option><option value="no">still wrong</option></select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="correctionRequiredReset">Required reset</label>
+            <select id="correctionRequiredReset"><option value="none">none · retain memory</option><option value="prediction">prediction register</option><option value="syndrome">syndrome register</option></select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="correctionResetCompleted">Reset state</label>
+            <select id="correctionResetCompleted"><option value="yes">cleared</option><option value="no">retained / uncleared</option></select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="correctionEntropyBits">Erased entropy</label>
+            <select id="correctionEntropyBits"><option value="0">0 bits</option><option value="0.5">0.5 bits</option><option value="1" selected>1 bit</option><option value="2">2 bits</option><option value="3">3 bits</option></select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="correctionTemperature">Reservoir temperature</label>
+            <select id="correctionTemperature"><option value="273">273 K</option><option value="300" selected>300 K</option><option value="310">310 K</option><option value="600">600 K</option></select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="correctionMessageMode">Side-information ensemble</label>
+            <select id="correctionMessageMode"><option value="none">none</option><option value="helpful">helpful first bit</option><option value="constant">constant bit</option><option value="correlated">correlated batch {000,111}</option></select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="correctionResetCount">Reset boundaries</label>
+            <select id="correctionResetCount"><option value="1">1 cycle</option><option value="2">2 cycles</option><option value="3">3 cycles</option><option value="4">4 cycles</option></select>
+          </div>
+          <div class="control-group">
+            <label class="control-label" for="correctionIndependent">Boundary relation</label>
+            <select id="correctionIndependent"><option value="yes">independent · additive</option><option value="no">dependent · do not sum</option></select>
+          </div>
+        </aside>
+        <div class="timespace-field">
+          <div class="timespace-planes">
+            <article class="timespace-plane">
+              <h3>Spacetime · what happened</h3>
+              <div class="actual-track">
+                <div class="event-point"><span class="annot">N0 · t=0</span><code id="actualWorldStart">—</code></div>
+                <div class="message-arrow">idea α<br>──────▶</div>
+                <div class="event-point"><span class="annot">N1 · t=1</span><code>received α</code></div>
+              </div>
+              <div class="actual-track" style="margin-top:8px">
+                <div class="event-point"><span class="annot">N1 · t=1</span><code>idea β</code></div>
+                <div class="message-arrow">β<br>──────▶</div>
+                <div class="event-point"><span class="annot">W · t=2</span><code id="actualWorldEnd">—</code></div>
+              </div>
+            </article>
+            <article class="timespace-plane">
+              <h3>Timespace · desired futures</h3>
+              <div class="future-stack">
+                <div class="future-point"><span class="annot">τ₀ · N0 at t+2</span><code id="senderDesireValue">—</code><div class="model" id="senderModelValue">—</div></div>
+                <div class="future-point"><span class="annot">τ₁ · N1 at t+2</span><code id="receiverDesireValue">—</code><div class="model" id="receiverModelValue">—</div></div>
+              </div>
+            </article>
+          </div>
+          <div class="policy-ledger">
+            <div class="policy-value"><small>Self-only target</small><strong id="selfOnlyTarget">—</strong></div>
+            <div class="policy-value"><small>Modeled target</small><strong id="modeledTarget">—</strong></div>
+            <div class="policy-value"><small>Oracle target</small><strong id="oracleTarget">—</strong></div>
+            <div class="policy-value"><small>Predictive gain</small><strong id="predictiveGain">—</strong></div>
+            <div class="policy-value"><small>Cross-model error</small><strong id="crossModelError">—</strong></div>
+            <div class="policy-value"><small>Realization gap</small><strong id="realizationGap">—</strong></div>
+            <div class="policy-value"><small>Idea state after</small><strong id="ideaState">—</strong></div>
+            <div class="policy-value"><small>Authorization</small><strong id="authorizationState">—</strong></div>
+          </div>
+          <p class="timespace-note">Desire is not permission. A cross-model can affect a controlled variable only when the other endpoint explicitly authorizes that scope. Payload: 14 logical bits; coordination weight: 2.</p>
+          <div class="trajectory-card">
+            <div class="trajectory-head"><h3>Trajectory compatibility</h3><strong class="compatibility" id="trajectoryCompatibility">—</strong></div>
+            <div class="trajectory-paths">
+              <div class="trajectory-path"><span class="annot">N0 intended path</span><div class="trajectory-track" id="intendedTrajectory">—</div></div>
+              <div class="trajectory-path"><span class="annot">N1 shortest accepted witness</span><div class="trajectory-track" id="acceptedTrajectory">—</div></div>
+            </div>
+            <div class="trajectory-metrics">
+              <div class="trajectory-metric"><small>Transition load</small><strong id="trajectoryLoads">—</strong></div>
+              <div class="trajectory-metric"><small>Acceleration</small><strong id="trajectoryAccelerations">—</strong></div>
+              <div class="trajectory-metric"><small>First conflict</small><strong id="trajectoryFirstConflict">—</strong></div>
+              <div class="trajectory-metric"><small>Minimum completion</small><strong id="trajectoryMinimumCompletion">—</strong></div>
+              <div class="trajectory-metric"><small>Minimum repair</small><strong id="trajectoryRepair">—</strong></div>
+            </div>
+            <p class="timespace-note">Endpoint equality is necessary, not sufficient. The accepted envelope also constrains horizon, authorized direction, transition load, and positive ramp rate. Physical energy remains unpriced.</p>
+          </div>
+          <div class="correction-card">
+            <div class="correction-head"><h3>Error-correction thermodynamics</h3><strong class="send-state" id="correctionSendState">—</strong></div>
+            <div class="correction-flow">
+              <div class="correction-state"><small>Prediction register</small><strong id="correctionPrediction">—</strong></div>
+              <div class="correction-state"><small>Observed state</small><strong id="correctionObservation">—</strong></div>
+              <div class="correction-state"><small>Corrected state</small><strong id="correctionCorrectedState">—</strong></div>
+              <div class="correction-state"><small>Reset boundary</small><strong id="correctionResetState">—</strong></div>
+            </div>
+            <div class="correction-metrics">
+              <div class="correction-metric"><small>Prediction / remaining error</small><strong id="correctionErrors">—</strong></div>
+              <div class="correction-metric"><small>Erased logical entropy</small><strong id="correctionEntropy">—</strong></div>
+              <div class="correction-metric"><small>Ideal floor / cycle</small><strong id="correctionFloor">—</strong></div>
+              <div class="correction-metric"><small>Sequence floor</small><strong id="correctionSequenceFloor">—</strong></div>
+              <div class="correction-metric"><small>H(Z|Y) → H(Z|Y,M)</small><strong id="correctionConditionalEntropy">—</strong></div>
+              <div class="correction-metric"><small>Corrective message value</small><strong id="correctionMessageValue">—</strong></div>
+              <div class="correction-metric"><small>Correlation savings</small><strong id="correctionCorrelationSavings">—</strong></div>
+              <div class="correction-metric"><small>Temperature / reset contract</small><strong id="correctionContract">—</strong></div>
+            </div>
+            <div class="energy-boundary"><b>Not measured</b><span>device work · communication energy · computation energy · human metabolic energy. Displayed joules are an ideal Landauer lower bound for explicitly declared erased logical entropy inside the finite-register boundary.</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="lower-grid">
+      <article class="equivalence">
+        <div class="panel-head"><h2>Observational equivalence classes</h2><span class="panel-index" id="classSummary">—</span></div>
+        <div class="equiv-body">
+          <div id="witnessArea"></div>
+          <div class="class-list" id="classList"></div>
+        </div>
+      </article>
+
+      <aside class="theory-note">
+        <div class="panel-head"><h2>Theory fragment</h2><span class="panel-index">T₀</span></div>
+        <div class="theory-body">
+          <div class="formula">S<sub>N</sub>(W₁) = S<sub>N</sub>(W₂) ⇒ f(W₁) = f(W₂)</div>
+          <p>Exact validation is available only when the answer is constant across every world the configured network cannot distinguish.</p>
+          <div class="claims">
+            <div class="claim"><span>Established</span><span>Indistinguishable observations cannot support different zero-error outputs.</span></div>
+            <div class="claim"><span>Instrument</span><span>This page enumerates the finite model exactly.</span></div>
+            <div class="claim no"><span>Not claimed</span><span>A separation of classical P and NP.</span></div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const STORAGE_KEY = "network-relativity-observation-lab-v1";
+      const defaults = {
+        bitCount: 4,
+        world: [0, 0, 0, 0],
+        task: "parity",
+        topology: "path",
+        preset: "distributed",
+        selectedNode: 0,
+        root: 0,
+        dynamicScenario: "rotating_sensor",
+        epoch: 0,
+        timespaceScenario: "accurate_authorized",
+        senderDesire: [0, 0],
+        receiverDesire: [1, 0],
+        realizedWorld: [0, 0],
+        trajectoryPreset: "smooth_compatible",
+        trajectoryPattern: "smooth_x0",
+        trajectoryIntendedTarget: [1, 1],
+        trajectoryAcceptedTarget: [1, 1],
+        trajectoryEarliest: 2,
+        trajectoryMaxLoad: 1,
+        trajectoryMaxAcceleration: 1,
+        trajectoryAuthorization: "both",
+        correctionPreset: "overwrite_prediction",
+        correctionCompleted: true,
+        correctionRequiredReset: "prediction",
+        correctionResetCompleted: true,
+        correctionEntropyBits: 1,
+        correctionTemperature: 300,
+        correctionMessageMode: "none",
+        correctionResetCount: 1,
+        correctionIndependent: true,
+        scopes: [[0], [1], [2], [3]]
+      };
+
+      const $ = (id) => document.getElementById(id);
+      let state = loadState();
+
+      function loadState() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+          if (!saved || !Number.isInteger(saved.bitCount)) return structuredClone(defaults);
+          return normalizeState(saved);
+        } catch (_) {
+          return structuredClone(defaults);
+        }
+      }
+
+      function normalizeState(candidate) {
+        const bitCount = Math.max(3, Math.min(6, Number(candidate.bitCount) || 4));
+        const world = Array.from({ length: bitCount }, (_, i) => candidate.world?.[i] === 1 ? 1 : 0);
+        const scopes = Array.from({ length: bitCount }, (_, node) => {
+          const raw = Array.isArray(candidate.scopes?.[node]) ? candidate.scopes[node] : [];
+          return [...new Set(raw.filter(i => Number.isInteger(i) && i >= 0 && i < bitCount))].sort((a, b) => a - b);
+        });
+        const dynamicScenarios = ["static", "rotating_sensor", "root_link_failure", "connectivity_recovery"];
+        const dynamicScenario = dynamicScenarios.includes(candidate.dynamicScenario)
+          ? candidate.dynamicScenario
+          : "rotating_sensor";
+        const timespaceScenarios = ["accurate_authorized", "inverted_model", "accurate_unauthorized"];
+        const trajectoryPatterns = ["smooth_x0", "smooth_x1", "delayed_burst", "direct"];
+        const trajectoryPresets = ["smooth_compatible", "burst_acceleration", "early_horizon", "burst_rate", "unauthorized_scope", "direction_mismatch", "custom"];
+        const authorizationScopes = ["both", "x0", "x1", "none"];
+        const correctionPresets = ["retained_prediction", "overwrite_prediction", "uncleared_syndrome", "cleared_syndrome", "incomplete_correction", "helpful_message", "constant_message", "correlated_batch", "repeated_resets", "dependent_resets", "custom"];
+        const correctionRegisters = ["none", "prediction", "syndrome"];
+        const correctionMessageModes = ["none", "helpful", "constant", "correlated"];
+        const correctionTemperatures = [273, 300, 310, 600];
+        const binaryPair = value => Array.from({ length: 2 }, (_, index) => value?.[index] === 1 ? 1 : 0);
+        const maxEpoch = dynamicScenario === "rotating_sensor" ? bitCount - 1 : dynamicScenario === "static" ? 0 : 1;
+        return {
+          bitCount,
+          world,
+          task: candidate.task === "or" ? "or" : "parity",
+          topology: candidate.topology === "clique" ? "clique" : "path",
+          preset: ["central", "distributed", "partial", "custom"].includes(candidate.preset) ? candidate.preset : "custom",
+          selectedNode: Math.max(0, Math.min(bitCount - 1, Number(candidate.selectedNode) || 0)),
+          root: Math.max(0, Math.min(bitCount - 1, Number(candidate.root) || 0)),
+          dynamicScenario,
+          epoch: Math.max(0, Math.min(maxEpoch, Number(candidate.epoch) || 0)),
+          timespaceScenario: timespaceScenarios.includes(candidate.timespaceScenario) ? candidate.timespaceScenario : "accurate_authorized",
+          senderDesire: binaryPair(candidate.senderDesire),
+          receiverDesire: binaryPair(candidate.receiverDesire),
+          realizedWorld: binaryPair(candidate.realizedWorld),
+          trajectoryPreset: world[0] || world[1]
+            ? "custom"
+            : trajectoryPresets.includes(candidate.trajectoryPreset) ? candidate.trajectoryPreset : defaults.trajectoryPreset,
+          trajectoryPattern: trajectoryPatterns.includes(candidate.trajectoryPattern) ? candidate.trajectoryPattern : defaults.trajectoryPattern,
+          trajectoryIntendedTarget: binaryPair(candidate.trajectoryIntendedTarget ?? defaults.trajectoryIntendedTarget),
+          trajectoryAcceptedTarget: binaryPair(candidate.trajectoryAcceptedTarget ?? defaults.trajectoryAcceptedTarget),
+          trajectoryEarliest: Math.max(1, Math.min(4, Number(candidate.trajectoryEarliest) || defaults.trajectoryEarliest)),
+          trajectoryMaxLoad: Number.isFinite(Number(candidate.trajectoryMaxLoad))
+            ? Math.max(0, Math.min(2, Number(candidate.trajectoryMaxLoad)))
+            : defaults.trajectoryMaxLoad,
+          trajectoryMaxAcceleration: Number.isFinite(Number(candidate.trajectoryMaxAcceleration))
+            ? Math.max(0, Math.min(2, Number(candidate.trajectoryMaxAcceleration)))
+            : defaults.trajectoryMaxAcceleration,
+          trajectoryAuthorization: authorizationScopes.includes(candidate.trajectoryAuthorization) ? candidate.trajectoryAuthorization : defaults.trajectoryAuthorization,
+          correctionPreset: correctionPresets.includes(candidate.correctionPreset) ? candidate.correctionPreset : defaults.correctionPreset,
+          correctionCompleted: typeof candidate.correctionCompleted === "boolean" ? candidate.correctionCompleted : defaults.correctionCompleted,
+          correctionRequiredReset: correctionRegisters.includes(candidate.correctionRequiredReset) ? candidate.correctionRequiredReset : defaults.correctionRequiredReset,
+          correctionResetCompleted: typeof candidate.correctionResetCompleted === "boolean" ? candidate.correctionResetCompleted : defaults.correctionResetCompleted,
+          correctionEntropyBits: Number.isFinite(Number(candidate.correctionEntropyBits))
+            ? Math.max(0, Math.min(3, Number(candidate.correctionEntropyBits)))
+            : defaults.correctionEntropyBits,
+          correctionTemperature: correctionTemperatures.includes(Number(candidate.correctionTemperature)) ? Number(candidate.correctionTemperature) : defaults.correctionTemperature,
+          correctionMessageMode: correctionMessageModes.includes(candidate.correctionMessageMode) ? candidate.correctionMessageMode : defaults.correctionMessageMode,
+          correctionResetCount: Math.max(1, Math.min(4, Number(candidate.correctionResetCount) || defaults.correctionResetCount)),
+          correctionIndependent: typeof candidate.correctionIndependent === "boolean" ? candidate.correctionIndependent : defaults.correctionIndependent,
+          scopes
+        };
+      }
+
+      function saveState() {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function baseEdges() {
+        if (state.topology === "clique") {
+          const result = [];
+          for (let left = 0; left < state.bitCount; left += 1) {
+            for (let right = left + 1; right < state.bitCount; right += 1) result.push([left, right]);
+          }
+          return result;
+        }
+        return Array.from({ length: state.bitCount - 1 }, (_, index) => [index, index + 1]);
+      }
+
+      function temporalSnapshots() {
+        const pathEdges = Array.from({ length: state.bitCount - 1 }, (_, index) => [index, index + 1]);
+        const distributedScopes = Array.from({ length: state.bitCount }, (_, index) => [index]);
+        if (state.dynamicScenario === "static") {
+          return [{ scopes: state.scopes.map(scope => [...scope]), edges: baseEdges() }];
+        }
+        if (state.dynamicScenario === "rotating_sensor") {
+          return Array.from({ length: state.bitCount }, (_, epoch) => ({
+            scopes: Array.from({ length: state.bitCount }, (_, node) => node === epoch ? [epoch] : []),
+            edges: pathEdges
+          }));
+        }
+        const disconnectedEdges = pathEdges.filter(([left, right]) => left !== 0 || right !== 1);
+        const connected = { scopes: distributedScopes, edges: pathEdges };
+        const disconnected = { scopes: distributedScopes, edges: disconnectedEdges };
+        return state.dynamicScenario === "root_link_failure"
+          ? [connected, disconnected]
+          : [disconnected, connected];
+      }
+
+      function activeSnapshot() {
+        const snapshots = temporalSnapshots();
+        return snapshots[Math.min(state.epoch, snapshots.length - 1)];
+      }
+
+      function taskValue(world) {
+        if (state.task === "or") return world.some(Boolean);
+        return world.reduce((sum, bit) => sum + bit, 0) % 2 === 1;
+      }
+
+      function allWorlds() {
+        return Array.from({ length: 2 ** state.bitCount }, (_, value) =>
+          Array.from({ length: state.bitCount }, (_, bit) => (value >> bit) & 1)
+        );
+      }
+
+      function nodeObservation(world, node, snapshot = activeSnapshot()) {
+        return snapshot.scopes[node].map(index => [index, world[index]]);
+      }
+
+      function globalObservation(world, snapshot = activeSnapshot()) {
+        return snapshot.scopes.map((_, node) => [node, nodeObservation(world, node, snapshot)]);
+      }
+
+      function observationKey(observation) {
+        return JSON.stringify(observation);
+      }
+
+      function partition(worlds, keyFn) {
+        const groups = new Map();
+        worlds.forEach(world => {
+          const key = observationKey(keyFn(world));
+          if (!groups.has(key)) groups.set(key, []);
+          groups.get(key).push(world);
+        });
+        return groups;
+      }
+
+      function analyzeGroups(groups) {
+        let bestCorrect = 0;
+        let witness = null;
+        let ambiguous = 0;
+        const rows = [];
+
+        groups.forEach((worlds, key) => {
+          const falseWorlds = worlds.filter(world => !taskValue(world));
+          const trueWorlds = worlds.filter(world => taskValue(world));
+          bestCorrect += Math.max(falseWorlds.length, trueWorlds.length);
+          const isAmbiguous = falseWorlds.length > 0 && trueWorlds.length > 0;
+          if (isAmbiguous) {
+            ambiguous += 1;
+            if (!witness) witness = [falseWorlds[0], trueWorlds[0]];
+          }
+          rows.push({ key, worlds, falseCount: falseWorlds.length, trueCount: trueWorlds.length, ambiguous: isAmbiguous });
+        });
+
+        return { groups, rows, bestCorrect, witness, ambiguous };
+      }
+
+      function modelAnalysis() {
+        const worlds = allWorlds();
+        const snapshot = activeSnapshot();
+        const global = analyzeGroups(partition(worlds, world => globalObservation(world, snapshot)));
+        const identifiable = global.ambiguous === 0;
+        let regime = "predictive";
+
+        if (identifiable) {
+          const locallyIdentifiable = snapshot.scopes.some((_, node) => {
+            const local = analyzeGroups(partition(worlds, world => nodeObservation(world, node, snapshot)));
+            return local.ambiguous === 0;
+          });
+          regime = locallyIdentifiable ? "local" : "distributed";
+        }
+
+        const communication = communicationPlan(snapshot);
+        const certificate = attestedCertificate(state.world, snapshot);
+        const temporal = temporalAnalysis();
+        return {
+          worlds,
+          global,
+          identifiable,
+          regime,
+          accuracy: global.bestCorrect / worlds.length,
+          radius: communication.rounds,
+          communication,
+          certificate,
+          temporal
+        };
+      }
+
+      function edges(snapshot = activeSnapshot()) {
+        return snapshot.edges;
+      }
+
+      function communicationPlan(snapshot = activeSnapshot()) {
+        const { distances, parents } = routingTree(state.root, snapshot);
+        const participants = snapshot.scopes
+          .map((scope, node) => scope.length && Number.isFinite(distances[node]) ? node : null)
+          .filter(node => node !== null);
+        const routeSet = new Set();
+        let rawBitTransmissions = 0;
+        participants.forEach(participant => {
+          rawBitTransmissions += snapshot.scopes[participant].length * distances[participant];
+          let node = participant;
+          while (node !== state.root) {
+            const parent = parents[node];
+            routeSet.add(`${node}:${parent}`);
+            node = parent;
+          }
+        });
+        const routeEdges = [...routeSet].map(key => key.split(":").map(Number)).sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+        return {
+          routeEdges,
+          rounds: participants.length ? Math.max(...participants.map(node => distances[node])) : 0,
+          messageCount: routeEdges.length,
+          aggregateBitTransmissions: routeEdges.length,
+          rawBitTransmissions
+        };
+      }
+
+      function routingTree(root, snapshot = activeSnapshot()) {
+        const adjacency = Array.from({ length: state.bitCount }, () => []);
+        edges(snapshot).forEach(([a, b]) => { adjacency[a].push(b); adjacency[b].push(a); });
+        adjacency.forEach(neighbors => neighbors.sort((a, b) => a - b));
+        const distances = Array(state.bitCount).fill(Infinity);
+        const parents = Array(state.bitCount).fill(null);
+        distances[root] = 0;
+        const queue = [root];
+        while (queue.length) {
+          const node = queue.shift();
+          adjacency[node].forEach(next => {
+            if (distances[next] === Infinity) {
+              distances[next] = distances[node] + 1;
+              parents[next] = node;
+              queue.push(next);
+            }
+          });
+        }
+        return { distances, parents };
+      }
+
+      function attestedCertificate(world, snapshot = activeSnapshot()) {
+        const localFacts = new Map(nodeObservation(world, state.root, snapshot));
+        const { distances } = routingTree(state.root, snapshot);
+        const candidates = [];
+        const unattestedIndices = [];
+        for (let worldIndex = 0; worldIndex < state.bitCount; worldIndex += 1) {
+          if (localFacts.has(worldIndex)) continue;
+          const issuers = snapshot.scopes
+            .map((scope, node) => scope.includes(worldIndex) && Number.isFinite(distances[node]) ? node : null)
+            .filter(node => node !== null)
+            .sort((a, b) => distances[a] - distances[b] || a - b);
+          if (!issuers.length) {
+            unattestedIndices.push(worldIndex);
+            continue;
+          }
+          candidates.push({ issuer: issuers[0], worldIndex, value: world[worldIndex] });
+        }
+
+        const claimedAnswer = taskValue(world);
+        for (let count = 0; count <= candidates.length; count += 1) {
+          for (const selected of combinationsOf(candidates, count)) {
+            const facts = new Map(localFacts);
+            selected.forEach(sample => facts.set(sample.worldIndex, sample.value));
+            const consistent = allWorlds().filter(candidate =>
+              [...facts].every(([index, value]) => candidate[index] === value)
+            );
+            const outcomes = new Set(consistent.map(taskValue));
+            if (outcomes.size === 1 && outcomes.has(claimedAnswer)) {
+              return certificateReport(selected, consistent.length, true, unattestedIndices);
+            }
+          }
+        }
+
+        const facts = new Map(localFacts);
+        candidates.forEach(sample => facts.set(sample.worldIndex, sample.value));
+        const consistent = allWorlds().filter(candidate =>
+          [...facts].every(([index, value]) => candidate[index] === value)
+        );
+        return certificateReport(candidates, consistent.length, false, unattestedIndices);
+      }
+
+      function combinationsOf(items, count, start = 0, prefix = []) {
+        if (count === 0) return [prefix];
+        const result = [];
+        for (let index = start; index <= items.length - count; index += 1) {
+          result.push(...combinationsOf(items, count - 1, index + 1, [...prefix, items[index]]));
+        }
+        return result;
+      }
+
+      function certificateReport(samples, worldsRemaining, determinesAnswer, unattestedIndices) {
+        const nodeBits = Math.ceil(Math.log2(state.bitCount));
+        const indexBits = Math.ceil(Math.log2(state.bitCount));
+        return {
+          samples,
+          worldsRemaining,
+          determinesAnswer,
+          unattestedIndices,
+          logicalPayloadBits: samples.length ? 1 + samples.length * (nodeBits + indexBits + 1) : 0
+        };
+      }
+
+      function factsAtSnapshot(snapshot) {
+        const { distances } = routingTree(state.root, snapshot);
+        const facts = new Map();
+        snapshot.scopes.forEach((_, node) => {
+          if (!Number.isFinite(distances[node])) return;
+          nodeObservation(state.world, node, snapshot).forEach(([index, value]) => facts.set(index, value));
+        });
+        return facts;
+      }
+
+      function determinationFromFacts(facts) {
+        const consistentWorlds = allWorlds().filter(world =>
+          [...facts].every(([index, value]) => world[index] === value)
+        );
+        const outcomes = new Set(consistentWorlds.map(taskValue));
+        return {
+          exact: outcomes.size === 1 && outcomes.has(taskValue(state.world)),
+          worldsRemaining: consistentWorlds.length
+        };
+      }
+
+      function certificateFresh(certificate, snapshot, currentCertificate) {
+        if (!certificate.samples.length) {
+          return currentCertificate.determinesAnswer && currentCertificate.samples.length === 0;
+        }
+        const { distances } = routingTree(state.root, snapshot);
+        return certificate.samples.every(sample =>
+          Number.isFinite(distances[sample.issuer])
+          && snapshot.scopes[sample.issuer].includes(sample.worldIndex)
+        );
+      }
+
+      function temporalAnalysis() {
+        const snapshots = temporalSnapshots().slice(0, state.epoch + 1);
+        const cumulativeFacts = new Map();
+        let latestCertificate = null;
+        let earliestInstantaneousStep = null;
+        let earliestCumulativeStep = null;
+        const steps = snapshots.map((snapshot, step) => {
+          const instantaneousFacts = factsAtSnapshot(snapshot);
+          instantaneousFacts.forEach((value, index) => cumulativeFacts.set(index, value));
+          const instantaneous = determinationFromFacts(instantaneousFacts);
+          const cumulative = determinationFromFacts(cumulativeFacts);
+          const currentCertificate = attestedCertificate(state.world, snapshot);
+          const previousCertificateFresh = latestCertificate === null
+            ? null
+            : certificateFresh(latestCertificate, snapshot, currentCertificate);
+
+          if (currentCertificate.determinesAnswer) latestCertificate = currentCertificate;
+          if (instantaneous.exact && earliestInstantaneousStep === null) earliestInstantaneousStep = step;
+          if (cumulative.exact && earliestCumulativeStep === null) earliestCumulativeStep = step;
+
+          return {
+            step,
+            instantaneousFacts: [...instantaneousFacts].sort((a, b) => a[0] - b[0]),
+            cumulativeFacts: [...cumulativeFacts].sort((a, b) => a[0] - b[0]),
+            instantaneous,
+            cumulative,
+            currentCertificate,
+            previousCertificateFresh
+          };
+        });
+        return {
+          steps,
+          current: steps.at(-1),
+          earliestInstantaneousStep,
+          earliestCumulativeStep
+        };
+      }
+
+      function timespaceAnalysis() {
+        const actualWorld = state.world.slice(0, 2);
+        const senderDesire = [...state.senderDesire];
+        const receiverDesire = [...state.receiverDesire];
+        const authorized = state.timespaceScenario !== "accurate_unauthorized";
+        const inverted = state.timespaceScenario === "inverted_model";
+        const senderModel = inverted ? receiverDesire.map(bit => 1 - bit) : [...receiverDesire];
+        const receiverModel = inverted ? senderDesire.map(bit => 1 - bit) : [...senderDesire];
+
+        function targetFor(policy) {
+          const target = [...actualWorld];
+          const choices = [
+            { index: 0, own: senderDesire, model: senderModel, truth: receiverDesire },
+            { index: 1, own: receiverDesire, model: receiverModel, truth: senderDesire }
+          ];
+          choices.forEach(choice => {
+            const other = policy === "self_only" ? null : policy === "modeled" ? choice.model : choice.truth;
+            const candidates = [0, 1].map(value => {
+              let loss = Number(value !== choice.own[choice.index]);
+              if (authorized && other) loss += 2 * Number(value !== other[choice.index]);
+              return [loss, Number(value !== actualWorld[choice.index]), value];
+            });
+            candidates.sort((left, right) => left[0] - right[0] || left[1] - right[1] || left[2] - right[2]);
+            target[choice.index] = candidates[0][2];
+          });
+          return target;
+        }
+
+        function realizedLoss(target) {
+          let loss = Number(target[0] !== senderDesire[0]) + Number(target[1] !== receiverDesire[1]);
+          if (authorized) {
+            loss += 2 * Number(target[0] !== receiverDesire[0]);
+            loss += 2 * Number(target[1] !== senderDesire[1]);
+          }
+          return loss;
+        }
+
+        const selfOnlyTarget = targetFor("self_only");
+        const modeledTarget = targetFor("modeled");
+        const oracleTarget = targetFor("oracle");
+        const selfOnlyLoss = realizedLoss(selfOnlyTarget);
+        const modeledLoss = realizedLoss(modeledTarget);
+        return {
+          actualWorld,
+          realizedWorld: [...state.realizedWorld],
+          senderDesire,
+          receiverDesire,
+          senderModel,
+          receiverModel,
+          authorized,
+          selfOnlyTarget,
+          modeledTarget,
+          oracleTarget,
+          selfOnlyLoss,
+          modeledLoss,
+          oracleLoss: realizedLoss(oracleTarget),
+          predictiveGain: selfOnlyLoss - modeledLoss,
+          crossModelError: hamming(senderModel, receiverDesire) + hamming(receiverModel, senderDesire),
+          realizationGap: hamming(state.realizedWorld, modeledTarget),
+          senderRealizationGap: hamming(state.realizedWorld, senderDesire),
+          receiverRealizationGap: hamming(state.realizedWorld, receiverDesire),
+          logicalPayloadBits: 14,
+          senderKnowledgeAfter: ["α", "β"],
+          receiverKnowledgeAfter: ["α", "β"],
+          authorizationViolations: 0
+        };
+      }
+
+      function trajectoryAnalysis() {
+        const start = state.world.slice(0, 2);
+        const intendedTarget = [...state.trajectoryIntendedTarget];
+        const acceptedTarget = [...state.trajectoryAcceptedTarget];
+        const authorized = state.trajectoryAuthorization === "both"
+          ? [0, 1]
+          : state.trajectoryAuthorization === "x0" ? [0]
+          : state.trajectoryAuthorization === "x1" ? [1] : [];
+        const midpoint = state.trajectoryPattern === "smooth_x1"
+          ? [start[0], intendedTarget[1]]
+          : [intendedTarget[0], start[1]];
+        const states = state.trajectoryPattern === "direct"
+          ? [start, intendedTarget]
+          : state.trajectoryPattern === "delayed_burst"
+            ? [start, [...start], intendedTarget]
+            : [start, midpoint, intendedTarget];
+        const loads = states.slice(1).map((world, index) => hamming(states[index], world));
+        const accelerations = loads.map((load, index) => load - (loads[index - 1] ?? 0));
+        const changes = states.slice(1).map((world, index) => world
+          .map((bit, bitIndex) => bit !== states[index][bitIndex] ? bitIndex : null)
+          .filter(bitIndex => bitIndex !== null));
+        const completionAt = states.length - 1;
+        const conflicts = [];
+        if (hamming(intendedTarget, acceptedTarget)) conflicts.push({ kind: "direction", epoch: completionAt });
+        if (completionAt < state.trajectoryEarliest) conflicts.push({ kind: "horizon", epoch: completionAt });
+        changes.forEach((indices, index) => {
+          if (indices.some(bitIndex => !authorized.includes(bitIndex))) conflicts.push({ kind: "authorization", epoch: index + 1 });
+        });
+        loads.forEach((load, index) => {
+          if (load > state.trajectoryMaxLoad) conflicts.push({ kind: "rate", epoch: index + 1 });
+        });
+        accelerations.forEach((acceleration, index) => {
+          if (acceleration > state.trajectoryMaxAcceleration) conflicts.push({ kind: "acceleration", epoch: index + 1 });
+        });
+        const conflictOrder = ["direction", "horizon", "authorization", "rate", "acceleration"];
+        const conflictTypes = conflictOrder.filter(kind => conflicts.some(conflict => conflict.kind === kind));
+        const acceptedWitness = acceptedTrajectoryWitness(start, acceptedTarget, authorized);
+        const minimumCompletion = acceptedWitness ? acceptedWitness.length - 1 : null;
+        return {
+          states,
+          acceptedTarget,
+          authorized,
+          loads,
+          accelerations,
+          conflicts,
+          conflictTypes,
+          compatible: conflicts.length === 0,
+          firstConflictEpoch: conflicts.length ? Math.min(...conflicts.map(conflict => conflict.epoch)) : null,
+          acceptedWitness,
+          minimumCompletion,
+          minimumDelay: minimumCompletion === null ? null : Math.max(0, minimumCompletion - completionAt)
+        };
+      }
+
+      function acceptedTrajectoryWitness(start, target, authorized) {
+        const worlds = [[0, 0], [0, 1], [1, 0], [1, 1]];
+        const queue = [{ world: [...start], previousLoad: 0, path: [[...start]] }];
+        const visited = new Set([`${formatWorld(start)}:0:0`]);
+        const maxEpoch = state.trajectoryEarliest + 12;
+        while (queue.length) {
+          const current = queue.shift();
+          const epoch = current.path.length - 1;
+          if (!hamming(current.world, target) && epoch >= state.trajectoryEarliest) return current.path;
+          if (epoch >= maxEpoch) continue;
+          worlds.forEach(candidate => {
+            const changed = candidate.map((bit, index) => bit !== current.world[index] ? index : null).filter(index => index !== null);
+            const load = changed.length;
+            const nextEpoch = epoch + 1;
+            if (changed.some(index => !authorized.includes(index))) return;
+            if (load > state.trajectoryMaxLoad) return;
+            if (load - current.previousLoad > state.trajectoryMaxAcceleration) return;
+            if (!hamming(candidate, target) && nextEpoch < state.trajectoryEarliest) return;
+            const key = `${formatWorld(candidate)}:${load}:${nextEpoch}`;
+            if (visited.has(key)) return;
+            visited.add(key);
+            queue.push({ world: [...candidate], previousLoad: load, path: [...current.path, [...candidate]] });
+          });
+        }
+        return null;
+      }
+
+      function applyTrajectoryPreset(name) {
+        const profiles = {
+          smooth_compatible: ["smooth_x0", "11", "11", 2, 1, 1, "both"],
+          burst_acceleration: ["delayed_burst", "11", "11", 2, 2, 1, "both"],
+          early_horizon: ["smooth_x0", "11", "11", 4, 1, 1, "both"],
+          burst_rate: ["direct", "11", "11", 1, 1, 2, "both"],
+          unauthorized_scope: ["direct", "10", "10", 1, 2, 2, "x1"],
+          direction_mismatch: ["direct", "10", "01", 1, 2, 2, "both"]
+        };
+        if (!profiles[name]) return;
+        const [pattern, intended, accepted, earliest, maxLoad, maxAcceleration, authorization] = profiles[name];
+        state.trajectoryPreset = name;
+        state.trajectoryPattern = pattern;
+        state.trajectoryIntendedTarget = intended.split("").map(Number);
+        state.trajectoryAcceptedTarget = accepted.split("").map(Number);
+        state.trajectoryEarliest = earliest;
+        state.trajectoryMaxLoad = maxLoad;
+        state.trajectoryMaxAcceleration = maxAcceleration;
+        state.trajectoryAuthorization = authorization;
+        state.world[0] = 0;
+        state.world[1] = 0;
+        update();
+      }
+
+      function correctionAnalysis() {
+        const prediction = [0, 0];
+        const observation = [1, 0];
+        const correctedState = state.correctionCompleted ? [...observation] : [...prediction];
+        const resetRequired = state.correctionRequiredReset !== "none";
+        const resetComplete = resetRequired && state.correctionResetCompleted;
+        const erasedEntropyBits = resetComplete ? state.correctionEntropyBits : 0;
+        const landauerUnit = 1.380649e-23 * state.correctionTemperature * Math.log(2);
+        const cycleFloorJoules = landauerUnit * erasedEntropyBits;
+        const sequenceFloorJoules = state.correctionIndependent
+          ? cycleFloorJoules * state.correctionResetCount
+          : null;
+        const nextMessageReady = state.correctionCompleted && (!resetRequired || resetComplete);
+        const ensembles = {
+          none: null,
+          helpful: { before: 2, after: 1, information: 1, marginal: 1, correlationSavings: 0 },
+          constant: { before: 2, after: 2, information: 0, marginal: 2, correlationSavings: 0 },
+          correlated: { before: 1, after: 1, information: 0, marginal: 3, correlationSavings: 2 }
+        };
+        const ensemble = ensembles[state.correctionMessageMode];
+        return {
+          prediction,
+          observation,
+          correctedState,
+          predictionErrorBits: hamming(prediction, observation),
+          remainingErrorBits: hamming(correctedState, observation),
+          resetRequired,
+          resetComplete,
+          erasedEntropyBits,
+          landauerUnit,
+          cycleFloorJoules,
+          sequenceFloorJoules,
+          nextMessageReady,
+          ensemble,
+          measuredPhysicalEnergyJoules: null
+        };
+      }
+
+      function applyCorrectionPreset(name) {
+        const profiles = {
+          retained_prediction: [true, "none", false, 0, "none", 1, true],
+          overwrite_prediction: [true, "prediction", true, 1, "none", 1, true],
+          uncleared_syndrome: [true, "syndrome", false, 1, "none", 1, true],
+          cleared_syndrome: [true, "syndrome", true, 1, "none", 1, true],
+          incomplete_correction: [false, "syndrome", true, 1, "none", 1, true],
+          helpful_message: [true, "prediction", true, 1, "helpful", 1, true],
+          constant_message: [true, "prediction", true, 2, "constant", 1, true],
+          correlated_batch: [true, "prediction", true, 1, "correlated", 1, true],
+          repeated_resets: [true, "prediction", true, 1, "none", 3, true],
+          dependent_resets: [true, "prediction", true, 1, "none", 3, false]
+        };
+        if (!profiles[name]) return;
+        const [completed, required, reset, entropy, message, count, independent] = profiles[name];
+        state.correctionPreset = name;
+        state.correctionCompleted = completed;
+        state.correctionRequiredReset = required;
+        state.correctionResetCompleted = reset;
+        state.correctionEntropyBits = entropy;
+        state.correctionTemperature = 300;
+        state.correctionMessageMode = message;
+        state.correctionResetCount = count;
+        state.correctionIndependent = independent;
+        update();
+      }
+
+      function formatJoules(value) {
+        if (value === null) return "not additive";
+        return value === 0 ? "0 J" : `${value.toExponential(3)} J`;
+      }
+
+      function hamming(left, right) {
+        return left.reduce((distance, value, index) => distance + Number(value !== right[index]), 0);
+      }
+
+      function applyPreset(name) {
+        state.preset = name;
+        state.dynamicScenario = "static";
+        state.epoch = 0;
+        state.scopes = Array.from({ length: state.bitCount }, () => []);
+        if (name === "central") state.scopes[0] = Array.from({ length: state.bitCount }, (_, i) => i);
+        if (name === "distributed") state.scopes = Array.from({ length: state.bitCount }, (_, i) => [i]);
+        if (name === "partial") state.scopes = Array.from({ length: state.bitCount }, (_, i) => i < state.bitCount - 1 ? [i] : []);
+        update();
+      }
+
+      function resizeWorld(bitCount) {
+        state.bitCount = bitCount;
+        state.world = Array.from({ length: bitCount }, (_, i) => state.world[i] ?? 0);
+        state.scopes = Array.from({ length: bitCount }, (_, node) =>
+          (state.scopes[node] ?? []).filter(index => index < bitCount)
+        );
+        state.selectedNode = Math.min(state.selectedNode, bitCount - 1);
+        state.root = Math.min(state.root, bitCount - 1);
+        state.preset = "custom";
+        update();
+      }
+
+      function formatWorld(world) {
+        return world.map(bit => bit ? "1" : "0").join("");
+      }
+
+      function formatObservation(world) {
+        const samples = globalObservation(world)
+          .filter(([, values]) => values.length)
+          .map(([node, values]) => `n${node}[${values.map(([i, value]) => `x${i}=${value}`).join(" ")}]`);
+        return samples.length ? samples.join(" · ") : "∅ — network samples nothing";
+      }
+
+      function formatAccuracy(value) {
+        const total = 2 ** state.bitCount;
+        const numerator = Math.round(value * total);
+        const gcd = greatestCommonDivisor(numerator, total);
+        return `${numerator / gcd}/${total / gcd}`;
+      }
+
+      function greatestCommonDivisor(a, b) {
+        while (b) [a, b] = [b, a % b];
+        return a;
+      }
+
+      function positions() {
+        const width = 700;
+        const height = 430;
+        if (state.dynamicScenario !== "static" || state.topology === "path") {
+          const spacing = 500 / Math.max(1, state.bitCount - 1);
+          return Array.from({ length: state.bitCount }, (_, i) => ({ x: 100 + i * spacing, y: 215 + (i % 2 ? 34 : -34) }));
+        }
+        const radius = state.bitCount <= 4 ? 140 : 165;
+        return Array.from({ length: state.bitCount }, (_, i) => {
+          const angle = -Math.PI / 2 + (Math.PI * 2 * i) / state.bitCount;
+          return { x: width / 2 + Math.cos(angle) * radius, y: height / 2 + Math.sin(angle) * radius };
+        });
+      }
+
+      function renderNetwork(analysis) {
+        const svg = $("networkSvg");
+        const points = positions();
+        const snapshot = activeSnapshot();
+        const routeKeys = new Set(analysis.communication.routeEdges.map(([a, b]) => `${Math.min(a, b)}:${Math.max(a, b)}`));
+        const edgeMarkup = edges(snapshot).map(([a, b]) => {
+          const route = routeKeys.has(`${Math.min(a, b)}:${Math.max(a, b)}`) ? " route" : "";
+          return `<line class="edge${route}" x1="${points[a].x}" y1="${points[a].y}" x2="${points[b].x}" y2="${points[b].y}"></line>`;
+        }).join("");
+
+        const nodeMarkup = points.map((point, node) => {
+          const selected = node === state.selectedNode ? " selected" : "";
+          const root = node === state.root ? " root" : "";
+          const scope = snapshot.scopes[node];
+          const sampleLabel = scope.length ? scope.map(i => `x${i}`).join(" ") : "blind";
+          const pips = scope.slice(0, 6).map((_, i) => {
+            const x = point.x - ((Math.min(scope.length, 6) - 1) * 5) + i * 10;
+            return `<circle class="sensor-pip" cx="${x}" cy="${point.y + 49}" r="2.5"></circle>`;
+          }).join("");
+          return `<g class="node-hit${selected}${root}" data-node="${node}" tabindex="0" role="button" aria-label="Select node ${node}">
+            <circle class="node-ring" cx="${point.x}" cy="${point.y}" r="34"></circle>
+            <text class="node-id" x="${point.x}" y="${point.y + 4}">N${node}</text>
+            <text class="node-samples" x="${point.x}" y="${point.y + 63}">${sampleLabel}</text>
+            ${pips}
+          </g>`;
+        }).join("");
+
+        svg.innerHTML = `${edgeMarkup}${nodeMarkup}`;
+        svg.querySelectorAll(".node-hit").forEach(node => {
+          const select = () => { state.selectedNode = Number(node.dataset.node); update(); };
+          node.addEventListener("click", select);
+          node.addEventListener("keydown", event => {
+            if (event.key === "Enter" || event.key === " ") { event.preventDefault(); select(); }
+          });
+        });
+      }
+
+      function renderControls() {
+        const snapshot = activeSnapshot();
+        const snapshots = temporalSnapshots();
+        $("bitCount").value = state.bitCount;
+        $("bitCountOut").textContent = `${state.bitCount} bits`;
+        $("taskSelect").value = state.task;
+        $("dynamicScenario").value = state.dynamicScenario;
+        $("epochSlider").max = snapshots.length - 1;
+        $("epochSlider").value = state.epoch;
+        $("epochSlider").disabled = snapshots.length === 1;
+        $("epochOut").textContent = `t=${state.epoch}`;
+        $("networkSummary").textContent = `${state.bitCount} nodes · ${state.dynamicScenario.replaceAll("_", " ")} · t=${state.epoch}`;
+        $("selectedNodeLabel").textContent = `NODE ${state.selectedNode}`;
+        $("rootSelect").innerHTML = Array.from({ length: state.bitCount }, (_, node) =>
+          `<option value="${node}">Node ${node}${snapshot.scopes[node].length ? " · sensor" : " · relay"}</option>`
+        ).join("");
+        $("rootSelect").value = state.root;
+
+        $("worldBits").style.gridTemplateColumns = `repeat(${Math.min(state.bitCount, 4)}, minmax(42px, 1fr))`;
+        $("worldBits").innerHTML = state.world.map((bit, index) =>
+          `<button class="bit ${bit ? "on" : ""}" type="button" data-bit="${index}" aria-label="Set world bit ${index}; current value ${bit}">
+            <span class="index">x${index}</span><span class="value">${bit}</span>
+          </button>`
+        ).join("");
+        $("worldBits").querySelectorAll(".bit").forEach(button => button.addEventListener("click", () => {
+          const index = Number(button.dataset.bit);
+          state.world[index] = state.world[index] ? 0 : 1;
+          if (index < 2) state.trajectoryPreset = "custom";
+          update();
+        }));
+
+        $("scopeBits").style.gridTemplateColumns = `repeat(${Math.min(state.bitCount, 4)}, 1fr)`;
+        $("scopeBits").innerHTML = Array.from({ length: state.bitCount }, (_, index) => {
+          const active = snapshot.scopes[state.selectedNode].includes(index);
+          return `<button class="scope-bit ${active ? "active" : ""}" type="button" data-scope="${index}" aria-pressed="${active}">x${index}</button>`;
+        }).join("");
+        $("scopeBits").querySelectorAll(".scope-bit").forEach(button => button.addEventListener("click", () => {
+          const index = Number(button.dataset.scope);
+          if (state.dynamicScenario !== "static") {
+            state.scopes = snapshot.scopes.map(scope => [...scope]);
+            state.dynamicScenario = "static";
+            state.epoch = 0;
+            state.topology = "path";
+          }
+          const scope = state.scopes[state.selectedNode];
+          state.scopes[state.selectedNode] = scope.includes(index) ? scope.filter(i => i !== index) : [...scope, index].sort((a, b) => a - b);
+          state.preset = "custom";
+          update();
+        }));
+
+        document.querySelectorAll("[data-topology]").forEach(button => button.classList.toggle("active", button.dataset.topology === state.topology));
+        document.querySelectorAll("[data-preset]").forEach(button => button.classList.toggle("active", button.dataset.preset === state.preset));
+      }
+
+      function renderResults(analysis) {
+        const descriptions = {
+          local: "At least one node can validate the task from its own samples.",
+          distributed: "The network can validate exactly, but only after combining samples.",
+          predictive: "Available observations merge worlds with different correct answers."
+        };
+        const card = $("regimeCard");
+        card.className = `regime-card ${analysis.regime}`;
+        $("regimeValue").textContent = analysis.regime;
+        $("regimeDescription").textContent = descriptions[analysis.regime];
+        $("identifiableValue").textContent = analysis.identifiable ? "YES" : "NO";
+        $("accuracyValue").textContent = formatAccuracy(analysis.accuracy);
+        $("radiusValue").textContent = `${analysis.radius} hop${analysis.radius === 1 ? "" : "s"}`;
+        $("ambiguousValue").textContent = analysis.global.ambiguous;
+        $("messageValue").textContent = analysis.communication.messageCount;
+        $("aggregateBitsValue").textContent = analysis.communication.aggregateBitTransmissions;
+        $("rawBitsValue").textContent = analysis.communication.rawBitTransmissions;
+        $("rootLabel").textContent = `root N${state.root}`;
+        renderCertificate(analysis.certificate);
+        renderTemporal(analysis.temporal);
+        $("currentObservation").textContent = formatObservation(state.world);
+        $("currentAnswer").textContent = taskValue(state.world) ? "TRUE" : "FALSE";
+        $("classSummary").textContent = `${analysis.global.groups.size} classes · ${analysis.worlds.length} worlds`;
+      }
+
+      function renderCertificate(certificate) {
+        const status = $("certificateStatus");
+        const local = certificate.determinesAnswer && certificate.samples.length === 0;
+        status.textContent = local
+          ? "local · no bundle"
+          : certificate.determinesAnswer
+            ? "exact · source grounded"
+            : "unavailable";
+        status.classList.toggle("unavailable", !certificate.determinesAnswer);
+        $("certificateSamplesValue").textContent = certificate.samples.length;
+        $("certificateBitsValue").textContent = certificate.logicalPayloadBits;
+        $("certificateWorldsValue").textContent = certificate.worldsRemaining;
+        $("certificateSamples").innerHTML = certificate.samples.length
+          ? certificate.samples.map(sample =>
+              `<span class="attestation">N${sample.issuer} attests x${sample.worldIndex}=${sample.value}</span>`
+            ).join("")
+          : `<span class="annot">${local ? "root observation is sufficient" : "no grounded remote samples"}</span>`;
+
+        if (local) {
+          $("certificateTrust").innerHTML = "The root directly samples enough state. No remote identity or testimony is required.";
+        } else if (certificate.determinesAnswer) {
+          $("certificateTrust").innerHTML = "<b>Trust remains:</b> issuer identity is authentic and each issuer reports its sampled value truthfully. Signatures and Byzantine faults are not modeled.";
+        } else {
+          const missing = certificate.unattestedIndices.map(index => `x${index}`).join(", ") || "required state";
+          $("certificateTrust").innerHTML = `<b>Unavailable:</b> ${missing} has no reachable observing issuer. Trusting every available attestation still leaves ${certificate.worldsRemaining} compatible worlds.`;
+        }
+      }
+
+      function renderTemporal(temporal) {
+        const current = temporal.current;
+        const instantaneousStatus = $("instantaneousStatus");
+        const cumulativeStatus = $("cumulativeStatus");
+        const freshnessStatus = $("freshnessStatus");
+        instantaneousStatus.textContent = current.instantaneous.exact ? "exact" : "ambiguous";
+        cumulativeStatus.textContent = current.cumulative.exact ? "exact" : "ambiguous";
+        instantaneousStatus.classList.toggle("no", !current.instantaneous.exact);
+        cumulativeStatus.classList.toggle("no", !current.cumulative.exact);
+        freshnessStatus.textContent = current.previousCertificateFresh === null
+          ? "none prior"
+          : current.previousCertificateFresh ? "fresh" : "stale";
+        freshnessStatus.classList.toggle("stale", current.previousCertificateFresh === false);
+        $("temporalEpochLabel").textContent = `${state.dynamicScenario.replaceAll("_", " ")} · epoch ${state.epoch}`;
+        $("instantaneousFacts").textContent = formatFacts(current.instantaneousFacts);
+        $("cumulativeFacts").textContent = formatFacts(current.cumulativeFacts);
+        $("temporalWorldsLeft").textContent = `${current.instantaneous.worldsRemaining} current · ${current.cumulative.worldsRemaining} cached`;
+      }
+
+      function formatFacts(facts) {
+        return facts.length
+          ? facts.map(([index, value]) => `x${index}=${value}`).join(" · ")
+          : "∅";
+      }
+
+      function renderTimespace(timespace) {
+        $("timespaceScenario").value = state.timespaceScenario;
+        renderTimespaceBits("senderDesireBits", "senderDesire");
+        renderTimespaceBits("receiverDesireBits", "receiverDesire");
+        renderTimespaceBits("realizedWorldBits", "realizedWorld");
+
+        $("actualWorldStart").textContent = `W(0)=${formatWorld(timespace.actualWorld)}`;
+        $("actualWorldEnd").textContent = `W(2)=${formatWorld(timespace.realizedWorld)}`;
+        $("senderDesireValue").textContent = `D₀=${formatWorld(timespace.senderDesire)}`;
+        $("receiverDesireValue").textContent = `D₁=${formatWorld(timespace.receiverDesire)}`;
+        $("senderModelValue").textContent = `N0 models D₁ as ${formatWorld(timespace.senderModel)}`;
+        $("receiverModelValue").textContent = `N1 models D₀ as ${formatWorld(timespace.receiverModel)}`;
+        $("selfOnlyTarget").textContent = `${formatWorld(timespace.selfOnlyTarget)} · L=${timespace.selfOnlyLoss}`;
+        $("modeledTarget").textContent = `${formatWorld(timespace.modeledTarget)} · L=${timespace.modeledLoss}`;
+        $("oracleTarget").textContent = `${formatWorld(timespace.oracleTarget)} · L=${timespace.oracleLoss}`;
+        const gain = $("predictiveGain");
+        gain.textContent = `${timespace.predictiveGain > 0 ? "+" : ""}${timespace.predictiveGain} / 14b`;
+        gain.className = timespace.predictiveGain > 0 ? "win" : timespace.predictiveGain < 0 ? "loss" : "";
+        $("crossModelError").textContent = `${timespace.crossModelError} bits`;
+        $("realizationGap").textContent = `${timespace.realizationGap} proposal · ${timespace.senderRealizationGap}/${timespace.receiverRealizationGap} desire`;
+        $("ideaState").textContent = "K0={α,β} · K1={α,β}";
+        $("authorizationState").textContent = timespace.authorized ? "mutual x0/x1" : "none · model inert";
+      }
+
+      function renderTrajectory(trajectory) {
+        $("trajectoryPreset").value = state.trajectoryPreset;
+        $("trajectoryPattern").value = state.trajectoryPattern;
+        $("trajectoryIntendedTarget").value = formatWorld(state.trajectoryIntendedTarget);
+        $("trajectoryAcceptedTarget").value = formatWorld(state.trajectoryAcceptedTarget);
+        $("trajectoryEarliest").value = String(state.trajectoryEarliest);
+        $("trajectoryMaxLoad").value = String(state.trajectoryMaxLoad);
+        $("trajectoryMaxAcceleration").value = String(state.trajectoryMaxAcceleration);
+        $("trajectoryAuthorization").value = state.trajectoryAuthorization;
+
+        const status = $("trajectoryCompatibility");
+        status.textContent = trajectory.compatible ? "compatible" : `incompatible · ${trajectory.conflictTypes.join(" + ")}`;
+        status.className = trajectory.compatible ? "compatibility" : "compatibility conflict";
+        const pathHtml = path => path
+          ? path.map((world, index) => `${index ? '<span class="trajectory-arrow">→</span>' : ""}<span class="trajectory-node">t+${index} · ${formatWorld(world)}</span>`).join("")
+          : '<span class="trajectory-node">∅ · no accepted path</span>';
+        $("intendedTrajectory").innerHTML = pathHtml(trajectory.states);
+        $("acceptedTrajectory").innerHTML = pathHtml(trajectory.acceptedWitness);
+        $("trajectoryLoads").textContent = trajectory.loads.join(" → ") || "0";
+        $("trajectoryAccelerations").textContent = trajectory.accelerations.map(value => value > 0 ? `+${value}` : String(value)).join(" → ") || "0";
+        $("trajectoryFirstConflict").textContent = trajectory.compatible
+          ? "none"
+          : `t+${trajectory.firstConflictEpoch} · ${trajectory.conflictTypes.join("+")}`;
+        $("trajectoryMinimumCompletion").textContent = trajectory.minimumCompletion === null ? "unreachable" : `t+${trajectory.minimumCompletion}`;
+        let repair = "none";
+        if (trajectory.conflictTypes.includes("authorization")) repair = "expand authorized scope";
+        else if (trajectory.conflictTypes.includes("direction")) repair = "align endpoint";
+        else if (trajectory.minimumDelay > 0) repair = `delay +${trajectory.minimumDelay}`;
+        else if (trajectory.conflictTypes.includes("acceleration")) repair = "smooth ramp";
+        else if (trajectory.conflictTypes.includes("rate")) repair = "reduce load";
+        $("trajectoryRepair").textContent = repair;
+      }
+
+      function renderCorrection(correction) {
+        $("correctionPreset").value = state.correctionPreset;
+        $("correctionCompleted").value = state.correctionCompleted ? "yes" : "no";
+        $("correctionRequiredReset").value = state.correctionRequiredReset;
+        $("correctionResetCompleted").value = state.correctionResetCompleted ? "yes" : "no";
+        $("correctionEntropyBits").value = String(state.correctionEntropyBits);
+        $("correctionTemperature").value = String(state.correctionTemperature);
+        $("correctionMessageMode").value = state.correctionMessageMode;
+        $("correctionResetCount").value = String(state.correctionResetCount);
+        $("correctionIndependent").value = state.correctionIndependent ? "yes" : "no";
+
+        const sendState = $("correctionSendState");
+        sendState.textContent = correction.nextMessageReady ? "next send · ready" : "next send · blocked";
+        sendState.className = correction.nextMessageReady ? "send-state" : "send-state blocked";
+        $("correctionPrediction").textContent = `${formatWorld(correction.prediction)} · obsolete`;
+        $("correctionObservation").textContent = `${formatWorld(correction.observation)} · received`;
+        const correctedState = $("correctionCorrectedState");
+        correctedState.textContent = `${formatWorld(correction.correctedState)} · ${correction.remainingErrorBits ? "mismatch" : "aligned"}`;
+        correctedState.className = correction.remainingErrorBits ? "blocked" : "ready";
+        const resetState = $("correctionResetState");
+        resetState.textContent = !correction.resetRequired
+          ? "retained · permitted"
+          : `${state.correctionRequiredReset} · ${correction.resetComplete ? "cleared" : "uncleared"}`;
+        resetState.className = !correction.resetRequired || correction.resetComplete ? "ready" : "blocked";
+        $("correctionErrors").textContent = `${correction.predictionErrorBits} → ${correction.remainingErrorBits} bits`;
+        $("correctionEntropy").textContent = `${correction.erasedEntropyBits} bits`;
+        $("correctionFloor").textContent = formatJoules(correction.cycleFloorJoules);
+        const sequenceFloor = $("correctionSequenceFloor");
+        sequenceFloor.textContent = correction.sequenceFloorJoules === null
+          ? `${state.correctionResetCount} dependent · unknown`
+          : `${state.correctionResetCount}× · ${formatJoules(correction.sequenceFloorJoules)}`;
+        sequenceFloor.className = correction.sequenceFloorJoules === null ? "bad" : "";
+        $("correctionConditionalEntropy").textContent = correction.ensemble
+          ? `${correction.ensemble.before} → ${correction.ensemble.after} bits`
+          : "not evaluated";
+        $("correctionMessageValue").textContent = correction.ensemble
+          ? `${correction.ensemble.information} bits · ${formatJoules(correction.ensemble.information * correction.landauerUnit)} avoided`
+          : "not evaluated";
+        $("correctionCorrelationSavings").textContent = correction.ensemble
+          ? `${correction.ensemble.correlationSavings} bits · marginal ${correction.ensemble.marginal}`
+          : "not evaluated";
+        $("correctionContract").textContent = `${state.correctionTemperature} K · before-next-message`;
+      }
+
+      function renderTimespaceBits(elementId, stateKey) {
+        const values = state[stateKey];
+        const container = $(elementId);
+        container.innerHTML = values.map((bit, index) =>
+          `<button class="bit ${bit ? "on" : ""}" type="button" data-timespace-bit="${index}" aria-label="Toggle ${stateKey} bit ${index}">
+            <span class="index">x${index}</span><span class="value">${bit}</span>
+          </button>`
+        ).join("");
+        container.querySelectorAll("[data-timespace-bit]").forEach(button => button.addEventListener("click", () => {
+          const index = Number(button.dataset.timespaceBit);
+          state[stateKey][index] = state[stateKey][index] ? 0 : 1;
+          update();
+        }));
+      }
+
+      function renderEquivalence(analysis) {
+        const witnessArea = $("witnessArea");
+        if (analysis.global.witness) {
+          const [left, right] = analysis.global.witness;
+          witnessArea.innerHTML = `<div class="witness">
+            <div class="witness-world"><span class="annot">World W₁</span><code>${formatWorld(left)}</code><small>f(W₁) = ${taskValue(left) ? "true" : "false"}</small></div>
+            <div class="same-sign">same S<sub>N</sub>(W)<br>different answer</div>
+            <div class="witness-world"><span class="annot">World W₂</span><code>${formatWorld(right)}</code><small>f(W₂) = ${taskValue(right) ? "true" : "false"}</small></div>
+          </div>`;
+        } else {
+          witnessArea.innerHTML = `<div class="empty-witness"><strong>No counterexample in this finite world.</strong><br>Every observational class has one task answer.</div>`;
+        }
+
+        const sorted = [...analysis.global.rows].sort((a, b) => Number(b.ambiguous) - Number(a.ambiguous) || b.worlds.length - a.worlds.length);
+        $("classList").innerHTML = sorted.slice(0, 16).map((row, index) => {
+          const outcomes = row.ambiguous ? "TRUE + FALSE" : row.trueCount ? "TRUE" : "FALSE";
+          return `<div class="class-row ${row.ambiguous ? "ambiguous" : ""}">
+            <span class="class-key">class ${String(index + 1).padStart(2, "0")} · ${row.worlds.map(formatWorld).join(", ")}</span>
+            <span>${row.worlds.length} world${row.worlds.length === 1 ? "" : "s"}</span>
+            <span class="class-outcome">${outcomes}</span>
+          </div>`;
+        }).join("");
+      }
+
+      function update() {
+        state = normalizeState(state);
+        saveState();
+        renderControls();
+        const analysis = modelAnalysis();
+        renderNetwork(analysis);
+        renderResults(analysis);
+        renderTimespace(timespaceAnalysis());
+        renderTrajectory(trajectoryAnalysis());
+        renderCorrection(correctionAnalysis());
+        renderEquivalence(analysis);
+      }
+
+      function showToast(message) {
+        const toast = $("toast");
+        toast.textContent = message;
+        toast.classList.add("show");
+        window.clearTimeout(showToast.timer);
+        showToast.timer = window.setTimeout(() => toast.classList.remove("show"), 1800);
+      }
+
+      $("bitCount").addEventListener("input", event => resizeWorld(Number(event.target.value)));
+      $("taskSelect").addEventListener("change", event => { state.task = event.target.value; update(); });
+      $("rootSelect").addEventListener("change", event => { state.root = Number(event.target.value); update(); });
+      $("dynamicScenario").addEventListener("change", event => {
+        state.dynamicScenario = event.target.value;
+        state.epoch = 0;
+        update();
+      });
+      $("epochSlider").addEventListener("input", event => { state.epoch = Number(event.target.value); update(); });
+      $("timespaceScenario").addEventListener("change", event => { state.timespaceScenario = event.target.value; update(); });
+      $("trajectoryPreset").addEventListener("change", event => {
+        if (event.target.value === "custom") {
+          state.trajectoryPreset = "custom";
+          update();
+        } else applyTrajectoryPreset(event.target.value);
+      });
+      ["trajectoryPattern", "trajectoryAuthorization"].forEach(id => $(id).addEventListener("change", event => {
+        state.trajectoryPreset = "custom";
+        state[id] = event.target.value;
+        update();
+      }));
+      ["trajectoryIntendedTarget", "trajectoryAcceptedTarget"].forEach(id => $(id).addEventListener("change", event => {
+        state.trajectoryPreset = "custom";
+        state[id] = event.target.value.split("").map(Number);
+        update();
+      }));
+      ["trajectoryEarliest", "trajectoryMaxLoad", "trajectoryMaxAcceleration"].forEach(id => $(id).addEventListener("change", event => {
+        state.trajectoryPreset = "custom";
+        state[id] = Number(event.target.value);
+        update();
+      }));
+      $("correctionPreset").addEventListener("change", event => {
+        if (event.target.value === "custom") {
+          state.correctionPreset = "custom";
+          update();
+        } else applyCorrectionPreset(event.target.value);
+      });
+      ["correctionRequiredReset", "correctionMessageMode"].forEach(id => $(id).addEventListener("change", event => {
+        state.correctionPreset = "custom";
+        state[id] = event.target.value;
+        update();
+      }));
+      ["correctionEntropyBits", "correctionTemperature", "correctionResetCount"].forEach(id => $(id).addEventListener("change", event => {
+        state.correctionPreset = "custom";
+        state[id] = Number(event.target.value);
+        update();
+      }));
+      [["correctionCompleted", "yes"], ["correctionResetCompleted", "yes"], ["correctionIndependent", "yes"]].forEach(([id, truthy]) => $(id).addEventListener("change", event => {
+        state.correctionPreset = "custom";
+        state[id] = event.target.value === truthy;
+        update();
+      }));
+      document.querySelectorAll("[data-topology]").forEach(button => button.addEventListener("click", () => {
+        state.topology = button.dataset.topology;
+        state.dynamicScenario = "static";
+        state.epoch = 0;
+        update();
+      }));
+      document.querySelectorAll("[data-preset]").forEach(button => button.addEventListener("click", () => applyPreset(button.dataset.preset)));
+      $("randomizeBtn").addEventListener("click", () => {
+        state.world = state.world.map(() => Math.random() < .5 ? 0 : 1);
+        state.trajectoryPreset = "custom";
+        update();
+      });
+      $("exportBtn").addEventListener("click", () => {
+        const analysis = modelAnalysis();
+        const timespace = timespaceAnalysis();
+        const trajectory = trajectoryAnalysis();
+        const correction = correctionAnalysis();
+        const payload = {
+          schema_version: "network-relativity-ui-state/v0.7",
+          configuration: state,
+          result: {
+            regime: analysis.regime,
+            identifiable: analysis.identifiable,
+            best_possible_uniform_prior_accuracy: formatAccuracy(analysis.accuracy),
+            aggregation_radius: analysis.radius,
+            communication: {
+              root: state.root,
+              rounds: analysis.communication.rounds,
+              message_count: analysis.communication.messageCount,
+              aggregate_bit_transmissions: analysis.communication.aggregateBitTransmissions,
+              raw_bit_transmissions: analysis.communication.rawBitTransmissions,
+              route_edges: analysis.communication.routeEdges
+            },
+            certificate: {
+              verifier: state.root,
+              claimed_answer: taskValue(state.world),
+              determines_answer: analysis.certificate.determinesAnswer,
+              samples: analysis.certificate.samples.map(sample => ({
+                issuer: sample.issuer,
+                world_index: sample.worldIndex,
+                value: sample.value
+              })),
+              worlds_remaining: analysis.certificate.worldsRemaining,
+              logical_payload_bits: analysis.certificate.logicalPayloadBits,
+              unattested_indices: analysis.certificate.unattestedIndices,
+              trust_assumptions: analysis.certificate.samples.length ? [
+                "issuer identity is authentic",
+                "issuer reports its sampled value truthfully"
+              ] : []
+            },
+            temporal: {
+              scenario: state.dynamicScenario,
+              epoch: state.epoch,
+              world_assumption: "static_across_epochs",
+              delivery_assumption: "connected_sensors_deliver_within_epoch",
+              cache_assumption: "verifier_retains_prior_observations",
+              earliest_instantaneous_step: analysis.temporal.earliestInstantaneousStep,
+              earliest_cumulative_step: analysis.temporal.earliestCumulativeStep,
+              current: {
+                instantaneous_facts: analysis.temporal.current.instantaneousFacts,
+                cumulative_facts: analysis.temporal.current.cumulativeFacts,
+                instantaneous_determines_answer: analysis.temporal.current.instantaneous.exact,
+                cumulative_determines_answer: analysis.temporal.current.cumulative.exact,
+                instantaneous_worlds_remaining: analysis.temporal.current.instantaneous.worldsRemaining,
+                cumulative_worlds_remaining: analysis.temporal.current.cumulative.worldsRemaining,
+                previous_certificate_fresh: analysis.temporal.current.previousCertificateFresh
+              }
+            },
+            timespace: {
+              scenario: state.timespaceScenario,
+              actual_world_at_t0: timespace.actualWorld,
+              realized_world_at_t2: timespace.realizedWorld,
+              sender_desired_world_at_t2: timespace.senderDesire,
+              receiver_desired_world_at_t2: timespace.receiverDesire,
+              sender_model_of_receiver: timespace.senderModel,
+              receiver_model_of_sender: timespace.receiverModel,
+              authorization: timespace.authorized ? { "0": [1], "1": [0] } : { "0": [], "1": [] },
+              self_only_target: timespace.selfOnlyTarget,
+              modeled_target: timespace.modeledTarget,
+              oracle_target: timespace.oracleTarget,
+              self_only_loss: timespace.selfOnlyLoss,
+              modeled_loss: timespace.modeledLoss,
+              oracle_loss: timespace.oracleLoss,
+              predictive_gain: timespace.predictiveGain,
+              cross_model_error: timespace.crossModelError,
+              modeled_target_realization_gap: timespace.realizationGap,
+              logical_payload_bits: timespace.logicalPayloadBits,
+              sender_knowledge_after: timespace.senderKnowledgeAfter,
+              receiver_knowledge_after: timespace.receiverKnowledgeAfter,
+              authorization_violations: timespace.authorizationViolations
+            },
+            trajectory: {
+              profile: state.trajectoryPreset,
+              intended_states: trajectory.states,
+              accepted_target: trajectory.acceptedTarget,
+              envelope: {
+                earliest_completion_at: state.trajectoryEarliest,
+                authorized_indices: trajectory.authorized,
+                max_load_per_epoch: state.trajectoryMaxLoad,
+                max_acceleration_per_epoch: state.trajectoryMaxAcceleration
+              },
+              compatible: trajectory.compatible,
+              conflict_types: trajectory.conflictTypes,
+              first_conflict_epoch: trajectory.firstConflictEpoch,
+              transition_loads: trajectory.loads,
+              acceleration_loads: trajectory.accelerations,
+              minimum_feasible_completion_at: trajectory.minimumCompletion,
+              minimum_delay: trajectory.minimumDelay,
+              accepted_witness: trajectory.acceptedWitness,
+              physical_energy_measured: false,
+              landauer_floor_computed_in_correction: true
+            },
+            correction: {
+              profile: state.correctionPreset,
+              prediction: correction.prediction,
+              observation: correction.observation,
+              corrected_state: correction.correctedState,
+              prediction_error_bits: correction.predictionErrorBits,
+              remaining_error_bits: correction.remainingErrorBits,
+              required_cleared_registers: state.correctionRequiredReset === "none" ? [] : [state.correctionRequiredReset],
+              cleared_registers: correction.resetComplete ? [state.correctionRequiredReset] : [],
+              erased_logical_entropy_bits: correction.erasedEntropyBits,
+              temperature_kelvin: state.correctionTemperature,
+              ideal_landauer_floor_joules: correction.cycleFloorJoules,
+              reset_boundaries: state.correctionResetCount,
+              independent_reset_boundaries: state.correctionIndependent,
+              sequence_landauer_floor_joules: correction.sequenceFloorJoules,
+              next_message_ready: correction.nextMessageReady,
+              reset_contract: "before-next-message",
+              system_boundary: "finite-logical-registers",
+              ensemble: correction.ensemble,
+              measured_physical_energy_joules: correction.measuredPhysicalEnergyJoules
+            },
+            ambiguous_classes: analysis.global.ambiguous,
+            classical_p_vs_np_resolved: false
+          }
+        };
+        const blob = new Blob([JSON.stringify(payload, null, 2) + "\n"], { type: "application/json" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "network-relativity-state.json";
+        link.click();
+        URL.revokeObjectURL(link.href);
+        showToast("State receipt exported");
+      });
+
+      update();
+    })();
+  </script>
+</body>
+</html>

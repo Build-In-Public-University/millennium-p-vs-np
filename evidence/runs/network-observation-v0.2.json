@@ -1,0 +1,544 @@
+{
+  "claim_boundary": {
+    "classical_p_vs_np_resolved": false,
+    "does_not_measure": [
+      "classical_time_complexity",
+      "computational_search_cost",
+      "real_sensor_noise",
+      "packet_headers_or_protocol_overhead",
+      "contention_or_congestion"
+    ],
+    "measures": [
+      "observational_identifiability",
+      "best_possible_uniform-prior_accuracy",
+      "aggregation_radius",
+      "route_message_count",
+      "aggregate_bit_transmissions",
+      "raw_bit_transmissions"
+    ]
+  },
+  "conditions": [
+    {
+      "aggregation_radius": 0,
+      "best_possible_accuracy": {
+        "denominator": 1,
+        "numerator": 1
+      },
+      "communication": {
+        "aggregate_bit_transmissions": 0,
+        "message_count": 0,
+        "raw_bit_transmissions": 0,
+        "root": 0,
+        "rounds": 0,
+        "route_edges": []
+      },
+      "counterexample": null,
+      "identifiable": true,
+      "regime": "local",
+      "sensor_configuration": "central",
+      "task": "or",
+      "topology": "clique"
+    },
+    {
+      "aggregation_radius": 0,
+      "best_possible_accuracy": {
+        "denominator": 1,
+        "numerator": 1
+      },
+      "communication": {
+        "aggregate_bit_transmissions": 0,
+        "message_count": 0,
+        "raw_bit_transmissions": 0,
+        "root": 0,
+        "rounds": 0,
+        "route_edges": []
+      },
+      "counterexample": null,
+      "identifiable": true,
+      "regime": "local",
+      "sensor_configuration": "central",
+      "task": "or",
+      "topology": "path"
+    },
+    {
+      "aggregation_radius": 1,
+      "best_possible_accuracy": {
+        "denominator": 1,
+        "numerator": 1
+      },
+      "communication": {
+        "aggregate_bit_transmissions": 3,
+        "message_count": 3,
+        "raw_bit_transmissions": 3,
+        "root": 0,
+        "rounds": 1,
+        "route_edges": [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ]
+        ]
+      },
+      "counterexample": null,
+      "identifiable": true,
+      "regime": "distributed",
+      "sensor_configuration": "distributed",
+      "task": "or",
+      "topology": "clique"
+    },
+    {
+      "aggregation_radius": 3,
+      "best_possible_accuracy": {
+        "denominator": 1,
+        "numerator": 1
+      },
+      "communication": {
+        "aggregate_bit_transmissions": 3,
+        "message_count": 3,
+        "raw_bit_transmissions": 6,
+        "root": 0,
+        "rounds": 3,
+        "route_edges": [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            2
+          ]
+        ]
+      },
+      "counterexample": null,
+      "identifiable": true,
+      "regime": "distributed",
+      "sensor_configuration": "distributed",
+      "task": "or",
+      "topology": "path"
+    },
+    {
+      "aggregation_radius": 1,
+      "best_possible_accuracy": {
+        "denominator": 16,
+        "numerator": 15
+      },
+      "communication": {
+        "aggregate_bit_transmissions": 2,
+        "message_count": 2,
+        "raw_bit_transmissions": 2,
+        "root": 0,
+        "rounds": 1,
+        "route_edges": [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ]
+        ]
+      },
+      "counterexample": {
+        "left_answer": false,
+        "left_world": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "right_answer": true,
+        "right_world": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "shared_observation": [
+          {
+            "node": 0,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 0
+              }
+            ]
+          },
+          {
+            "node": 1,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 1
+              }
+            ]
+          },
+          {
+            "node": 2,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 2
+              }
+            ]
+          }
+        ]
+      },
+      "identifiable": false,
+      "regime": "predictive",
+      "sensor_configuration": "partial",
+      "task": "or",
+      "topology": "clique"
+    },
+    {
+      "aggregation_radius": 2,
+      "best_possible_accuracy": {
+        "denominator": 16,
+        "numerator": 15
+      },
+      "communication": {
+        "aggregate_bit_transmissions": 2,
+        "message_count": 2,
+        "raw_bit_transmissions": 3,
+        "root": 0,
+        "rounds": 2,
+        "route_edges": [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            1
+          ]
+        ]
+      },
+      "counterexample": {
+        "left_answer": false,
+        "left_world": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "right_answer": true,
+        "right_world": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "shared_observation": [
+          {
+            "node": 0,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 0
+              }
+            ]
+          },
+          {
+            "node": 1,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 1
+              }
+            ]
+          },
+          {
+            "node": 2,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 2
+              }
+            ]
+          }
+        ]
+      },
+      "identifiable": false,
+      "regime": "predictive",
+      "sensor_configuration": "partial",
+      "task": "or",
+      "topology": "path"
+    },
+    {
+      "aggregation_radius": 0,
+      "best_possible_accuracy": {
+        "denominator": 1,
+        "numerator": 1
+      },
+      "communication": {
+        "aggregate_bit_transmissions": 0,
+        "message_count": 0,
+        "raw_bit_transmissions": 0,
+        "root": 0,
+        "rounds": 0,
+        "route_edges": []
+      },
+      "counterexample": null,
+      "identifiable": true,
+      "regime": "local",
+      "sensor_configuration": "central",
+      "task": "parity",
+      "topology": "clique"
+    },
+    {
+      "aggregation_radius": 0,
+      "best_possible_accuracy": {
+        "denominator": 1,
+        "numerator": 1
+      },
+      "communication": {
+        "aggregate_bit_transmissions": 0,
+        "message_count": 0,
+        "raw_bit_transmissions": 0,
+        "root": 0,
+        "rounds": 0,
+        "route_edges": []
+      },
+      "counterexample": null,
+      "identifiable": true,
+      "regime": "local",
+      "sensor_configuration": "central",
+      "task": "parity",
+      "topology": "path"
+    },
+    {
+      "aggregation_radius": 1,
+      "best_possible_accuracy": {
+        "denominator": 1,
+        "numerator": 1
+      },
+      "communication": {
+        "aggregate_bit_transmissions": 3,
+        "message_count": 3,
+        "raw_bit_transmissions": 3,
+        "root": 0,
+        "rounds": 1,
+        "route_edges": [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ],
+          [
+            3,
+            0
+          ]
+        ]
+      },
+      "counterexample": null,
+      "identifiable": true,
+      "regime": "distributed",
+      "sensor_configuration": "distributed",
+      "task": "parity",
+      "topology": "clique"
+    },
+    {
+      "aggregation_radius": 3,
+      "best_possible_accuracy": {
+        "denominator": 1,
+        "numerator": 1
+      },
+      "communication": {
+        "aggregate_bit_transmissions": 3,
+        "message_count": 3,
+        "raw_bit_transmissions": 6,
+        "root": 0,
+        "rounds": 3,
+        "route_edges": [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            1
+          ],
+          [
+            3,
+            2
+          ]
+        ]
+      },
+      "counterexample": null,
+      "identifiable": true,
+      "regime": "distributed",
+      "sensor_configuration": "distributed",
+      "task": "parity",
+      "topology": "path"
+    },
+    {
+      "aggregation_radius": 1,
+      "best_possible_accuracy": {
+        "denominator": 2,
+        "numerator": 1
+      },
+      "communication": {
+        "aggregate_bit_transmissions": 2,
+        "message_count": 2,
+        "raw_bit_transmissions": 2,
+        "root": 0,
+        "rounds": 1,
+        "route_edges": [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            0
+          ]
+        ]
+      },
+      "counterexample": {
+        "left_answer": false,
+        "left_world": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "right_answer": true,
+        "right_world": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "shared_observation": [
+          {
+            "node": 0,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 0
+              }
+            ]
+          },
+          {
+            "node": 1,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 1
+              }
+            ]
+          },
+          {
+            "node": 2,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 2
+              }
+            ]
+          }
+        ]
+      },
+      "identifiable": false,
+      "regime": "predictive",
+      "sensor_configuration": "partial",
+      "task": "parity",
+      "topology": "clique"
+    },
+    {
+      "aggregation_radius": 2,
+      "best_possible_accuracy": {
+        "denominator": 2,
+        "numerator": 1
+      },
+      "communication": {
+        "aggregate_bit_transmissions": 2,
+        "message_count": 2,
+        "raw_bit_transmissions": 3,
+        "root": 0,
+        "rounds": 2,
+        "route_edges": [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            1
+          ]
+        ]
+      },
+      "counterexample": {
+        "left_answer": false,
+        "left_world": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "right_answer": true,
+        "right_world": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "shared_observation": [
+          {
+            "node": 0,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 0
+              }
+            ]
+          },
+          {
+            "node": 1,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 1
+              }
+            ]
+          },
+          {
+            "node": 2,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 2
+              }
+            ]
+          }
+        ]
+      },
+      "identifiable": false,
+      "regime": "predictive",
+      "sensor_configuration": "partial",
+      "task": "parity",
+      "topology": "path"
+    }
+  ],
+  "schema_version": "network-observation-experiment/v0.2",
+  "world": {
+    "bit_count": 4,
+    "possible_worlds": 16,
+    "prior": "uniform"
+  }
+}

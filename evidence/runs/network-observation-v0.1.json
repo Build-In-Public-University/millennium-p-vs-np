@@ -1,0 +1,355 @@
+{
+  "claim_boundary": {
+    "classical_p_vs_np_resolved": false,
+    "does_not_measure": [
+      "classical_time_complexity",
+      "computational_search_cost",
+      "real_sensor_noise"
+    ],
+    "measures": [
+      "observational_identifiability",
+      "best_possible_uniform-prior_accuracy",
+      "aggregation_radius"
+    ]
+  },
+  "conditions": [
+    {
+      "aggregation_radius": 0,
+      "best_possible_accuracy": {
+        "denominator": 1,
+        "numerator": 1
+      },
+      "counterexample": null,
+      "identifiable": true,
+      "regime": "local",
+      "sensor_configuration": "central",
+      "task": "or",
+      "topology": "clique"
+    },
+    {
+      "aggregation_radius": 0,
+      "best_possible_accuracy": {
+        "denominator": 1,
+        "numerator": 1
+      },
+      "counterexample": null,
+      "identifiable": true,
+      "regime": "local",
+      "sensor_configuration": "central",
+      "task": "or",
+      "topology": "path"
+    },
+    {
+      "aggregation_radius": 1,
+      "best_possible_accuracy": {
+        "denominator": 1,
+        "numerator": 1
+      },
+      "counterexample": null,
+      "identifiable": true,
+      "regime": "distributed",
+      "sensor_configuration": "distributed",
+      "task": "or",
+      "topology": "clique"
+    },
+    {
+      "aggregation_radius": 3,
+      "best_possible_accuracy": {
+        "denominator": 1,
+        "numerator": 1
+      },
+      "counterexample": null,
+      "identifiable": true,
+      "regime": "distributed",
+      "sensor_configuration": "distributed",
+      "task": "or",
+      "topology": "path"
+    },
+    {
+      "aggregation_radius": 1,
+      "best_possible_accuracy": {
+        "denominator": 16,
+        "numerator": 15
+      },
+      "counterexample": {
+        "left_answer": false,
+        "left_world": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "right_answer": true,
+        "right_world": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "shared_observation": [
+          {
+            "node": 0,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 0
+              }
+            ]
+          },
+          {
+            "node": 1,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 1
+              }
+            ]
+          },
+          {
+            "node": 2,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 2
+              }
+            ]
+          }
+        ]
+      },
+      "identifiable": false,
+      "regime": "predictive",
+      "sensor_configuration": "partial",
+      "task": "or",
+      "topology": "clique"
+    },
+    {
+      "aggregation_radius": 2,
+      "best_possible_accuracy": {
+        "denominator": 16,
+        "numerator": 15
+      },
+      "counterexample": {
+        "left_answer": false,
+        "left_world": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "right_answer": true,
+        "right_world": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "shared_observation": [
+          {
+            "node": 0,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 0
+              }
+            ]
+          },
+          {
+            "node": 1,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 1
+              }
+            ]
+          },
+          {
+            "node": 2,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 2
+              }
+            ]
+          }
+        ]
+      },
+      "identifiable": false,
+      "regime": "predictive",
+      "sensor_configuration": "partial",
+      "task": "or",
+      "topology": "path"
+    },
+    {
+      "aggregation_radius": 0,
+      "best_possible_accuracy": {
+        "denominator": 1,
+        "numerator": 1
+      },
+      "counterexample": null,
+      "identifiable": true,
+      "regime": "local",
+      "sensor_configuration": "central",
+      "task": "parity",
+      "topology": "clique"
+    },
+    {
+      "aggregation_radius": 0,
+      "best_possible_accuracy": {
+        "denominator": 1,
+        "numerator": 1
+      },
+      "counterexample": null,
+      "identifiable": true,
+      "regime": "local",
+      "sensor_configuration": "central",
+      "task": "parity",
+      "topology": "path"
+    },
+    {
+      "aggregation_radius": 1,
+      "best_possible_accuracy": {
+        "denominator": 1,
+        "numerator": 1
+      },
+      "counterexample": null,
+      "identifiable": true,
+      "regime": "distributed",
+      "sensor_configuration": "distributed",
+      "task": "parity",
+      "topology": "clique"
+    },
+    {
+      "aggregation_radius": 3,
+      "best_possible_accuracy": {
+        "denominator": 1,
+        "numerator": 1
+      },
+      "counterexample": null,
+      "identifiable": true,
+      "regime": "distributed",
+      "sensor_configuration": "distributed",
+      "task": "parity",
+      "topology": "path"
+    },
+    {
+      "aggregation_radius": 1,
+      "best_possible_accuracy": {
+        "denominator": 2,
+        "numerator": 1
+      },
+      "counterexample": {
+        "left_answer": false,
+        "left_world": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "right_answer": true,
+        "right_world": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "shared_observation": [
+          {
+            "node": 0,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 0
+              }
+            ]
+          },
+          {
+            "node": 1,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 1
+              }
+            ]
+          },
+          {
+            "node": 2,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 2
+              }
+            ]
+          }
+        ]
+      },
+      "identifiable": false,
+      "regime": "predictive",
+      "sensor_configuration": "partial",
+      "task": "parity",
+      "topology": "clique"
+    },
+    {
+      "aggregation_radius": 2,
+      "best_possible_accuracy": {
+        "denominator": 2,
+        "numerator": 1
+      },
+      "counterexample": {
+        "left_answer": false,
+        "left_world": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "right_answer": true,
+        "right_world": [
+          0,
+          0,
+          0,
+          1
+        ],
+        "shared_observation": [
+          {
+            "node": 0,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 0
+              }
+            ]
+          },
+          {
+            "node": 1,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 1
+              }
+            ]
+          },
+          {
+            "node": 2,
+            "samples": [
+              {
+                "value": 0,
+                "world_index": 2
+              }
+            ]
+          }
+        ]
+      },
+      "identifiable": false,
+      "regime": "predictive",
+      "sensor_configuration": "partial",
+      "task": "parity",
+      "topology": "path"
+    }
+  ],
+  "schema_version": "network-observation-experiment/v0.1",
+  "world": {
+    "bit_count": 4,
+    "possible_worlds": 16,
+    "prior": "uniform"
+  }
+}

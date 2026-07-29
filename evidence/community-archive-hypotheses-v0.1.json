@@ -1,0 +1,129 @@
+{
+  "schema_version": "community-archive-network-hypotheses/v0.1",
+  "frozen_at": "2026-07-29",
+  "research_goal": "Determine which future public interaction and propagation attributes are predictably identifiable from a time-bounded Community Archive network state, and quantify when topology, content, recurrence, and cross-population position add held-out information beyond boring priors.",
+  "source_repository": "../leo-twitter-audience-model",
+  "privacy_boundary": "Raw social records remain in the source repository; this ledger stores aggregate priors and public-safe hypothesis contracts.",
+  "benchmark_contract": {
+    "split": "rolling chronological origin with at least three held-out windows",
+    "feature_cutoff": "strictly before prediction timestamp",
+    "label_window": "declared per run and complete before scoring",
+    "binary_primary_metric": "average_precision",
+    "binary_secondary_metrics": ["roc_auc", "brier_score", "calibration_error"],
+    "ranking_metrics": ["recall_at_5", "recall_at_10", "mrr", "candidate_coverage", "new_account_event_share"],
+    "required_baselines": [
+      "global_positive_rate",
+      "account_frequency",
+      "content_only",
+      "topology_only",
+      "recurrence_only",
+      "combined"
+    ],
+    "negative_controls": [
+      "shuffled_event_times",
+      "shuffled_account_labels_within_window"
+    ],
+    "minimum_evaluable_positive_events": 30,
+    "insufficient_status": "not_evaluatable_yet"
+  },
+  "current_priors": {
+    "window": "2026-07-12/2026-07-20",
+    "authored_posts": 870,
+    "direct_interaction_events": 140,
+    "interacting_accounts": 68,
+    "test_events": 22,
+    "test_seen_account_events": 13,
+    "text_roc_auc": 0.554,
+    "text_average_precision": 0.106,
+    "test_positive_rate": 0.086,
+    "content_recall_at_5": 0.462,
+    "content_recall_at_10": 0.462,
+    "content_plus_recency_recall_at_5": 0.385,
+    "content_plus_recency_recall_at_10": 0.462,
+    "new_account_event_share": 0.364,
+    "bridge_posts": 36,
+    "observed_bridge_propagation_positives": 0
+  },
+  "hypotheses": [
+    {
+      "id": "H-CA-01",
+      "target": "visible_direct_interaction",
+      "claim": "Pre-event content features predict whether a post receives a visible reply, quote, or mention better than the global positive-rate baseline.",
+      "primary_comparison": "content_only average precision minus global_positive_rate average precision",
+      "prediction": "positive mean delta across at least three held-out windows",
+      "falsifier": "delta is non-positive in at least two windows or pooled confidence interval includes only non-positive values",
+      "prior_status": "weak_positive",
+      "prior_evidence": "ROC AUC 0.554 and AP 0.106 at positive rate 0.086 in one held-out slice"
+    },
+    {
+      "id": "H-CA-02",
+      "target": "seen_account_interactor",
+      "claim": "Recent relationship recurrence adds ranking information beyond content and historical account frequency for previously observed interactors.",
+      "primary_comparison": "combined Recall@10 minus max(content_only, account_frequency, recurrence_only) Recall@10",
+      "prediction": "positive mean delta across at least three held-out windows without reducing candidate coverage",
+      "falsifier": "combined model fails to exceed the best boring baseline or improvement disappears under time-shuffle control",
+      "prior_status": "preliminary_negative",
+      "prior_evidence": "three-day recency changed Recall@5 from 0.462 to 0.385 and Recall@10 from 0.462 to 0.462"
+    },
+    {
+      "id": "H-CA-03",
+      "target": "new_account_event",
+      "claim": "Post content and cross-population topic position predict whether the next visible interaction comes from an account unseen in training.",
+      "primary_comparison": "combined average precision minus global new-account-rate baseline",
+      "prediction": "positive mean delta across at least three held-out windows",
+      "falsifier": "combined model does not beat the global-rate baseline or only account-activity volume explains the delta",
+      "prior_status": "untested",
+      "prior_evidence": "new accounts were 0.364 of held-out direct-interaction events"
+    },
+    {
+      "id": "H-CA-04",
+      "target": "interaction_type",
+      "claim": "Relationship partition and prior interaction type add information beyond content for distinguishing reply, quote, and mention events.",
+      "primary_comparison": "combined macro average precision minus content_only macro average precision",
+      "prediction": "positive delta with every class meeting the evaluability threshold",
+      "falsifier": "class imbalance leaves any target unevaluable or combined performance does not beat content-only",
+      "prior_status": "untested",
+      "prior_evidence": "129 identity-resolved relationship rows and 12 identity-resolved distribution rows exist"
+    },
+    {
+      "id": "H-CA-05",
+      "target": "bridge_post_propagation",
+      "claim": "A candidate account's cross-population position predicts whether its bridge post receives visible second-hop audience response.",
+      "primary_comparison": "topology_plus_content average precision minus candidate_activity baseline",
+      "prediction": "positive delta after at least 30 positive propagation events exist",
+      "falsifier": "no positive events accrue, or candidate activity/follower count explains all observed performance",
+      "prior_status": "not_evaluatable_yet",
+      "prior_evidence": "36 bridge posts, zero observed audience-response positives, zero two-hop edges"
+    },
+    {
+      "id": "H-CA-06",
+      "target": "relationship_transition",
+      "claim": "Repeated visible interaction predicts a later transition from one-sided follow relation to mutual relation.",
+      "primary_comparison": "interaction-history model average precision minus partition transition-rate baseline",
+      "prediction": "positive delta across synchronized relationship snapshots",
+      "falsifier": "no synchronized later snapshot exists, or interaction history does not beat the partition baseline",
+      "prior_status": "not_evaluatable_yet",
+      "prior_evidence": "one relationship snapshot exists; no lifecycle labels"
+    },
+    {
+      "id": "H-CA-07",
+      "target": "observation_class_ceiling",
+      "claim": "Posts with identical declared observation profiles but different outcomes create a measurable ceiling on exact archive-event prediction.",
+      "primary_comparison": "empirical best class-constant accuracy versus observed model accuracy",
+      "prediction": "model performance remains at or below the class-conditional ceiling on every held-out window",
+      "falsifier": "a leakage-free model exceeds the computed ceiling, implying the observation partition or ceiling implementation is wrong",
+      "prior_status": "untested",
+      "prior_evidence": "finite observation-class theorem implemented only on synthetic worlds"
+    },
+    {
+      "id": "H-CA-08",
+      "target": "claim_outcome_accuracy",
+      "claim": "Propagation-weighted network position predicts later claim accuracy after controlling for claim topic and source evidence.",
+      "primary_comparison": "network_plus_claim model versus claim_only baseline",
+      "prediction": "left unspecified until an outcome rubric and independent labels are frozen",
+      "falsifier": "outcome labels remain unscored or network position adds no held-out information",
+      "prior_status": "not_evaluatable_yet",
+      "prior_evidence": "claim ledger exists but every outcome is unscored"
+    }
+  ]
+}
