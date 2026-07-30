@@ -1,6 +1,6 @@
 # Review: observation factorization and succinct identifiability
 
-- **Status:** contract frozen; acquisition not executed
+- **Status:** revisions 1 and 2 rejected before expansion; exact-seed design pending
 - **Problem contract:** `review.json`
 - **Theory under review:** `../../papers/observation-factorization-v0.1.md`
 - **Theorem ledger:** `../../evidence/theorem-ledger-v0.7.md`
@@ -36,20 +36,30 @@ These limits may leave relevant literature outside the review. Any expansion
 must version the contract rather than silently enlarging it after favorable or
 unfavorable papers appear.
 
-## Next authorized network steps
+## Discovery revision history
 
-Inspect plans first:
+- Revision 1 returned 124 unique records and 9,643 reference edges but admitted
+  severe cross-domain noise. Eighty-three records lacked even broad topical
+  keywords; obvious false positives included CHARMM molecular simulation and
+  high-energy-physics papers containing the word “factorized.”
+- Revision 1 was rejected before reference expansion or PDF retrieval. Its
+  normalized records, receipt, hashes, and audit remain under
+  `history/discovery-r1/`.
+- Revision 2 narrows all five searches and adds record-level query provenance.
+  A deterministic title/abstract screen retained 55 of 122 records (45.08%),
+  below the frozen 60% gate. Query-level candidate rates were 24%, 91.67%,
+  44%, 32%, and 32%, respectively. Expansion and PDF retrieval remain blocked.
+- The next discovery revision should retain the strong noninterference query and
+  replace the other four with exact seed works or citation-led searches. Another
+  synonym shuffle would mostly provide fresh opportunities to rediscover
+  molecular simulation.
 
-```bash
-python3 -m literature_review.pipeline discover \
-  --review literature/observation-factorization
-python3 -m literature_review.pipeline expand \
-  --review literature/observation-factorization
-python3 -m literature_review.pipeline download \
-  --review literature/observation-factorization
-```
+## Next authorized step
 
-Then, only with explicit approval, repeat each phase with `--execute`.
+Design revision 3 from exact seed works and citation-led searches. Do not run
+`expand --execute` or `download --execute` on the revision 2 corpus. Any revised
+discovery contract must retain the revision history and receive approval before
+its network run.
 
 After acquisition and extraction, review sources individually and write
 `claim_links.jsonl`. Search ranking and abstract similarity do not establish

@@ -1,0 +1,23 @@
+{
+  "broad_keyword_matches": 41,
+  "broad_keyword_unmatched": 83,
+  "contract_revision": 1,
+  "decision": "reject_seed_set",
+  "doi_records": 120,
+  "expansion_authorized": false,
+  "known_false_positive_examples": [
+    "CHARMM: The biomolecular simulation program",
+    "Gravity factorized",
+    "Supersymmetric indices factorize",
+    "Landau-Ginzburg/Calabi-Yau correspondence, global mirror symmetry and Orlov equivalence"
+  ],
+  "open_access_pdf_available": 117,
+  "query_provenance_available": false,
+  "reason": "Search formulations produced severe cross-domain noise and records lacked query-level provenance.",
+  "receipt_sha256": "b12c583d264d5cfedd1de7f156692631e21aae03773228a7ae66dfc4f8f7f31e",
+  "records": 124,
+  "records_sha256": "291ff83187af7fd40a1623a937ae5761a9048f620413255aebf5389582b1d2f9",
+  "reference_edges": 9643,
+  "schema_version": "literature-discovery-audit/v0.1",
+  "unique_record_ids": 124
+}

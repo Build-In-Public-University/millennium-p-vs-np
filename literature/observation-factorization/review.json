@@ -12,6 +12,7 @@
     "supports",
     "unresolved"
   ],
+  "contract_revision": 2,
   "claims": [
     {
       "claim_id": "T-01",
@@ -34,11 +35,11 @@
     "max_results_per_query": 25,
     "provider": "openalex",
     "queries": [
-      "functional dependence Boolean circuits variable independence",
-      "noninterference information flow Boolean circuits complexity",
-      "functions constant on equivalence classes quotient factorization",
-      "Blackwell comparison statistical experiments sufficient statistics decision theory",
-      "distributed function computation communication complexity graph topology"
+      "functional dependence verification Boolean circuits NP complete",
+      "noninterference hyperproperties observational equivalence program verification",
+      "Boolean functional decomposition disjoint support decomposition circuits",
+      "Blackwell sufficiency comparison of statistical experiments decision theory",
+      "distributed function computation communication complexity"
     ]
   },
   "expansion": {
@@ -53,6 +54,27 @@
     "full_text_policy": "open_access_or_user_supplied",
     "local_artifacts_tracked_by_git": false,
     "max_pdf_bytes": 50000000
+  },
+  "revision_log": [
+    {
+      "decision": "rejected_before_expansion",
+      "reason": "The initial five searches returned 124 records with severe cross-domain noise; 83 lacked even broad topical keywords, and record-level query provenance was absent.",
+      "revision": 1,
+      "snapshot": "history/discovery-r1"
+    },
+    {
+      "change": "Narrow all five search formulations and require record-level query provenance plus a pre-expansion screening gate.",
+      "decision": "rejected_before_expansion",
+      "outcome": "The deterministic title/abstract candidate screen retained 55 of 122 records (45.08%), below the frozen 60% gate.",
+      "reason": "Repair low seed precision without expanding or downloading the rejected corpus.",
+      "revision": 2
+    }
+  ],
+  "screening": {
+    "expansion_requires_approval": true,
+    "minimum_obvious_relevance_overall": 0.6,
+    "method": "title_and_abstract_screening_by_query",
+    "reject_query_if_most_results_are_off_topic": true
   },
   "schema_version": "literature-review/v0.1",
   "slug": "observation-factorization",

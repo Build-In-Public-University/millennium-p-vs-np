@@ -108,6 +108,7 @@ def test_openalex_normalization_preserves_identifiers_oa_and_all_reference_ids()
     assert record["referenced_provider_ids"] == ["openalex:W2", "openalex:W3"]
     assert record["open_access"]["pdf_url"] == "https://example.org/paper.pdf"
     assert record["provenance"]["provider"] == "openalex"
+    assert record["discovered_by_queries"] == []
 
 
 def test_discovery_is_zero_network_without_execute_and_deduplicates_by_doi(tmp_path: Path) -> None:
@@ -135,6 +136,7 @@ def test_discovery_is_zero_network_without_execute_and_deduplicates_by_doi(tmp_p
     assert len(records) == 1
     assert records[0]["record_id"] == "doi:10.1000/shared"
     assert set(records[0]["provider_ids"]["openalex"]) == {"W1", "W9"}
+    assert records[0]["discovered_by_queries"] == sorted(_contract()["discovery"]["queries"])
 
 
 def test_reference_expansion_resolves_every_provider_edge_within_contract_cap(

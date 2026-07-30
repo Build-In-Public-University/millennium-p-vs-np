@@ -1,0 +1,14 @@
+{
+  "failures": [],
+  "mode": "execute",
+  "network_calls": 5,
+  "phase": "discover",
+  "queries_attempted": 5,
+  "records_added": 122,
+  "records_after": 122,
+  "records_before": 0,
+  "reference_edges": 8366,
+  "retrieved_at": "2026-07-30T00:15:08.325299+00:00",
+  "schema_version": "literature-acquisition-receipt/v0.1",
+  "truncated": false
+}

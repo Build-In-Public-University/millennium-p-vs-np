@@ -1,0 +1,55 @@
+{
+  "acceptance_threshold": 0.6,
+  "caveat": "Lexical inclusion is a screening candidate, not evidence that a paper supports, contradicts, or subsumes a claim.",
+  "contract_revision": 2,
+  "expansion_authorized": false,
+  "method": "deterministic_title_abstract_lexical_screen",
+  "overall_candidate_rate": 0.4508,
+  "passes_overall_gate": false,
+  "per_query": [
+    {
+      "candidate_rate": 0.24,
+      "exclude_candidates": 19,
+      "include_candidates": 6,
+      "query": "functional dependence verification Boolean circuits NP complete",
+      "query_index": 1,
+      "results": 25
+    },
+    {
+      "candidate_rate": 0.9167,
+      "exclude_candidates": 2,
+      "include_candidates": 22,
+      "query": "noninterference hyperproperties observational equivalence program verification",
+      "query_index": 2,
+      "results": 24
+    },
+    {
+      "candidate_rate": 0.44,
+      "exclude_candidates": 14,
+      "include_candidates": 11,
+      "query": "Boolean functional decomposition disjoint support decomposition circuits",
+      "query_index": 3,
+      "results": 25
+    },
+    {
+      "candidate_rate": 0.32,
+      "exclude_candidates": 17,
+      "include_candidates": 8,
+      "query": "Blackwell sufficiency comparison of statistical experiments decision theory",
+      "query_index": 4,
+      "results": 25
+    },
+    {
+      "candidate_rate": 0.32,
+      "exclude_candidates": 17,
+      "include_candidates": 8,
+      "query": "distributed function computation communication complexity",
+      "query_index": 5,
+      "results": 25
+    }
+  ],
+  "records": 122,
+  "schema_version": "literature-screening-report/v0.1",
+  "unique_exclude_candidates": 67,
+  "unique_include_candidates": 55
+}

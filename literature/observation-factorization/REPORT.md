@@ -1,10 +1,10 @@
 # Literature review: Observation factorization and succinct identifiability
 
-- Generated: `2026-07-29T23:07:42.052498+00:00`
-- Records: **0**
-- Citation edges: **0**
-- Coverage gap: **0 unresolved provider references**
-- Open-access PDFs available: **0**
+- Generated: `2026-07-30T00:22:02.877728+00:00`
+- Records: **122**
+- Citation edges: **8366**
+- Coverage gap: **8326 unresolved provider references**
+- Open-access PDFs available: **103**
 - Full texts extracted locally: **0**
 - Claims linked: **0/4**
 

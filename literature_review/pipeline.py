@@ -197,7 +197,11 @@ def _arxiv_id(work: Mapping[str, Any]) -> str | None:
 
 
 def normalize_openalex_work(
-    work: Mapping[str, Any], *, retrieved_at: str, discovery_depth: int = 0
+    work: Mapping[str, Any],
+    *,
+    retrieved_at: str,
+    discovery_depth: int = 0,
+    discovery_query: str | None = None,
 ) -> dict[str, Any]:
     openalex_id = _openalex_id(work.get("id"))
     doi = _normalize_doi(work.get("doi"))
@@ -242,6 +246,7 @@ def normalize_openalex_work(
         "abstract": _abstract_from_inverted(work.get("abstract_inverted_index")),
         "referenced_provider_ids": references,
         "discovery_depth": discovery_depth,
+        "discovered_by_queries": [discovery_query] if discovery_query else [],
         "open_access": {
             "is_oa": bool(open_access.get("is_oa")),
             "status": open_access.get("oa_status"),
@@ -270,6 +275,10 @@ def _merge_record(existing: dict[str, Any], incoming: Mapping[str, Any]) -> dict
     merged["referenced_provider_ids"] = sorted(
         set(existing.get("referenced_provider_ids") or [])
         | set(incoming.get("referenced_provider_ids") or [])
+    )
+    merged["discovered_by_queries"] = sorted(
+        set(existing.get("discovered_by_queries") or [])
+        | set(incoming.get("discovered_by_queries") or [])
     )
     merged["discovery_depth"] = min(
         int(existing.get("discovery_depth", 0)), int(incoming.get("discovery_depth", 0))
@@ -368,7 +377,12 @@ def discover(
             works = client.search(query, int(discovery["max_results_per_query"]))
             calls += 1
             incoming.extend(
-                normalize_openalex_work(work, retrieved_at=retrieved_at, discovery_depth=0)
+                normalize_openalex_work(
+                    work,
+                    retrieved_at=retrieved_at,
+                    discovery_depth=0,
+                    discovery_query=query,
+                )
                 for work in works
             )
         except Exception as exc:  # provider failure is recorded without losing prior queries
