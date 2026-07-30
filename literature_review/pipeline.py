@@ -29,6 +29,10 @@ class ExpansionClient(Protocol):
     def get_work(self, openalex_id: str) -> dict[str, Any]: ...
 
 
+class ExactSeedClient(Protocol):
+    def get_doi(self, doi: str) -> dict[str, Any]: ...
+
+
 FetchBytes = Callable[[str], tuple[bytes, str, str]]
 Extractor = Callable[[Path, Path], None]
 
@@ -280,6 +284,10 @@ def _merge_record(existing: dict[str, Any], incoming: Mapping[str, Any]) -> dict
         set(existing.get("discovered_by_queries") or [])
         | set(incoming.get("discovered_by_queries") or [])
     )
+    merged["discovered_by_seed_dois"] = sorted(
+        set(existing.get("discovered_by_seed_dois") or [])
+        | set(incoming.get("discovered_by_seed_dois") or [])
+    )
     merged["discovery_depth"] = min(
         int(existing.get("discovery_depth", 0)), int(incoming.get("discovery_depth", 0))
     )
@@ -407,6 +415,82 @@ def discover(
             "reference_edges": len(edges),
             "failures": failures,
             "truncated": truncated,
+        },
+    )
+
+
+def ingest_exact_seeds(
+    review_dir: Path,
+    client: ExactSeedClient,
+    *,
+    design_path: Path,
+    execute: bool,
+    retrieved_at: str | None = None,
+) -> dict[str, Any]:
+    design = json.loads(design_path.read_text())
+    plan = design.get("provider_plan") or {}
+    if plan.get("lookup_mode") != "exact_doi_only" or plan.get("reference_depth") != 0:
+        raise ValueError("seed design must require exact DOI lookup with reference depth zero")
+    seeds = design.get("seeds") or []
+    maximum = int(plan.get("maximum_seed_records") or 0)
+    raw_dois = [
+        _normalize_doi(seed.get("doi"))
+        for seed in seeds
+        if isinstance(seed, Mapping)
+    ]
+    if (
+        not raw_dois
+        or any(doi is None for doi in raw_dois)
+        or len(raw_dois) != len(set(raw_dois))
+    ):
+        raise ValueError("seed design requires unique non-empty DOI values")
+    dois = [str(doi) for doi in raw_dois]
+    if maximum < 1 or len(dois) > maximum:
+        raise ValueError("seed design exceeds maximum_seed_records")
+    if not execute:
+        return {
+            "mode": "dry_run",
+            "network_calls": 0,
+            "seed_dois": dois,
+            "maximum_seed_records": maximum,
+        }
+    if not (design.get("execution_gate") or {}).get("authorized"):
+        raise PermissionError("seed ingestion is not authorized by the design")
+
+    retrieved_at = retrieved_at or _now()
+    existing = _read_jsonl(review_dir / "records.jsonl")
+    incoming: list[dict[str, Any]] = []
+    failures: list[dict[str, str]] = []
+    calls = 0
+    for doi in dois:
+        try:
+            work = client.get_doi(doi)
+            calls += 1
+            record = normalize_openalex_work(
+                work, retrieved_at=retrieved_at, discovery_depth=0
+            )
+            if record.get("doi") != doi:
+                raise ValueError(f"provider DOI mismatch: expected {doi}, got {record.get('doi')}")
+            record["discovered_by_seed_dois"] = [doi]
+            incoming.append(record)
+        except Exception as exc:
+            failures.append({"doi": doi, "error": f"{type(exc).__name__}: {exc}"})
+    merged = _merge_records(existing, incoming)
+    _write_jsonl(review_dir / "records.jsonl", merged, key="record_id")
+    edges = _sync_edges(review_dir, merged)
+    return _receipt(
+        review_dir,
+        "ingest-seeds",
+        {
+            "mode": "execute",
+            "retrieved_at": retrieved_at,
+            "network_calls": calls,
+            "seeds_attempted": len(dois),
+            "seeds_resolved": len(incoming),
+            "records_before": len(existing),
+            "records_after": len(merged),
+            "reference_edges": len(edges),
+            "failures": failures,
         },
     )
 
@@ -816,6 +900,7 @@ def render_report(review_dir: Path, *, generated_at: str | None = None) -> dict[
     metadata_only = sum(1 for artifact in artifacts if artifact.get("status") == "metadata_only")
     claims_linked = len({str(link.get("claim_id")) for link in links if link.get("claim_id")})
     generated_at = generated_at or _now()
+    seed_boundary = contract.get("seed_ingestion") or {}
     result = {
         "schema_version": "literature-review-report/v0.1",
         "generated_at": generated_at,
@@ -832,8 +917,12 @@ def render_report(review_dir: Path, *, generated_at: str | None = None) -> dict[
         "claims_total": len(contract.get("claims") or []),
         "claims_linked": claims_linked,
         "claim_links": len(links),
-        "expansion_depth": contract["expansion"]["depth"],
-        "max_records": contract["expansion"]["max_records"],
+        "expansion_depth": seed_boundary.get(
+            "reference_depth", contract["expansion"]["depth"]
+        ),
+        "max_records": seed_boundary.get(
+            "maximum_records", contract["expansion"]["max_records"]
+        ),
     }
     _write_json(review_dir / "report.json", result)
     claim_text = {str(claim["claim_id"]): str(claim["text"]) for claim in contract["claims"]}
@@ -926,6 +1015,16 @@ class OpenAlexClient:
             {"select": _OPENALEX_FIELDS},
         )
 
+    def get_doi(self, doi: str) -> dict[str, Any]:
+        normalized = _normalize_doi(doi)
+        if not normalized:
+            raise ValueError("DOI is required")
+        identifier = quote(f"https://doi.org/{normalized}", safe="")
+        return self._get(
+            f"https://api.openalex.org/works/{identifier}",
+            {"select": _OPENALEX_FIELDS},
+        )
+
 
 _OPENALEX_FIELDS = ",".join(
     (
@@ -988,6 +1087,11 @@ def main(argv: list[str] | None = None) -> int:
         item.add_argument("--review", type=Path, required=True)
         item.add_argument("--execute", action="store_true")
         item.add_argument("--email")
+    seeds = subparsers.add_parser("ingest-seeds", help="ingest exact DOI seeds")
+    seeds.add_argument("--review", type=Path, required=True)
+    seeds.add_argument("--design", type=Path, required=True)
+    seeds.add_argument("--execute", action="store_true")
+    seeds.add_argument("--email")
     for command in ("extract", "validate", "report"):
         item = subparsers.add_parser(command)
         item.add_argument("--review", type=Path, required=True)
@@ -1013,6 +1117,13 @@ def main(argv: list[str] | None = None) -> int:
     elif args.command == "discover":
         output = discover(
             args.review, OpenAlexClient(email=args.email), execute=args.execute
+        )
+    elif args.command == "ingest-seeds":
+        output = ingest_exact_seeds(
+            args.review,
+            OpenAlexClient(email=args.email),
+            design_path=args.design,
+            execute=args.execute,
         )
     elif args.command == "expand":
         output = expand_references(

@@ -5,6 +5,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+import literature_review.pipeline as pipeline
+import pytest
 from literature_review.pipeline import (
     attach_local_pdf,
     build_review_contract,
@@ -137,6 +139,150 @@ def test_discovery_is_zero_network_without_execute_and_deduplicates_by_doi(tmp_p
     assert records[0]["record_id"] == "doi:10.1000/shared"
     assert set(records[0]["provider_ids"]["openalex"]) == {"W1", "W9"}
     assert records[0]["discovered_by_queries"] == sorted(_contract()["discovery"]["queries"])
+
+
+def test_exact_seed_ingestion_is_dry_run_safe_and_preserves_seed_provenance(
+    tmp_path: Path,
+) -> None:
+    review_dir = initialize_review(tmp_path, _contract())
+    design = review_dir / "revision-3-design.json"
+    design.write_text(
+        json.dumps(
+            {
+                "status": "approved_for_seed_ingestion",
+                "provider_plan": {
+                    "lookup_mode": "exact_doi_only",
+                    "reference_depth": 0,
+                    "maximum_seed_records": 2,
+                },
+                "execution_gate": {"authorized": True},
+                "seeds": [
+                    {"doi": "10.1000/SEED-A", "family": "dependency"},
+                    {"doi": "https://doi.org/10.1000/seed-b", "family": "risk"},
+                ],
+            }
+        )
+    )
+    calls: list[str] = []
+
+    class Client:
+        def get_doi(self, doi: str) -> dict[str, Any]:
+            calls.append(doi)
+            return {
+                "10.1000/seed-a": _work("W10", doi="10.1000/seed-a", references=["W99"]),
+                "10.1000/seed-b": _work("W20", doi="10.1000/seed-b"),
+            }[doi]
+
+    dry = pipeline.ingest_exact_seeds(
+        review_dir, Client(), design_path=design, execute=False, retrieved_at=NOW
+    )
+    assert dry["mode"] == "dry_run"
+    assert dry["network_calls"] == 0
+    assert calls == []
+    assert (review_dir / "records.jsonl").read_text() == ""
+
+    receipt = pipeline.ingest_exact_seeds(
+        review_dir, Client(), design_path=design, execute=True, retrieved_at=NOW
+    )
+    records = [json.loads(line) for line in (review_dir / "records.jsonl").read_text().splitlines()]
+    assert calls == ["10.1000/seed-a", "10.1000/seed-b"]
+    assert receipt["seeds_attempted"] == 2
+    assert receipt["seeds_resolved"] == 2
+    assert receipt["failures"] == []
+    assert len(records) == 2
+    assert records[0]["discovered_by_seed_dois"] == ["10.1000/seed-a"]
+    assert records[1]["discovered_by_seed_dois"] == ["10.1000/seed-b"]
+    assert records[0]["referenced_provider_ids"] == ["openalex:W99"]
+
+
+def test_ingest_seeds_cli_defaults_to_dry_run(tmp_path: Path, capsys: Any) -> None:
+    review_dir = initialize_review(tmp_path, _contract())
+    design = review_dir / "seeds.json"
+    design.write_text(
+        json.dumps(
+            {
+                "provider_plan": {
+                    "lookup_mode": "exact_doi_only",
+                    "reference_depth": 0,
+                    "maximum_seed_records": 1,
+                },
+                "execution_gate": {"authorized": False},
+                "seeds": [{"doi": "10.1000/seed"}],
+            }
+        )
+    )
+
+    assert pipeline.main(
+        ["ingest-seeds", "--review", str(review_dir), "--design", str(design)]
+    ) == 0
+    output = json.loads(capsys.readouterr().out)
+    assert output["mode"] == "dry_run"
+    assert output["network_calls"] == 0
+    assert output["seed_dois"] == ["10.1000/seed"]
+
+
+def test_exact_seed_execution_requires_design_authorization(tmp_path: Path) -> None:
+    review_dir = initialize_review(tmp_path, _contract())
+    design = review_dir / "seeds.json"
+    design.write_text(
+        json.dumps(
+            {
+                "provider_plan": {
+                    "lookup_mode": "exact_doi_only",
+                    "reference_depth": 0,
+                    "maximum_seed_records": 1,
+                },
+                "execution_gate": {"authorized": False},
+                "seeds": [{"doi": "10.1000/seed"}],
+            }
+        )
+    )
+
+    class Client:
+        def get_doi(self, doi: str) -> dict[str, Any]:
+            raise AssertionError("unauthorized execution made a network call")
+
+    with pytest.raises(PermissionError, match="not authorized"):
+        pipeline.ingest_exact_seeds(
+            review_dir,
+            Client(),
+            design_path=design,
+            execute=True,
+            retrieved_at=NOW,
+        )
+
+
+def test_exact_seed_ingestion_rejects_provider_doi_mismatch(tmp_path: Path) -> None:
+    review_dir = initialize_review(tmp_path, _contract())
+    design = review_dir / "seeds.json"
+    design.write_text(
+        json.dumps(
+            {
+                "provider_plan": {
+                    "lookup_mode": "exact_doi_only",
+                    "reference_depth": 0,
+                    "maximum_seed_records": 1,
+                },
+                "execution_gate": {"authorized": True},
+                "seeds": [{"doi": "10.1000/expected"}],
+            }
+        )
+    )
+
+    class Client:
+        def get_doi(self, doi: str) -> dict[str, Any]:
+            return _work("W30", doi="10.1000/different")
+
+    receipt = pipeline.ingest_exact_seeds(
+        review_dir,
+        Client(),
+        design_path=design,
+        execute=True,
+        retrieved_at=NOW,
+    )
+    assert receipt["seeds_resolved"] == 0
+    assert "provider DOI mismatch" in receipt["failures"][0]["error"]
+    assert (review_dir / "records.jsonl").read_text() == ""
 
 
 def test_reference_expansion_resolves_every_provider_edge_within_contract_cap(
@@ -313,6 +459,17 @@ def test_extract_validate_and_report_connect_claims_to_local_artifacts(tmp_path:
     invalid = validate_review(review_dir)
     assert invalid["valid"] is False
     assert any("sha256 mismatch" in error for error in invalid["errors"])
+
+
+def test_report_uses_active_exact_seed_boundary(tmp_path: Path) -> None:
+    review_dir = initialize_review(tmp_path, _contract())
+    contract = json.loads((review_dir / "review.json").read_text())
+    contract["seed_ingestion"] = {"maximum_records": 10, "reference_depth": 0}
+    (review_dir / "review.json").write_text(json.dumps(contract))
+
+    report = render_report(review_dir, generated_at=NOW)
+    assert report["max_records"] == 10
+    assert report["expansion_depth"] == 0
 
 
 def test_claim_links_reject_unknown_relationships(tmp_path: Path) -> None:

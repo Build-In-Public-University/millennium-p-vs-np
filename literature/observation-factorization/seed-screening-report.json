@@ -1,0 +1,27 @@
+{
+  "claim_links_created": 0,
+  "design_revision": 3,
+  "evidence_level_counts": {
+    "metadata_and_abstract": 7,
+    "metadata_only": 1,
+    "metadata_with_malformed_abstract": 2
+  },
+  "full_text_retrieval_authorized": false,
+  "minimum_required_ratio": 0.6,
+  "novelty_risk_counts": {
+    "high": 6,
+    "medium": 2,
+    "very_high": 2
+  },
+  "obvious_relevance_ratio": 1.0,
+  "obviously_relevant": 10,
+  "reference_edges_recorded_not_expanded": 248,
+  "reference_expansion_authorized": false,
+  "relevance_gate_passed": true,
+  "reviewed_at": "2026-07-30T01:14:45Z",
+  "schema_version": "literature-seed-screening-report/v0.1",
+  "seeds_attempted": 10,
+  "seeds_resolved": 10,
+  "seeds_screened": 10,
+  "verdict": "Exact seeds pass topical relevance. Metadata and abstracts expose substantial prior-art risk, but do not establish theorem equivalence or resolve T-11 novelty."
+}

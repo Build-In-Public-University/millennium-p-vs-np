@@ -12,7 +12,7 @@
     "supports",
     "unresolved"
   ],
-  "contract_revision": 2,
+  "contract_revision": 3,
   "claims": [
     {
       "claim_id": "T-01",
@@ -67,7 +67,16 @@
       "decision": "rejected_before_expansion",
       "outcome": "The deterministic title/abstract candidate screen retained 55 of 122 records (45.08%), below the frozen 60% gate.",
       "reason": "Repair low seed precision without expanding or downloading the rejected corpus.",
-      "revision": 2
+      "revision": 2,
+      "snapshot": "history/discovery-r2"
+    },
+    {
+      "change": "Replace keyword discovery with ten exact DOI seed lookups and seed-level provenance.",
+      "decision": "seed_ingestion_completed_awaiting_expansion_decision",
+      "outcome": "All 10 DOI seeds resolved and were screened as obviously relevant; 248 reference edges were recorded but not followed.",
+      "reason": "Revision 2 retained 45.08% candidate records and failed the 60% gate; exact seeds bound the next run to named prior-work families.",
+      "revision": 3,
+      "scope": "Metadata for ten exact DOI seeds only; no reference expansion or full-text retrieval."
     }
   ],
   "screening": {
@@ -75,6 +84,13 @@
     "minimum_obvious_relevance_overall": 0.6,
     "method": "title_and_abstract_screening_by_query",
     "reject_query_if_most_results_are_off_topic": true
+  },
+  "seed_ingestion": {
+    "design": "revision-3-design.json",
+    "lookup_mode": "exact_doi_only",
+    "maximum_records": 10,
+    "reference_depth": 0,
+    "requires_separate_expansion_approval": true
   },
   "schema_version": "literature-review/v0.1",
   "slug": "observation-factorization",

@@ -1,0 +1,35 @@
+{
+  "files": {
+    "REPORT.md": {
+      "bytes": 1010,
+      "sha256": "c6df4cb7781555652bcc606d4533d1f244a113fc9b67c7a87f36f8042ef2f22d"
+    },
+    "discover.json": {
+      "bytes": 346,
+      "sha256": "254351d4bbd5bd547fa9907992b35a211a3c14358f4bdcbf19f8bf03be30fadd"
+    },
+    "edges.jsonl": {
+      "bytes": 1718987,
+      "sha256": "99bb7651fecb55284daa510452e9eaefab48a68a7ae2d263c4c7217d9b0d87af"
+    },
+    "records.jsonl": {
+      "bytes": 509782,
+      "sha256": "525b543498f2bc04ab2a899d34777ef4b585927ba3e3b37dec764ed0e3e2e7f9"
+    },
+    "report.json": {
+      "bytes": 453,
+      "sha256": "1bf6e8839ecbc19ae373dae688289e406e34c136b8ae570c7f8241f170bdde32"
+    },
+    "screening-report.json": {
+      "bytes": 1707,
+      "sha256": "cf29b838ce1d41825abb6e49e13b8640a21bbe826759f6837de2f249438a8f62"
+    },
+    "screening.jsonl": {
+      "bytes": 36526,
+      "sha256": "1f21c876d9e34f053ed1cfd0f27d8ac3ffc6cf1a588d07abd8b1723f3ed05b50"
+    }
+  },
+  "revision": 2,
+  "schema_version": "literature-discovery-archive/v0.1",
+  "status": "rejected_before_expansion"
+}

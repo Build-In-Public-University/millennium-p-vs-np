@@ -1,0 +1,13 @@
+{
+  "failures": [],
+  "mode": "execute",
+  "network_calls": 10,
+  "phase": "ingest-seeds",
+  "records_after": 10,
+  "records_before": 0,
+  "reference_edges": 248,
+  "retrieved_at": "2026-07-30T01:13:51.818829+00:00",
+  "schema_version": "literature-acquisition-receipt/v0.1",
+  "seeds_attempted": 10,
+  "seeds_resolved": 10
+}

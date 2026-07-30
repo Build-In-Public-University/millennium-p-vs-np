@@ -1,7 +1,7 @@
 {
   "schema_version": "literature-seed-design-v0.1",
   "design_revision": 3,
-  "status": "proposed_not_executed",
+  "status": "seed_ingestion_completed_awaiting_expansion_decision",
   "created_at": "2026-07-30T00:33:20Z",
   "purpose": "Replace low-precision keyword retrieval with exact DOI seeds before any citation expansion.",
   "provider_plan": {
@@ -15,6 +15,10 @@
   },
   "execution_gate": {
     "authorized": false,
+    "authorized_at": "2026-07-30T01:11:32Z",
+    "authorization_consumed_at": "2026-07-30T01:13:51.818829+00:00",
+    "authorization_source": "user_current_session",
+    "authorized_scope": "ten exact DOI metadata lookups only; no reference expansion or full-text retrieval",
     "requirements": [
       "Resolve at least 8 of 10 exact DOI seeds in OpenAlex.",
       "Preserve DOI-level deduplication and exact-seed provenance.",
@@ -120,6 +124,17 @@
     "If Blackwell or deficiency theory already yields the finite Bayes-risk decomposition under the same assumptions, T-BAYES is an application rather than a new theorem.",
     "If distributed function-computation literature already formalizes the local/joint observation distinction, T-03 should be reframed as synthesis, not novelty."
   ],
+  "outcome": {
+    "seeds_attempted": 10,
+    "seeds_resolved": 10,
+    "seeds_screened": 10,
+    "obvious_relevance_ratio": 1.0,
+    "relevance_gate_passed": true,
+    "reference_edges_recorded_not_expanded": 248,
+    "reference_expansion_authorized": false,
+    "full_text_retrieval_authorized": false,
+    "verdict": "Topical gate passed; substantial prior-art risk remains and theorem equivalence is unresolved."
+  },
   "receipts": {
     "crossref_resolution": {
       "attempted": 10,
@@ -127,7 +142,9 @@
       "checked_at": "2026-07-30T00:33:20Z",
       "network_mutation": false
     },
+    "openalex_ingestion": "receipts/ingest-seeds.json",
+    "seed_screening": "seed-screening-report.json",
     "revision_1": "history/discovery-r1/audit.json",
-    "revision_2": "screening-report.json"
+    "revision_2": "history/discovery-r2/screening-report.json"
   }
 }
