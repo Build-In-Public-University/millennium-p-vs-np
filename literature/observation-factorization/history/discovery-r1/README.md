@@ -14,3 +14,13 @@
 The search formulations admitted unrelated molecular simulation, high-energy
 physics, algebraic geometry, medicine, and psychology. This snapshot is retained
 as a published miss rather than silently replaced.
+
+## Publication-safety receipt
+
+The global pre-commit scanner flagged public OpenAlex `pdf_url` and
+`landing_url` values as high-entropy base64-like strings. Before commit
+`41dfa3f`, an independent structured-field audit found 65 high-entropy tokens:
+all 65 occurred in those two public URL fields and zero occurred elsewhere.
+A separate credential-pattern scan returned zero matches. The scanner's
+documented `GIT_ALLOW_SECRETS=1` path was used for that metadata commit; no
+credential or private artifact was knowingly bypassed.
