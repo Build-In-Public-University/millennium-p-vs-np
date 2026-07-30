@@ -1,0 +1,51 @@
+{
+  "schema_version": "literature-targeted-full-text-plan/v0.1",
+  "revision": 4,
+  "status": "executed_and_consumed",
+  "purpose": "Test T-01 and T-11 against the two most direct SAT functional-dependency sources and the strongest classical decomposition source before any citation expansion.",
+  "maximum_targets": 3,
+  "reference_expansion_authorized": false,
+  "execution_gate": {
+    "authorized": false,
+    "authorized_at": "2026-07-30T02:15:58Z",
+    "authorization_source": "user_current_session",
+    "scope": "Retrieve at most two identified author-hosted PDFs among exactly three named records; record the publisher-closed Karp source as unavailable; extract and inspect retrieved texts; no reference expansion.",
+    "consumed_at": "2026-07-30T02:17:57.031092+00:00",
+    "receipt": "receipts/download-targets.json"
+  },
+  "targets": [
+    {
+      "record_id": "doi:10.1109/iccad.2007.4397270",
+      "doi": "10.1109/iccad.2007.4397270",
+      "title": "Scalable exploration of functional dependency by interpolation and incremental SAT solving",
+      "claim_targets": ["T-01", "T-11"],
+      "source_kind": "author_hosted",
+      "source_url": "https://people.eecs.berkeley.edu/~alanmi/publications/2007/iccad07_fd.pdf",
+      "access_basis": "Author publication page states papers are made available for dissemination while copyright remains with the rights holders."
+    },
+    {
+      "record_id": "doi:10.1109/tc.2010.12",
+      "doi": "10.1109/tc.2010.12",
+      "title": "To SAT or Not to SAT: Scalable Exploration of Functional Dependency",
+      "claim_targets": ["T-01", "T-11"],
+      "source_kind": "author_hosted",
+      "source_url": "https://people.eecs.berkeley.edu/~alanmi/publications/2010/tc10_sat.pdf",
+      "access_basis": "Author publication page states papers are made available for dissemination while copyright remains with the rights holders."
+    },
+    {
+      "record_id": "doi:10.1137/0111022",
+      "doi": "10.1137/0111022",
+      "title": "Functional Decomposition and Switching Circuit Design",
+      "claim_targets": ["T-01"],
+      "source_kind": "publisher_closed",
+      "source_url": null,
+      "access_basis": "No authorized open or author-hosted copy found in the bounded search; SIAM PDF retrieval was inaccessible."
+    }
+  ],
+  "stop_conditions": [
+    "Do not follow any of the 248 recorded references.",
+    "Do not retrieve a PDF from an unlisted URL.",
+    "Do not treat metadata, abstracts, surveys, or lecture notes as the unavailable Karp full text.",
+    "Do not infer novelty from absence of a complexity statement without inspecting the retrieved texts."
+  ]
+}

@@ -757,6 +757,124 @@ def attach_local_pdf(
     )
 
 
+def download_targets(
+    review_dir: Path,
+    fetch: FetchBytes,
+    *,
+    plan_path: Path,
+    execute: bool,
+    retrieved_at: str | None = None,
+) -> dict[str, Any]:
+    contract = _load_contract(review_dir)
+    records = {
+        str(record["record_id"]): record
+        for record in _read_jsonl(review_dir / "records.jsonl")
+    }
+    plan = json.loads(plan_path.read_text())
+    targets = plan.get("targets") or []
+    maximum = int(plan.get("maximum_targets") or 0)
+    record_ids = [
+        str(target.get("record_id"))
+        for target in targets
+        if isinstance(target, Mapping)
+    ]
+    if (
+        not record_ids
+        or len(record_ids) != len(targets)
+        or len(record_ids) != len(set(record_ids))
+        or maximum < 1
+        or len(record_ids) > maximum
+    ):
+        raise ValueError("target plan requires unique records within maximum_targets")
+    unknown = sorted(set(record_ids) - set(records))
+    if unknown:
+        raise ValueError(f"target plan contains unknown records: {', '.join(unknown)}")
+    candidates = sum(bool(target.get("source_url")) for target in targets)
+    if not execute:
+        return {
+            "mode": "dry_run",
+            "network_calls": 0,
+            "targets": len(targets),
+            "download_candidates": candidates,
+            "unavailable": len(targets) - candidates,
+        }
+    if not (plan.get("execution_gate") or {}).get("authorized"):
+        raise PermissionError("targeted full-text retrieval is not authorized by the plan")
+
+    retrieved_at = retrieved_at or _now()
+    artifacts = {
+        str(row["record_id"]): row
+        for row in _read_jsonl(review_dir / "artifacts.jsonl")
+    }
+    max_bytes = int(contract["retrieval"]["max_pdf_bytes"])
+    downloaded = failed = metadata_only = calls = 0
+    for target in targets:
+        record_id = str(target["record_id"])
+        source_url = target.get("source_url")
+        if not source_url:
+            artifacts[record_id] = {
+                "schema_version": ARTIFACT_SCHEMA,
+                "record_id": record_id,
+                "status": "metadata_only",
+                "source_kind": target.get("source_kind"),
+                "reason": "no_authorized_full_text_source",
+                "checked_at": retrieved_at,
+            }
+            metadata_only += 1
+            continue
+        try:
+            payload, content_type, final_url = fetch(str(source_url))
+            calls += 1
+            if len(payload) > max_bytes:
+                raise ValueError("pdf_exceeded_size_limit")
+            if not payload.startswith(b"%PDF-"):
+                raise ValueError("response_was_not_pdf")
+            relative = Path("artifacts/pdfs") / _artifact_name(record_id, ".pdf")
+            path = review_dir / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(payload)
+            artifacts[record_id] = {
+                "schema_version": ARTIFACT_SCHEMA,
+                "record_id": record_id,
+                "status": "downloaded",
+                "source_kind": target.get("source_kind"),
+                "source_url": source_url,
+                "final_url": final_url,
+                "content_type": content_type,
+                "local_path": relative.as_posix(),
+                "sha256": hashlib.sha256(payload).hexdigest(),
+                "bytes": len(payload),
+                "retrieved_at": retrieved_at,
+            }
+            downloaded += 1
+        except Exception as exc:
+            reason = str(exc) if isinstance(exc, ValueError) else f"{type(exc).__name__}: {exc}"
+            artifacts[record_id] = {
+                "schema_version": ARTIFACT_SCHEMA,
+                "record_id": record_id,
+                "status": "failed",
+                "source_kind": target.get("source_kind"),
+                "source_url": source_url,
+                "reason": reason,
+                "checked_at": retrieved_at,
+            }
+            failed += 1
+    _write_jsonl(review_dir / "artifacts.jsonl", artifacts.values(), key="record_id")
+    return _receipt(
+        review_dir,
+        "download-targets",
+        {
+            "mode": "execute",
+            "retrieved_at": retrieved_at,
+            "network_calls": calls,
+            "targets": len(targets),
+            "downloaded": downloaded,
+            "metadata_only": metadata_only,
+            "failed": failed,
+        },
+    )
+
+
 def _pdftotext(source: Path, target: Path) -> None:
     run = subprocess.run(
         ["pdftotext", "-layout", str(source), str(target)],
@@ -1092,6 +1210,12 @@ def main(argv: list[str] | None = None) -> int:
     seeds.add_argument("--design", type=Path, required=True)
     seeds.add_argument("--execute", action="store_true")
     seeds.add_argument("--email")
+    targets = subparsers.add_parser(
+        "download-targets", help="retrieve only full texts named in an authorized plan"
+    )
+    targets.add_argument("--review", type=Path, required=True)
+    targets.add_argument("--plan", type=Path, required=True)
+    targets.add_argument("--execute", action="store_true")
     for command in ("extract", "validate", "report"):
         item = subparsers.add_parser(command)
         item.add_argument("--review", type=Path, required=True)
@@ -1132,6 +1256,13 @@ def main(argv: list[str] | None = None) -> int:
     elif args.command == "download":
         output = download_open_access(
             args.review, _requests_fetch, execute=args.execute
+        )
+    elif args.command == "download-targets":
+        output = download_targets(
+            args.review,
+            _requests_fetch,
+            plan_path=args.plan,
+            execute=args.execute,
         )
     elif args.command == "extract":
         output = extract_downloads(args.review)

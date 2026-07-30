@@ -1,0 +1,52 @@
+{
+  "schema_version": "literature-full-text-assessment/v0.1",
+  "revision": 4,
+  "assessed_at": "2026-07-30T02:23:34Z",
+  "scope": {
+    "targets": 3,
+    "full_texts_retrieved": 2,
+    "metadata_only": 1,
+    "reference_expansion": 0
+  },
+  "sources": [
+    {
+      "record_id": "doi:10.1109/iccad.2007.4397270",
+      "status": "full_text_inspected",
+      "key_locations": ["local-text:88-100", "local-text:135-169", "local-text:400-421"]
+    },
+    {
+      "record_id": "doi:10.1109/tc.2010.12",
+      "status": "full_text_inspected",
+      "key_locations": ["local-text:96-130", "local-text:160-205", "local-text:550-578"]
+    },
+    {
+      "record_id": "doi:10.1137/0111022",
+      "status": "metadata_only",
+      "reason": "No authorized open or author-hosted full text found; SIAM PDF was inaccessible."
+    }
+  ],
+  "term_search": {
+    "texts_searched": 2,
+    "terms": ["NP-complete", "coNP", "NP-hard", "complexity class", "computational complexity", "polynomial time"],
+    "matches": 0,
+    "limitation": "Term absence is supporting negative evidence only; it is not proof that no equivalent classification is expressed using other language. The theorem and proof sections were also read directly."
+  },
+  "claim_assessments": {
+    "T-01": {
+      "status": "directly_anticipated_in_boolean_setting",
+      "confidence": "high",
+      "basis": "Both papers define f=h(G) and cite the necessary-and-sufficient disjoint-image/fiber criterion as prior work."
+    },
+    "T-11": {
+      "status": "witness_construction_anticipated_complexity_classification_unresolved",
+      "confidence": "high_for_construction_medium_for_classification_absence",
+      "basis": "Both papers construct the same two-copy bad-fiber CNF in linear time and use SAT to witness nonfactorization. Neither inspected text states NP-completeness of bad-fiber existence or coNP-completeness of factorization."
+    }
+  },
+  "falsifiers": [
+    "A source predating or independent of this review explicitly classifies the unrestricted Boolean-circuit bad-fiber problem as NP-complete or the corresponding dependency problem as coNP-complete.",
+    "Karp 1963 or another inaccessible foundational source contains an equivalent complexity classification.",
+    "T-11 imposes restrictions under which the two-copy SAT encoding is not polynomial-size or the decision problem changes complexity."
+  ],
+  "decision": "Do not claim novelty for T-01 or for T-11's witness construction. Preserve only the explicit unrestricted complexity classification as a residual candidate pending a focused complexity-literature search and inspection of foundational sources."
+}

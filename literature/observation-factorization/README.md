@@ -56,13 +56,24 @@ unfavorable papers appear.
   provenance. All ten passed topical screening. The active corpus contains ten
   records and 248 recorded reference edges; none of those references were followed.
 
-## Preliminary prior-art risk
+## Full-text result
 
-- The two SAT functional-dependency papers use the exact form
-  `f = h(g1, ..., gn)`. They are very-high-risk prior art for `T-01` and the first
-  sources to inspect for `T-11`.
+- Revision 4 targeted exactly the two SAT functional-dependency papers and Karp's
+  classical decomposition paper. Two author-hosted PDFs were retrieved and
+  extracted; Karp remained publisher-closed and is recorded as metadata-only.
+- Both retrieved papers use the exact form `f = h(g1, ..., gn)` and state the
+  necessary-and-sufficient disjoint-fiber criterion. `T-01` is directly anticipated
+  in the Boolean setting.
+- Both build the same two-copy bad-fiber formula used by `T-11`: disjoint input
+  copies, equal base-function outputs, and opposite target outputs. They state that
+  dependency holds exactly when this formula is unsatisfiable, and the journal
+  version describes linear-time circuit-to-CNF conversion.
+- Neither inspected full text states NP-completeness of bad-fiber existence or
+  coNP-completeness of dependency. This removes novelty from the witness
+  construction, not necessarily from the explicit unrestricted complexity
+  classification.
 - Karp and Curtis place `T-01` in a classical Boolean functional-decomposition
-  lineage.
+  lineage, but the targeted Karp full text was not available for inspection.
 - Blackwell and Torgersen directly occupy the comparison-of-experiments and
   decision-risk substrate around `T-BAYES`.
 - Orlitsky and Roche directly separate computing a function from the bits needed
@@ -70,15 +81,13 @@ unfavorable papers appear.
 - Hyperproperties and noninterference provide established bad-observation-pair
   language, but their abstracts do not establish the same circuit complexity result.
 
-These are metadata/abstract screening judgments, not claim-level evidence and not
-findings of theorem equivalence.
+The four line-addressed claim receipts are in `claim_links.jsonl`; the bounded
+assessment and its falsifiers are in `revision-4-full-text-assessment.json`.
 
 ## Next decision
 
-The one-shot seed-ingestion authorization has been consumed. Decide whether to
-authorize one bounded backward-reference expansion from these ten seeds. PDF
-retrieval remains a separate later decision.
-
-After acquisition and extraction, review sources individually and write
-`claim_links.jsonl`. Search ranking and abstract similarity do not establish
-support or novelty.
+The revision-4 full-text authorization has been consumed. Do not expand all 248
+references yet. The narrow remaining question is whether prior complexity
+literature already classifies unrestricted Boolean functional dependency / the
+two-copy bad-fiber SAT problem as NP-complete or coNP-complete. A bounded search for
+that classification is more informative than undirected citation expansion.

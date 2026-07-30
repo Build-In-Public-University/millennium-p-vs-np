@@ -361,6 +361,75 @@ def test_download_requires_execute_hashes_pdf_and_records_metadata_only_gaps(
     assert closed["reason"] == "no_open_access_pdf"
 
 
+def test_targeted_download_calls_only_authorized_sources_and_records_closed_gap(
+    tmp_path: Path,
+) -> None:
+    review_dir = initialize_review(tmp_path, _contract())
+    records = [
+        normalize_openalex_work(_work("W1", doi="10.1000/one"), retrieved_at=NOW),
+        normalize_openalex_work(_work("W2", doi="10.1000/two"), retrieved_at=NOW),
+        normalize_openalex_work(_work("W3", doi="10.1000/untargeted"), retrieved_at=NOW),
+    ]
+    (review_dir / "records.jsonl").write_text(
+        "".join(json.dumps(row, sort_keys=True) + "\n" for row in records)
+    )
+    plan = review_dir / "targets.json"
+    plan.write_text(
+        json.dumps(
+            {
+                "execution_gate": {"authorized": True},
+                "maximum_targets": 2,
+                "targets": [
+                    {
+                        "record_id": "doi:10.1000/one",
+                        "source_url": "https://authors.example/one.pdf",
+                        "source_kind": "author_hosted",
+                    },
+                    {
+                        "record_id": "doi:10.1000/two",
+                        "source_url": None,
+                        "source_kind": "publisher_closed",
+                    },
+                ],
+            }
+        )
+    )
+    calls: list[str] = []
+
+    def fetch(url: str) -> tuple[bytes, str, str]:
+        calls.append(url)
+        return b"%PDF-1.7\ntargeted\n%%EOF\n", "application/pdf", url
+
+    missing = getattr(
+        pipeline,
+        "download_targets",
+        lambda *args, **kwargs: {"mode": "missing"},
+    )
+    dry = missing(review_dir, fetch, plan_path=plan, execute=False, retrieved_at=NOW)
+    assert dry == {
+        "mode": "dry_run",
+        "network_calls": 0,
+        "targets": 2,
+        "download_candidates": 1,
+        "unavailable": 1,
+    }
+    assert calls == []
+
+    receipt = missing(review_dir, fetch, plan_path=plan, execute=True, retrieved_at=NOW)
+    artifacts = {
+        row["record_id"]: row
+        for row in map(
+            json.loads, (review_dir / "artifacts.jsonl").read_text().splitlines()
+        )
+    }
+    assert calls == ["https://authors.example/one.pdf"]
+    assert receipt["downloaded"] == 1
+    assert receipt["metadata_only"] == 1
+    assert set(artifacts) == {"doi:10.1000/one", "doi:10.1000/two"}
+    assert artifacts["doi:10.1000/one"]["source_kind"] == "author_hosted"
+    assert artifacts["doi:10.1000/two"]["reason"] == "no_authorized_full_text_source"
+
+
 def test_download_rejects_non_pdf_payload(tmp_path: Path) -> None:
     review_dir = initialize_review(tmp_path, _contract())
     record = normalize_openalex_work(
