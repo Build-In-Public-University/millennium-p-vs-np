@@ -1,6 +1,6 @@
 # Review: observation factorization and succinct identifiability
 
-- **Status:** revisions 1 and 2 rejected before expansion; exact-seed design pending
+- **Status:** revisions 1 and 2 rejected before expansion; revision 3 exact-seed design frozen but not executed
 - **Problem contract:** `review.json`
 - **Theory under review:** `../../papers/observation-factorization-v0.1.md`
 - **Theorem ledger:** `../../evidence/theorem-ledger-v0.7.md`
@@ -49,17 +49,18 @@ unfavorable papers appear.
   A deterministic title/abstract screen retained 55 of 122 records (45.08%),
   below the frozen 60% gate. Query-level candidate rates were 24%, 91.67%,
   44%, 32%, and 32%, respectively. Expansion and PDF retrieval remain blocked.
-- The next discovery revision should retain the strong noninterference query and
-  replace the other four with exact seed works or citation-led searches. Another
-  synonym shuffle would mostly provide fresh opportunities to rediscover
-  molecular simulation.
+- Revision 3 is specified in `revision-3-design.json`. It replaces keyword search
+  with ten exact DOI seeds across noninterference, Boolean functional dependency,
+  classical functional decomposition, statistical experiments, and distributed
+  function computation. Crossref resolved all ten identifiers. The design has
+  not been ingested into the active corpus.
 
 ## Next authorized step
 
-Design revision 3 from exact seed works and citation-led searches. Do not run
-`expand --execute` or `download --execute` on the revision 2 corpus. Any revised
-discovery contract must retain the revision history and receive approval before
-its network run.
+Review and approve `revision-3-design.json`, then implement exact-DOI ingestion
+with seed-level provenance. Do not emulate exact lookup with keyword search. Run
+only the ten seed lookups, inspect every resolved seed, and obtain a later
+approval before reference expansion or PDF retrieval.
 
 After acquisition and extraction, review sources individually and write
 `claim_links.jsonl`. Search ranking and abstract similarity do not establish

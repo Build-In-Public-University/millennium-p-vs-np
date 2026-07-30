@@ -1,0 +1,133 @@
+{
+  "schema_version": "literature-seed-design-v0.1",
+  "design_revision": 3,
+  "status": "proposed_not_executed",
+  "created_at": "2026-07-30T00:33:20Z",
+  "purpose": "Replace low-precision keyword retrieval with exact DOI seeds before any citation expansion.",
+  "provider_plan": {
+    "metadata_resolution": "crossref",
+    "corpus_ingestion": "openalex",
+    "lookup_mode": "exact_doi_only",
+    "keyword_queries": 0,
+    "reference_depth": 0,
+    "maximum_seed_records": 10,
+    "maximum_records_before_new_approval": 10
+  },
+  "execution_gate": {
+    "authorized": false,
+    "requirements": [
+      "Resolve at least 8 of 10 exact DOI seeds in OpenAlex.",
+      "Preserve DOI-level deduplication and exact-seed provenance.",
+      "Inspect every resolved seed against its target claim family.",
+      "Do not expand references or retrieve full text without a later approval."
+    ]
+  },
+  "seeds": [
+    {
+      "doi": "10.1109/csf.2008.7",
+      "title": "Hyperproperties",
+      "year": 2008,
+      "family": "observation_and_noninterference",
+      "target_claims": ["T-01", "T-03"],
+      "rationale": "Foundational formulation of relational trace properties and secure information flow; tests whether observation equivalence is already standard in verification language.",
+      "crossref_resolved": true
+    },
+    {
+      "doi": "10.1145/2500365.2500574",
+      "title": "Testing noninterference, quickly",
+      "year": 2013,
+      "family": "observation_and_noninterference",
+      "target_claims": ["T-01", "T-11"],
+      "rationale": "Connects noninterference to executable testing and complexity limits rather than treating factorization as an isolated identity.",
+      "crossref_resolved": true
+    },
+    {
+      "doi": "10.1109/tc.2010.12",
+      "title": "To SAT or Not to SAT: Scalable Exploration of Functional Dependency",
+      "year": 2010,
+      "family": "circuit_functional_dependency",
+      "target_claims": ["T-01", "T-11"],
+      "rationale": "Uses the same composition form f = h(g1,...,gn) in Boolean circuits and supplies the closest direct terminology match found in revision 2.",
+      "crossref_resolved": true
+    },
+    {
+      "doi": "10.1109/iccad.2007.4397270",
+      "title": "Scalable exploration of functional dependency by interpolation and incremental SAT solving",
+      "year": 2007,
+      "family": "circuit_functional_dependency",
+      "target_claims": ["T-01", "T-11"],
+      "rationale": "Earlier SAT/interpolation treatment of Boolean functional dependency; likely prior art for the decision mechanism even if not the succinct complexity classification.",
+      "crossref_resolved": true
+    },
+    {
+      "doi": "10.1137/0111022",
+      "title": "Functional Decomposition and Switching Circuit Design",
+      "year": 1963,
+      "family": "boolean_functional_decomposition",
+      "target_claims": ["T-01"],
+      "rationale": "Foundational switching-circuit decomposition work; tests whether the factorization criterion is a restatement of classical functional decomposition.",
+      "crossref_resolved": true
+    },
+    {
+      "doi": "10.1145/320964.320982",
+      "title": "A Functional Canonical Form",
+      "year": 1959,
+      "family": "boolean_functional_decomposition",
+      "target_claims": ["T-01"],
+      "rationale": "Early canonical-form treatment cited by later Ashenhurst-Curtis decomposition literature.",
+      "crossref_resolved": true
+    },
+    {
+      "doi": "10.1214/aoms/1177729032",
+      "title": "Equivalent Comparisons of Experiments",
+      "year": 1953,
+      "family": "statistical_experiments_and_risk",
+      "target_claims": ["T-01", "T-BAYES"],
+      "rationale": "Foundational Blackwell comparison result linking information structures to attainable risk across decision problems.",
+      "crossref_resolved": true
+    },
+    {
+      "doi": "10.1017/cbo9780511666353",
+      "title": "Comparison of Statistical Experiments",
+      "year": 1991,
+      "family": "statistical_experiments_and_risk",
+      "target_claims": ["T-BAYES"],
+      "rationale": "Monograph-level treatment of deficiency, sufficiency, and experiment comparison for the finite Bayes-risk audit.",
+      "crossref_resolved": true
+    },
+    {
+      "doi": "10.1109/18.915643",
+      "title": "Coding for computing",
+      "year": 2001,
+      "family": "distributed_function_computation",
+      "target_claims": ["T-03"],
+      "rationale": "Directly separates function recoverability from the number of communicated bits using characteristic graph entropy.",
+      "crossref_resolved": true
+    },
+    {
+      "doi": "10.1016/j.tcs.2023.113896",
+      "title": "Representable Markov categories and comparison of statistical experiments in categorical probability",
+      "year": 2023,
+      "family": "statistical_experiments_and_risk",
+      "target_claims": ["T-01", "T-BAYES"],
+      "rationale": "Modern categorical account of comparison of statistical experiments; useful for detecting whether factorization claims merely repackage sufficiency or garbling orders.",
+      "crossref_resolved": true
+    }
+  ],
+  "falsifiers": [
+    "If classical functional-decomposition literature states the same fiber-constancy criterion in equivalent form, T-01 is not novel as a theorem.",
+    "If circuit functional-dependency literature already classifies the same succinct decision problem as coNP-complete or its complement as NP-complete, T-11 is not novel.",
+    "If Blackwell or deficiency theory already yields the finite Bayes-risk decomposition under the same assumptions, T-BAYES is an application rather than a new theorem.",
+    "If distributed function-computation literature already formalizes the local/joint observation distinction, T-03 should be reframed as synthesis, not novelty."
+  ],
+  "receipts": {
+    "crossref_resolution": {
+      "attempted": 10,
+      "resolved": 10,
+      "checked_at": "2026-07-30T00:33:20Z",
+      "network_mutation": false
+    },
+    "revision_1": "history/discovery-r1/audit.json",
+    "revision_2": "screening-report.json"
+  }
+}
