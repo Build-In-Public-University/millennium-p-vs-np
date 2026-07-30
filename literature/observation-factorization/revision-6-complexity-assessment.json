@@ -1,0 +1,56 @@
+{
+  "schema_version": "literature-complexity-assessment/v0.1",
+  "revision": 6,
+  "claim_id": "T-11",
+  "assessed_at": "2026-07-30T03:24:00Z",
+  "search_receipts": [
+    "history/complexity-search-r5/receipt.json",
+    "history/complexity-search-r6/receipt.json"
+  ],
+  "search_counts": {
+    "revision_5_provider_calls": 8,
+    "revision_5_unique_candidates": 66,
+    "revision_5_direct_candidates": 0,
+    "revision_6_provider_calls": 6,
+    "revision_6_unique_candidates": 40,
+    "revision_6_decisive_sources": 2,
+    "reference_expansion": 0
+  },
+  "decision": {
+    "bad_fiber_complexity": "NP-complete",
+    "circuit_identifiable_complexity": "coNP-complete",
+    "substantive_novelty_status": "falsified",
+    "exact_named_prior_publication_status": "not_found_in_bounded_search",
+    "interpretation": "The exact BAD-FIBER name or f=h(G) complexity theorem was not found. Nevertheless, the classification is an immediate linear-size corollary of standard Circuit-SAT and is not defensible as a substantive theorem contribution. Search absence is not evidence that the exact wording is historically new."
+  },
+  "proof_receipt": {
+    "membership": "BAD-FIBER is in NP: guess two assignments u and v, evaluate G(u), G(v), f(u), and f(v), then verify G(u)=G(v) and f(u) differs from f(v). Circuit evaluation and comparison are polynomial time.",
+    "hardness_source": "Boolean Circuit-SAT, stated NP-complete by Böhler et al. at local-text:73-80 and Proposition 3.1 at local-text:421-422.",
+    "reduction": "Given a Boolean circuit C(x), construct one additional input b, let the observation circuit G(x,b) be the constant 0 circuit, and let f_C(x,b)=b AND C(x). The construction adds constant size beyond C.",
+    "forward": "If C has a satisfying assignment x*, then u=(x*,1) and v=(x*,0) have equal observation G=0 and outputs f_C(u)=1, f_C(v)=0, so they form a bad fiber.",
+    "reverse": "If a bad fiber exists, the two f_C values differ. One value is therefore 1, which requires b=1 and C(x)=1. Hence C is satisfiable.",
+    "conclusion": "Circuit-SAT many-one reduces to BAD-FIBER in linear size, so BAD-FIBER is NP-hard and therefore NP-complete. Exact CIRCUIT-IDENTIFIABLE is its complement by the constant-on-fibers criterion, so it is coNP-complete.",
+    "equivalence_cross_check": "Jordan Proposition 1, local-text:24-34, states Boolean-circuit equivalence is coNP-complete and identifies a differing input as the concise complement witness."
+  },
+  "falsifier_outcome": "satisfied_by_standard_circuit_sat_plus_explicit_reduction",
+  "what_remains": [
+    "The terminology and synthesis of observation factorization may still be expository contributions, but T-01, the two-copy SAT encoding, and the T-11 complexity classification are not defensible as new mathematical results.",
+    "No claim is made that the bounded search proved historical absence of the exact BAD-FIBER name.",
+    "No additional citation expansion is justified for evaluating T-11."
+  ],
+  "sources": [
+    {
+      "source_id": "doi:10.2168/lmcs-8(3:31)2012",
+      "title": "Complexity classifications for different equivalence and audit problems for Boolean circuits",
+      "role": "explicit Circuit-SAT NP-completeness source",
+      "artifact_receipt": "revision-6-source-artifacts.jsonl",
+      "metadata_note": "The publisher record identifies this article as 10.2168/LMCS-8(3:31)2012. The retrieved PDF footer incorrectly prints 3:27, which resolves to a different LMCS paper; the publisher's canonical 3:31 DOI is used here."
+    },
+    {
+      "source_id": "doi:10.26421/qic14.15-16-3",
+      "title": "Strong equivalence of reversible circuits is coNP-complete",
+      "role": "explicit standard Boolean-circuit equivalence coNP-completeness cross-check",
+      "artifact_receipt": "revision-6-source-artifacts.jsonl"
+    }
+  ]
+}

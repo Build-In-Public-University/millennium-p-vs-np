@@ -195,6 +195,69 @@ def test_exact_seed_ingestion_is_dry_run_safe_and_preserves_seed_provenance(
     assert records[0]["referenced_provider_ids"] == ["openalex:W99"]
 
 
+def test_complexity_gap_search_is_bounded_and_does_not_touch_active_corpus(
+    tmp_path: Path,
+) -> None:
+    review_dir = initialize_review(tmp_path, _contract())
+    active = json.dumps(normalize_openalex_work(_work("W0"), retrieved_at=NOW)) + "\n"
+    (review_dir / "records.jsonl").write_text(active)
+    plan = review_dir / "revision-5.json"
+    plan.write_text(
+        json.dumps(
+            {
+                "provider": "OpenAlex",
+                "queries": ["query one", "query two"],
+                "per_query": 2,
+                "maximum_provider_calls": 2,
+                "maximum_candidates": 3,
+                "reference_expansion_authorized": False,
+                "execution_gate": {"authorized": True},
+            }
+        )
+    )
+    calls: list[tuple[str, int]] = []
+
+    class Client:
+        def search(self, query: str, per_page: int) -> list[dict[str, Any]]:
+            calls.append((query, per_page))
+            suffix, openalex_id = (
+                ("one", "W10") if query == "query one" else ("two", "W20")
+            )
+            return [
+                _work("W1", doi="10.1000/shared"),
+                _work(openalex_id, doi=f"10.1000/{suffix}")
+            ]
+
+    dry = pipeline.search_complexity_gap(
+        review_dir, Client(), plan_path=plan, execute=False, retrieved_at=NOW
+    )
+    assert dry == {
+        "mode": "dry_run",
+        "network_calls": 0,
+        "queries": ["query one", "query two"],
+        "per_query": 2,
+        "maximum_candidates": 3,
+    }
+    assert calls == []
+    assert (review_dir / "records.jsonl").read_text() == active
+
+    receipt = pipeline.search_complexity_gap(
+        review_dir, Client(), plan_path=plan, execute=True, retrieved_at=NOW
+    )
+    candidates = [
+        json.loads(line)
+        for line in (review_dir / "complexity-search-candidates.jsonl").read_text().splitlines()
+    ]
+    assert calls == [("query one", 2), ("query two", 2)]
+    assert receipt["network_calls"] == 2
+    assert receipt["unique_candidates"] == 3
+    assert receipt["truncated"] is False
+    assert len(candidates) == 3
+    shared = next(row for row in candidates if row["doi"] == "10.1000/shared")
+    assert shared["discovered_by_queries"] == ["query one", "query two"]
+    assert (review_dir / "records.jsonl").read_text() == active
+
+
 def test_ingest_seeds_cli_defaults_to_dry_run(tmp_path: Path, capsys: Any) -> None:
     review_dir = initialize_review(tmp_path, _contract())
     design = review_dir / "seeds.json"
@@ -539,6 +602,33 @@ def test_report_uses_active_exact_seed_boundary(tmp_path: Path) -> None:
     report = render_report(review_dir, generated_at=NOW)
     assert report["max_records"] == 10
     assert report["expansion_depth"] == 0
+
+
+def test_report_includes_optional_complexity_assessment(tmp_path: Path) -> None:
+    review_dir = initialize_review(tmp_path, _contract())
+    (review_dir / "revision-6-complexity-assessment.json").write_text(
+        json.dumps(
+            {
+                "claim_id": "T-11",
+                "decision": {
+                    "bad_fiber_complexity": "NP-complete",
+                    "circuit_identifiable_complexity": "coNP-complete",
+                    "substantive_novelty_status": "falsified",
+                    "exact_named_prior_publication_status": "not_found_in_bounded_search",
+                    "interpretation": "Immediate corollary, not an exact named prior theorem.",
+                },
+                "proof_receipt": {"conclusion": "Circuit-SAT reduces in linear size."},
+            }
+        )
+    )
+
+    report = render_report(review_dir, generated_at=NOW)
+    markdown = (review_dir / "REPORT.md").read_text()
+
+    assert report["complexity_assessment"] == "falsified"
+    assert "Complexity assessment: T-11" in markdown
+    assert "not_found_in_bounded_search" in markdown
+    assert "Circuit-SAT reduces in linear size." in markdown
 
 
 def test_claim_links_reject_unknown_relationships(tmp_path: Path) -> None:

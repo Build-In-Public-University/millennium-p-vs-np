@@ -1,0 +1,58 @@
+{
+  "schema_version": "literature-complexity-gap-search/v0.1",
+  "revision": 6,
+  "status": "executed_screened_and_consumed",
+  "purpose": "Lexical correction to revision 5: falsify residual T-11 through the standard decision-problem names circuit nonconstancy, constancy, equivalence, and identity.",
+  "claim_under_test": {
+    "claim_id": "T-11",
+    "residual_only": "BAD-FIBER for succinct Boolean circuits is NP-complete and exact factorization is coNP-complete.",
+    "polynomial_equivalence_to_check": "Set the observation circuit G constant and add a selector input b to f(x,b)=b AND C(x). A bad fiber exists iff C is satisfiable. The complement asks whether f is constant on G-fibers."
+  },
+  "provider": "OpenAlex",
+  "queries": [
+    "Boolean circuit nonconstancy NP complete",
+    "Boolean circuit constancy coNP complete",
+    "Boolean circuit equivalence coNP complete",
+    "circuit equivalence problem computational complexity",
+    "Boolean circuit identity testing coNP complete",
+    "Boolean circuit tautology coNP complete"
+  ],
+  "per_query": 10,
+  "maximum_provider_calls": 6,
+  "maximum_candidates": 60,
+  "reference_expansion_authorized": false,
+  "full_text_policy": "Retrieve only sources that explicitly classify circuit nonconstancy, constancy, equivalence, identity, or tautology and can support the stated polynomial equivalence.",
+  "screening": {
+    "include_if": [
+      "title or abstract explicitly classifies Boolean circuit nonconstancy, constancy, equivalence, identity, or tautology",
+      "paper or authoritative source states the relevant NP/coNP completeness under succinct circuit input"
+    ],
+    "exclude_if": [
+      "polynomial identity testing for arithmetic circuits",
+      "quantum circuit equivalence",
+      "circuit minimization",
+      "restricted circuit class without transfer to unrestricted circuits",
+      "SAT solver performance without a complexity classification"
+    ]
+  },
+  "falsifier": "An established NP-completeness result for Boolean circuit nonconstancy/SAT or coNP-completeness result for circuit constancy/equivalence/tautology, combined with the explicit polynomial reduction to T-11.",
+  "non_falsifier": "Absence of search results remains non-evidence of novelty.",
+  "stop_conditions": [
+    "Stop after six provider calls.",
+    "Do not follow references or cited-by edges.",
+    "Do not modify the active ten-record corpus.",
+    "If a standard completeness result plus the explicit reduction settles T-11, mark residual novelty falsified and stop."
+  ],
+  "execution_gate": {
+    "authorized": false,
+    "authorized_at": "2026-07-30T03:20:47Z",
+    "authorization_source": "continuation_of_user_authorized_bounded_complexity_search",
+    "scope": "Six lexical-correction OpenAlex searches, at most 60 isolated candidates, no reference expansion, and only decisive targeted source retrieval.",
+    "consumed_at": "2026-07-30T03:22:45.804446+00:00",
+    "receipt": "history/complexity-search-r6/receipt.json",
+    "candidate_ledger": "history/complexity-search-r6/candidates.jsonl",
+    "candidate_ledger_sha256": "56c8b314402a1eb488e34762c6a094d30480c6cea3822a76ffb5a9e5a1b449b1",
+    "candidate_ledger_redaction": "Public URL values are replaced by sha256:<digest>; bibliographic content, DOI, provider IDs, abstracts, and query provenance are retained.",
+    "assessment": "revision-6-complexity-assessment.json"
+  }
+}

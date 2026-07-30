@@ -1,0 +1,22 @@
+{
+  "schema_version": "literature-complexity-screening/v0.1",
+  "revision": 5,
+  "screened_at": "2026-07-30T03:20:47Z",
+  "provider_calls": 8,
+  "raw_results": 80,
+  "unique_candidates": 66,
+  "direct_classification_candidates": 0,
+  "reference_expansion": 0,
+  "result": "no_direct_candidate_frame_error_detected",
+  "strongest_false_positives": [
+    {"doi": "10.1109/icde.2008.4497460", "reason": "Conditional functional dependencies over relational data; classifies CFD satisfiability/implication, not Boolean-circuit factorization."},
+    {"doi": "10.1145/2882903.2915232", "reason": "Graph database dependencies; classifies GFD satisfiability/implication/validation, not f=h(G) for circuits."},
+    {"doi": "10.1145/3183713.3196916", "reason": "Graph functional-dependency discovery and parameterized complexity; wrong representation and decision problem."},
+    {"doi": "10.1145/320064.320066", "reason": "Relational schema design and keys; explicitly excluded database meaning of functional dependency."},
+    {"doi": "10.4230/lipics.ccc.2020.22", "reason": "Circuit minimization hardness; classifies optimization of representation size, not existence of a bad fiber."},
+    {"doi": "10.3233/978-1-58603-929-5-339", "reason": "Minimal unsatisfiability and autarkies; no functional-dependency equivalence."},
+    {"doi": "10.48550/arxiv.2004.12941", "reason": "Boolean Graph Logic evaluation/entailment; no f=h(G) or bad-fiber problem."}
+  ],
+  "interpretation": "The frozen queries were dominated by database functional dependencies and circuit minimization. The null result does not support novelty because the elementary residual problem is more naturally named circuit nonconstancy or circuit equivalence.",
+  "next_revision_constraint": "Change vocabulary only: search circuit nonconstancy, circuit constancy, circuit equivalence, and Boolean circuit identity. Keep the same T-11 residual claim, caps, no-reference-expansion rule, and falsifier."
+}

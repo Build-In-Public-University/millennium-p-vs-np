@@ -419,6 +419,87 @@ def discover(
     )
 
 
+def search_complexity_gap(
+    review_dir: Path,
+    client: DiscoveryClient,
+    *,
+    plan_path: Path,
+    execute: bool,
+    retrieved_at: str | None = None,
+) -> dict[str, Any]:
+    plan = json.loads(plan_path.read_text())
+    queries = [str(query).strip() for query in plan.get("queries") or []]
+    per_query = int(plan.get("per_query") or 0)
+    max_calls = int(plan.get("maximum_provider_calls") or 0)
+    max_candidates = int(plan.get("maximum_candidates") or 0)
+    if (
+        str(plan.get("provider") or "").lower() != "openalex"
+        or not queries
+        or any(not query for query in queries)
+        or len(queries) != len(set(queries))
+        or per_query < 1
+        or max_calls < len(queries)
+        or max_candidates < 1
+        or plan.get("reference_expansion_authorized") is not False
+    ):
+        raise ValueError("complexity-gap plan has an invalid provider, boundary, or query set")
+    if not execute:
+        return {
+            "mode": "dry_run",
+            "network_calls": 0,
+            "queries": queries,
+            "per_query": per_query,
+            "maximum_candidates": max_candidates,
+        }
+    if not (plan.get("execution_gate") or {}).get("authorized"):
+        raise PermissionError("complexity-gap search is not authorized by the plan")
+
+    retrieved_at = retrieved_at or _now()
+    incoming: list[dict[str, Any]] = []
+    failures: list[dict[str, str]] = []
+    calls = raw_results = 0
+    for query in queries:
+        try:
+            works = client.search(query, per_query)
+            calls += 1
+            raw_results += len(works)
+            incoming.extend(
+                normalize_openalex_work(
+                    work,
+                    retrieved_at=retrieved_at,
+                    discovery_depth=0,
+                    discovery_query=query,
+                )
+                for work in works
+            )
+        except Exception as exc:
+            failures.append({"query": query, "error": f"{type(exc).__name__}: {exc}"})
+    candidates = _merge_records([], incoming)
+    truncated = len(candidates) > max_candidates
+    candidates = candidates[:max_candidates]
+    _write_jsonl(
+        review_dir / "complexity-search-candidates.jsonl",
+        candidates,
+        key="record_id",
+    )
+    return _receipt(
+        review_dir,
+        "complexity-search",
+        {
+            "mode": "execute",
+            "retrieved_at": retrieved_at,
+            "network_calls": calls,
+            "queries_attempted": len(queries),
+            "raw_results": raw_results,
+            "unique_candidates": len(candidates),
+            "failures": failures,
+            "truncated": truncated,
+            "active_corpus_modified": False,
+            "reference_expansion": 0,
+        },
+    )
+
+
 def ingest_exact_seeds(
     review_dir: Path,
     client: ExactSeedClient,
@@ -1019,6 +1100,11 @@ def render_report(review_dir: Path, *, generated_at: str | None = None) -> dict[
     claims_linked = len({str(link.get("claim_id")) for link in links if link.get("claim_id")})
     generated_at = generated_at or _now()
     seed_boundary = contract.get("seed_ingestion") or {}
+    assessment_path = review_dir / "revision-6-complexity-assessment.json"
+    complexity_assessment = (
+        json.loads(assessment_path.read_text()) if assessment_path.exists() else None
+    )
+    decision = (complexity_assessment or {}).get("decision") or {}
     result = {
         "schema_version": "literature-review-report/v0.1",
         "generated_at": generated_at,
@@ -1042,6 +1128,8 @@ def render_report(review_dir: Path, *, generated_at: str | None = None) -> dict[
             "maximum_records", contract["expansion"]["max_records"]
         ),
     }
+    if decision:
+        result["complexity_assessment"] = decision.get("substantive_novelty_status")
     _write_json(review_dir / "report.json", result)
     claim_text = {str(claim["claim_id"]): str(claim["text"]) for claim in contract["claims"]}
     record_title = {str(record["record_id"]): str(record["title"]) for record in records}
@@ -1080,6 +1168,22 @@ def render_report(review_dir: Path, *, generated_at: str | None = None) -> dict[
                     "",
                 ]
             )
+    if decision:
+        proof = (complexity_assessment or {}).get("proof_receipt") or {}
+        lines.extend(
+            [
+                f"## Complexity assessment: {(complexity_assessment or {}).get('claim_id')}",
+                "",
+                f"- BAD-FIBER: **{decision.get('bad_fiber_complexity')}**",
+                f"- CIRCUIT-IDENTIFIABLE: **{decision.get('circuit_identifiable_complexity')}**",
+                f"- Substantive novelty: **{decision.get('substantive_novelty_status')}**",
+                "- Exact named prior publication: "
+                f"**{decision.get('exact_named_prior_publication_status')}**",
+                f"- Assessment: {decision.get('interpretation')}",
+                f"- Proof receipt: {proof.get('conclusion')}",
+                "",
+            ]
+        )
     lines.extend(
         [
             "## Completeness boundary",
@@ -1210,6 +1314,13 @@ def main(argv: list[str] | None = None) -> int:
     seeds.add_argument("--design", type=Path, required=True)
     seeds.add_argument("--execute", action="store_true")
     seeds.add_argument("--email")
+    gap = subparsers.add_parser(
+        "complexity-search", help="run an isolated plan-driven complexity-gap search"
+    )
+    gap.add_argument("--review", type=Path, required=True)
+    gap.add_argument("--plan", type=Path, required=True)
+    gap.add_argument("--execute", action="store_true")
+    gap.add_argument("--email")
     targets = subparsers.add_parser(
         "download-targets", help="retrieve only full texts named in an authorized plan"
     )
@@ -1247,6 +1358,13 @@ def main(argv: list[str] | None = None) -> int:
             args.review,
             OpenAlexClient(email=args.email),
             design_path=args.design,
+            execute=args.execute,
+        )
+    elif args.command == "complexity-search":
+        output = search_complexity_gap(
+            args.review,
+            OpenAlexClient(email=args.email),
+            plan_path=args.plan,
             execute=args.execute,
         )
     elif args.command == "expand":

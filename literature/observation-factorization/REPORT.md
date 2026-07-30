@@ -1,6 +1,6 @@
 # Literature review: Observation factorization and succinct identifiability
 
-- Generated: `2026-07-30T02:28:38.907083+00:00`
+- Generated: `2026-07-30T03:36:13.358355+00:00`
 - Records: **10**
 - Citation edges: **248**
 - Coverage gap: **245 unresolved provider references**
@@ -41,6 +41,15 @@ Determine which parts of the observation-factorization framework are established
 - Source: `doi:10.1109/tc.2010.12` — To SAT or Not to SAT: Scalable Exploration of Functional Dependency
 - Locator: local-text:160-205
 - Assessment: The journal version gives the same polynomial-size two-copy CNF and SAT/UNSAT criterion. This removes novelty from the witness construction. No complexity-class theorem or NP/coNP completeness claim appears in the inspected full text.
+
+## Complexity assessment: T-11
+
+- BAD-FIBER: **NP-complete**
+- CIRCUIT-IDENTIFIABLE: **coNP-complete**
+- Substantive novelty: **falsified**
+- Exact named prior publication: **not_found_in_bounded_search**
+- Assessment: The exact BAD-FIBER name or f=h(G) complexity theorem was not found. Nevertheless, the classification is an immediate linear-size corollary of standard Circuit-SAT and is not defensible as a substantive theorem contribution. Search absence is not evidence that the exact wording is historically new.
+- Proof receipt: Circuit-SAT many-one reduces to BAD-FIBER in linear size, so BAD-FIBER is NP-hard and therefore NP-complete. Exact CIRCUIT-IDENTIFIABLE is its complement by the constant-on-fibers criterion, so it is coNP-complete.
 
 ## Completeness boundary
 

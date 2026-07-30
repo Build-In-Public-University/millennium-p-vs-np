@@ -1,0 +1,71 @@
+{
+  "schema_version": "literature-complexity-gap-search/v0.1",
+  "revision": 5,
+  "status": "executed_screened_and_consumed",
+  "purpose": "Attempt to falsify residual novelty of T-11 by finding prior explicit NP/coNP classifications of unrestricted Boolean-circuit functional dependency or its two-copy bad-fiber decision problem.",
+  "claim_under_test": {
+    "claim_id": "T-11",
+    "residual_only": "Given succinct Boolean circuits for a target f and observation/base functions G, existence of two inputs with equal G-values and unequal f-values is NP-complete; exact factorization f=h(G) is coNP-complete.",
+    "excluded_as_already_prior_art": [
+      "constant-on-fibers criterion",
+      "f=h(G) formulation",
+      "two-copy SAT witness construction",
+      "linear-size circuit-to-CNF encoding"
+    ]
+  },
+  "provider": "OpenAlex",
+  "queries": [
+    "Boolean functional dependency NP complete",
+    "Boolean functional dependency coNP complete",
+    "functional decomposition NP complete Boolean circuit",
+    "functional decomposition coNP complete Boolean circuit",
+    "circuit functional dependence computational complexity",
+    "SAT functional dependency complexity",
+    "functional determination Boolean circuits complexity",
+    "dependency function network satisfiability complexity"
+  ],
+  "per_query": 10,
+  "maximum_provider_calls": 8,
+  "maximum_candidates": 80,
+  "reference_expansion_authorized": false,
+  "full_text_policy": "Retrieve only a candidate whose title or abstract materially indicates an explicit complexity classification; prefer open or author-hosted copies; record closed sources honestly.",
+  "screening": {
+    "include_if": [
+      "title or abstract discusses computational complexity of Boolean functional dependency/decomposition/determination",
+      "title or abstract states NP-hard, NP-complete, coNP-hard, or coNP-complete for an equivalent circuit decision problem",
+      "paper gives a general complexity classification whose theorem appears applicable to T-11"
+    ],
+    "exclude_if": [
+      "functional dependency means relational database dependencies without a circuit/function equivalence",
+      "paper merely uses SAT operationally without classifying the decision problem",
+      "decomposition concerns numerical optimization, matrices, molecules, or unrelated domains",
+      "complexity statement concerns only minimizing decomposition size rather than existence of factorization"
+    ]
+  },
+  "falsifier": "A pre-existing result explicitly proves NP-hardness/NP-completeness of the bad-fiber witness problem or coNP-hardness/coNP-completeness of unrestricted Boolean-circuit functional dependency, under a polynomially equivalent input representation.",
+  "non_falsifiers": [
+    "a SAT encoding without a hardness proof",
+    "NP-hardness of finding an optimal or minimum decomposition",
+    "complexity under restrictions not shown equivalent to unrestricted T-11",
+    "absence of matching search results"
+  ],
+  "stop_conditions": [
+    "Stop after eight provider calls.",
+    "Do not follow references or cited-by edges.",
+    "Do not add candidates to the active ten-record seed corpus.",
+    "Do not claim novelty from a null result.",
+    "If a direct prior classification is found, record T-11 as falsified and stop broadening queries."
+  ],
+  "execution_gate": {
+    "authorized": false,
+    "authorized_at": "2026-07-30T03:12:33Z",
+    "authorization_source": "user_current_session",
+    "scope": "Eight frozen OpenAlex searches, at most 80 candidates, followed by screening and only decisive targeted full-text retrieval; no reference expansion.",
+    "consumed_at": "2026-07-30T03:17:40.572433+00:00",
+    "receipt": "history/complexity-search-r5/receipt.json",
+    "candidate_ledger": "history/complexity-search-r5/candidates.jsonl",
+    "candidate_ledger_sha256": "6a53850d562d1ce5130110d8eeedafa97543765b9b9f4f0ce117048f14ebe3df",
+    "candidate_ledger_redaction": "Public URL values are replaced by sha256:<digest>; bibliographic content, DOI, provider IDs, abstracts, and query provenance are retained.",
+    "screening": "history/complexity-search-r5/screening.json"
+  }
+}

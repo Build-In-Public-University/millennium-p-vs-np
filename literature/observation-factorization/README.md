@@ -1,6 +1,6 @@
 # Review: observation factorization and succinct identifiability
 
-- **Status:** revision 3 exact seeds ingested and screened; reference expansion and full-text retrieval remain unauthorized
+- **Status:** revision 6 complexity assessment complete; T-01 and T-11 are not defensible as novel mathematical results
 - **Problem contract:** `review.json`
 - **Theory under review:** `../../papers/observation-factorization-v0.1.md`
 - **Theorem ledger:** `../../evidence/theorem-ledger-v0.7.md`
@@ -84,10 +84,34 @@ unfavorable papers appear.
 The four line-addressed claim receipts are in `claim_links.jsonl`; the bounded
 assessment and its falsifiers are in `revision-4-full-text-assessment.json`.
 
-## Next decision
+## Complexity result
 
-The revision-4 full-text authorization has been consumed. Do not expand all 248
-references yet. The narrow remaining question is whether prior complexity
-literature already classifies unrestricted Boolean functional dependency / the
-two-copy bad-fiber SAT problem as NP-complete or coNP-complete. A bounded search for
-that classification is more informative than undirected citation expansion.
+- Revision 5 froze eight classification queries and screened 66 unique OpenAlex
+  candidates. It found no direct source because the query vocabulary was dominated
+  by database dependencies and circuit minimization. That null result is recorded as
+  a frame error, not novelty evidence, under `history/complexity-search-r5/`.
+- Revision 6 changed vocabulary only, freezing six searches for Boolean-circuit
+  nonconstancy, constancy, equivalence, identity, and tautology. It screened 40 unique
+  candidates and retrieved two decisive open-access sources without following any
+  references.
+- Böhler et al. state that Boolean Circuit-SAT is NP-complete. Jordan states as
+  Proposition 1 that Boolean-circuit equivalence is coNP-complete and that a differing
+  input is the concise complement witness.
+- `T-11` follows by a linear-size reduction. Given `C(x)`, set `G(x,b)=0` and
+  `f_C(x,b)=b AND C(x)`. A bad fiber exists exactly when `C` is satisfiable. Thus
+  BAD-FIBER is NP-complete, and exact CIRCUIT-IDENTIFIABLE is coNP-complete by the
+  constant-on-fibers criterion.
+- The bounded search did not find a source using the exact BAD-FIBER name. This does
+  not rescue substantive novelty: the result is an immediate corollary of standard
+  Circuit-SAT. The historical absence of the exact wording remains unproved.
+
+The proof receipt, hashes, source locators, and caveats are in
+`revision-6-complexity-assessment.json`, `revision-6-source-artifacts.jsonl`, and
+`revision-6-claim-links.jsonl`.
+
+## Decision
+
+Do not claim novelty for `T-01`, the two-copy bad-fiber encoding, or `T-11`'s
+NP/coNP classification. Both revision-5 and revision-6 authorizations are consumed;
+reference expansion remains disabled. Expanding all 248 references is no longer
+justified for evaluating `T-11`.

@@ -1,6 +1,8 @@
 {
   "schema_version": "literature-full-text-assessment/v0.1",
   "revision": 4,
+  "status": "superseded_for_T-11_by_revision_6",
+  "superseded_by": "revision-6-complexity-assessment.json",
   "assessed_at": "2026-07-30T02:23:34Z",
   "scope": {
     "targets": 3,
@@ -38,9 +40,9 @@
       "basis": "Both papers define f=h(G) and cite the necessary-and-sufficient disjoint-image/fiber criterion as prior work."
     },
     "T-11": {
-      "status": "witness_construction_anticipated_complexity_classification_unresolved",
-      "confidence": "high_for_construction_medium_for_classification_absence",
-      "basis": "Both papers construct the same two-copy bad-fiber CNF in linear time and use SAT to witness nonfactorization. Neither inspected text states NP-completeness of bad-fiber existence or coNP-completeness of factorization."
+      "status": "superseded_by_revision_6",
+      "confidence": "historical_revision_only",
+      "basis": "Revision 4 found the witness construction but left the classification unresolved. Revision 6 settles the classification by a linear-size reduction from standard Circuit-SAT; see revision-6-complexity-assessment.json."
     }
   },
   "falsifiers": [
@@ -48,5 +50,5 @@
     "Karp 1963 or another inaccessible foundational source contains an equivalent complexity classification.",
     "T-11 imposes restrictions under which the two-copy SAT encoding is not polynomial-size or the decision problem changes complexity."
   ],
-  "decision": "Do not claim novelty for T-01 or for T-11's witness construction. Preserve only the explicit unrestricted complexity classification as a residual candidate pending a focused complexity-literature search and inspection of foundational sources."
+  "decision": "Historical revision-4 decision, superseded for T-11 by revision 6. Do not claim novelty for T-01, the two-copy witness construction, or the unrestricted NP/coNP classification."
 }
